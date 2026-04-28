@@ -30,6 +30,7 @@ public class Member {
 	public static class Detail{
 		private int userNo;
 		private String userId;
+		private String userPwd;
 		private String name;
 		private String nickName;
 	}
