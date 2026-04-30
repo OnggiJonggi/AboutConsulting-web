@@ -1,13 +1,11 @@
-package com.axaboutconsulting.member.model.service;
+package com.axaboutconsulting.member;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.axaboutconsulting.common.config.security.CustomUserDetails;
-import com.axaboutconsulting.member.model.mapper.MemberMapper;
-import com.axaboutconsulting.member.model.vo.Member;
+import com.axaboutconsulting.global.security.CustomUserDetails;
 
 /**
  * spring security에서 사용하는 로그인 서비스 로직
@@ -25,7 +23,7 @@ public class MemberSecurityService implements UserDetailsService{
 	@Override
 	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         
-        Member.Detail memberDetail = memberMapper.selectMemberById(userId);
+        MemberVO.Detail memberDetail = memberMapper.selectMemberById(userId);
         
         if (memberDetail == null) {
             throw new UsernameNotFoundException("그런 사람 없다는데요");

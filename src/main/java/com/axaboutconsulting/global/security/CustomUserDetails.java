@@ -1,4 +1,4 @@
-package com.axaboutconsulting.common.config.security;
+package com.axaboutconsulting.global.security;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -6,15 +6,15 @@ import java.util.Collections;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.axaboutconsulting.member.model.vo.Member;
-import com.axaboutconsulting.member.model.vo.Member.Detail;
+import com.axaboutconsulting.member.MemberVO;
+import com.axaboutconsulting.member.MemberVO.Detail;
 
 //spring security에서 사용하는 UserDetails 수정
 public class CustomUserDetails implements UserDetails{
 	
 	private static final long serialVersionUID = 1L;
 	
-    private final Member.Detail member;
+    private final MemberVO.Detail member;
     
     public CustomUserDetails(Detail memberDetail) {
         this.member = memberDetail;
@@ -46,6 +46,11 @@ public class CustomUserDetails implements UserDetails{
     // 별명 꺼내쓰기
     public String getNickName() {
     	return member.getNickName();
+    }
+    
+    // 회원번호 꺼내쓰기
+    public int getMemberNo() {
+    	return member.getMemberNo();
     }
     
     

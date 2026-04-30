@@ -1,6 +1,7 @@
-package com.axaboutconsulting.member.controller;
+package com.axaboutconsulting.member;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -8,17 +9,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.axaboutconsulting.member.model.service.MemberAccountService;
-import com.axaboutconsulting.member.model.vo.Member;
-
 import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/member")
-public class MemberAccountController {
+public class MemberController {
 
 	@Autowired
-	private MemberAccountService service;
+	private MemberService service;
 	
 	/**
 	 * 회원 가입 페이지로 가세요라
@@ -27,8 +25,8 @@ public class MemberAccountController {
 	@GetMapping("/join")
 	public String Join(Model model) {
 		// thymeleaf에서 th:object로 받아갈 빈 객체 보내기
-		model.addAttribute("newAccount", new Member.NewAccount());
-		return "member/new-account";
+		model.addAttribute("newAccount", new MemberVO.Join());
+		return "member/join";
 	}
 	
 	/**
@@ -37,14 +35,33 @@ public class MemberAccountController {
 	 * BindingResult : @Valid 뒤에 붙여나와 오류 발생 시 결과 저장
 	 * @return 실패하면 기존 페이지, 성공하면 메인화면
 	 */
-	@PostMapping("/new-account")
-	public String newAccount(@Valid Member.NewAccount member
+	@PostMapping("/join")
+	public String join(@Valid MemberVO.Join member
 			,BindingResult bindingResult){
 		
 		// 유효성 검사 실패하면 가세요라
-		if(bindingResult.hasErrors()) return "member/new-account";
+		if(bindingResult.hasErrors()) return "member/join";
 		
-		service.newAccount(member);
+		service.join(member);
+		
 		return "redirect:/";
+	}
+	
+	/**
+	 * 아이디 중복 확인
+	 * @param member
+	 * @param bindingResult
+	 * @return 정상 200, 이상해요 500
+	 */
+	@PostMapping("/check-id")
+	public ResponseEntity<Void> checkId(@Valid MemberVO.Join member
+			,BindingResult bindingResult) {
+		
+		if(bindingResult.hasErrors())
+			return ResponseEntity.badRequest().build();
+		
+		service.checkId(member);
+		
+		return ResponseEntity.ok().build();
 	}
 }

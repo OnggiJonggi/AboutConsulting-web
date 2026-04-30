@@ -1,6 +1,6 @@
-package com.axaboutconsulting.member.model.vo;
+package com.axaboutconsulting.member;
 
-import com.axaboutconsulting.common.regex.MemberRegexp;
+import com.axaboutconsulting.global.regex.MemberRegexp;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 @Builder
-public class Member {
+public class MemberVO {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Getter
@@ -28,7 +28,7 @@ public class Member {
 	@AllArgsConstructor
 	@Getter
 	public static class Detail{
-		private int userNo;
+		private int memberNo;
 		private String userId;
 		private String userPwd;
 		private String name;
@@ -38,7 +38,7 @@ public class Member {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Getter
-	public static class NewAccount{
+	public static class Join{
 		private int memberNo;
 		
 		@NotBlank(message="아이디를 입력해라.")

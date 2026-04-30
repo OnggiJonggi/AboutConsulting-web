@@ -1,4 +1,4 @@
-package com.axaboutconsulting.common.regex;
+package com.axaboutconsulting.global.regex;
 
 import lombok.NoArgsConstructor;
 
