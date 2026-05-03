@@ -54,14 +54,8 @@ public class MemberController {
 	 * @return 정상 200, 이상해요 500
 	 */
 	@PostMapping("/check-id")
-	public ResponseEntity<Void> checkId(@Valid MemberVO.Join member
-			,BindingResult bindingResult) {
-		
-		if(bindingResult.hasErrors())
-			return ResponseEntity.badRequest().build();
-		
-		service.checkId(member);
-		
+	public ResponseEntity<Void> checkId(String userId) {
+		service.checkId(userId);
 		return ResponseEntity.ok().build();
 	}
 }

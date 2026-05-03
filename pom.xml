@@ -70,6 +70,13 @@
 			<scope>test</scope>
 		</dependency>
 		
+		<!-- thymeleaf와 spring security 연동-->
+		<dependency>
+		    <groupId>org.thymeleaf.extras</groupId>
+		    <artifactId>thymeleaf-extras-springsecurity6</artifactId>
+		    <scope>compile</scope>
+		</dependency>
+		
 		<!-- 오라클, 마이바티스 -->
 		<dependency>
 		    <groupId>com.oracle.database.jdbc</groupId>

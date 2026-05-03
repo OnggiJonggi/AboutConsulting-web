@@ -2,8 +2,6 @@ package com.axaboutconsulting.member;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.axaboutconsulting.member.MemberVO.Join;
-
 @Mapper
 public interface MemberMapper {
 	
@@ -11,5 +9,5 @@ public interface MemberMapper {
 
 	public int insertJoin(MemberVO.Join member);
 
-	public int selectCheckId(Join member);
+	public int selectCheckId(String userId);
 }

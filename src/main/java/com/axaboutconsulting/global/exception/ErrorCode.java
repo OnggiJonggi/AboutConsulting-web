@@ -1,4 +1,4 @@
-package com.axaboutconsulting.common.exception;
+package com.axaboutconsulting.global.exception;
 
 import org.springframework.http.HttpStatus;
 

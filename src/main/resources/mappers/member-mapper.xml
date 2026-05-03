@@ -50,7 +50,7 @@
 			,#{nickName}
 	</insert>
 	
-	<select id="selectCheckId" parameterType="memberJoinMap" resultType="int" >
+	<select id="selectCheckId" parameterType="string" resultType="_int" >
 		select count(*)
 		from MEMBER
 		where ID = #{userId}

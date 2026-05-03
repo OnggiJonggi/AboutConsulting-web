@@ -2,8 +2,8 @@ package com.axaboutconsulting.member;
 
 import org.springframework.stereotype.Service;
 
-import com.axaboutconsulting.common.exception.CustomException;
-import com.axaboutconsulting.common.exception.ErrorCode;
+import com.axaboutconsulting.global.exception.CustomException;
+import com.axaboutconsulting.global.exception.ErrorCode;
 import com.axaboutconsulting.member.MemberVO.Join;
 
 @Service
@@ -27,9 +27,9 @@ public class MemberServiceImpl implements MemberService{
 	 * 아이디 중복 확인
 	 */
 	@Override
-	public void checkId(Join member) {
-		if(memberMapper.selectCheckId(member)==0) return;
-		else throw new CustomException(ErrorCode.ID_IS_DUPLICATED);
+	public void checkId(String userId) {
+		if(memberMapper.selectCheckId(userId) > 0)
+			throw new CustomException(ErrorCode.ID_IS_DUPLICATED);
 	}
     
     

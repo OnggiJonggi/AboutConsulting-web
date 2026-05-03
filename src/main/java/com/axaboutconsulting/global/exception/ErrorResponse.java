@@ -1,4 +1,4 @@
-package com.axaboutconsulting.common.exception;
+package com.axaboutconsulting.global.exception;
 
 import java.time.LocalDateTime;
 
