@@ -25,7 +25,7 @@ public class MemberController {
 	@GetMapping("/join")
 	public String Join(Model model) {
 		// thymeleaf에서 th:object로 받아갈 빈 객체 보내기
-		model.addAttribute("newAccount", new MemberVO.Join());
+		model.addAttribute("memberJoin", new MemberVO.Join());
 		return "member/join";
 	}
 	

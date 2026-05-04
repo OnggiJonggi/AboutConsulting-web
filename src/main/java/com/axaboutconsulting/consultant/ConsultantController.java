@@ -10,10 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ConsultantController {
 	@Autowired
 	public ConsultantService service;
-	
-	@GetMapping("/list")
-	public getList() {
-		
-	}
+
 
 }
