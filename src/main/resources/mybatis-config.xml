@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC
+  "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">	
+<configuration>
+	<!-- 별칭 설정. 여기서도 패키지만 생략할 수도 있는데 그럼 ㅈ버그 걸림 -->
+    <typeAliases>
+        <typeAlias type="com.axaboutconsulting.member.MemberVO$Login" alias="MemberLogin"/>
+        <typeAlias type="com.axaboutconsulting.member.MemberVO$Detail" alias="MemberDetail"/>
+        <typeAlias type="com.axaboutconsulting.member.MemberVO$Join" alias="MemberJoin"/>
+    </typeAliases>
+</configuration>

@@ -5,14 +5,14 @@
 
 <mapper namespace="memberMapper">
 
-	<resultMap id="memberDetailMap" type="Member$Detail">
+	<resultMap id="memberDetailMap" type="MemberDetail">
 	    <result property="memberNo" column="MEMBERS_NO"/>
 	    <result property="userId" column="ID"/>
 	    <result property="userPwd" column="PWD"/>
 	    <result property="name" column="NAME"/>
 	    <result property="nickName" column="NICK_NAME"/>
 	</resultMap>
-	<resultMap id="memberJoinMap" type="Member$Join">
+	<resultMap id="memberJoinMap" type="MemberJoin">
 	    <result property="memberNo" column="MEMBERS_NO"/>
 	    <result property="userId" column="ID"/>
 	    <result property="userPwd" column="PWD"/>
