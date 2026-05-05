@@ -10,4 +10,6 @@ public interface MemberMapper {
 	public int insertJoin(MemberVO.Join member);
 
 	public int selectCheckId(String userId);
+
+	public int selectCheckNickname(String nickname);
 }

@@ -1,9 +1,11 @@
 package com.axaboutconsulting.global.security;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.axaboutconsulting.member.MemberVO;
@@ -20,10 +22,12 @@ public class CustomUserDetails implements UserDetails{
         this.member = memberDetail;
     }
 
-    //사용자 다중 권한 식별 장치
+    //사용자 권한 식별 장치
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-    	 return Collections.emptyList();
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(member.getRole()));
+        return authorities;
     }
 
     // 비밀번호 검증
@@ -44,15 +48,14 @@ public class CustomUserDetails implements UserDetails{
     }
     
     // 별명 꺼내쓰기
-    public String getNickName() {
-    	return member.getNickName();
+    public String getNickname() {
+    	return member.getNickname();
     }
     
     // 회원번호 꺼내쓰기
     public int getMemberNo() {
     	return member.getMemberNo();
     }
-    
     
     // 계정 만료 여부
     @Override

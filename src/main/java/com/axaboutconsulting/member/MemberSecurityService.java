@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.axaboutconsulting.global.security.CustomUserDetails;
+import com.axaboutconsulting.global.security.RoleMapper;
 
 /**
  * spring security에서 사용하는 로그인 서비스 로직
@@ -15,8 +16,11 @@ import com.axaboutconsulting.global.security.CustomUserDetails;
 public class MemberSecurityService implements UserDetailsService{
 	
 	private final MemberMapper memberMapper;
-    public MemberSecurityService(MemberMapper memberMapper) {
+	private final RoleMapper roleMapper;
+    public MemberSecurityService(MemberMapper memberMapper
+    		,RoleMapper roleMapper) {
         this.memberMapper = memberMapper;
+		this.roleMapper = roleMapper;
     }
 
 	// 로그인
@@ -28,6 +32,8 @@ public class MemberSecurityService implements UserDetailsService{
         if (memberDetail == null) {
             throw new UsernameNotFoundException("그런 사람 없다는데요");
         }
+        
+        memberDetail.setRole(roleMapper.selectRoleByMemberNo(memberDetail.getMemberNo()));
 
         return new CustomUserDetails(memberDetail);
 	}

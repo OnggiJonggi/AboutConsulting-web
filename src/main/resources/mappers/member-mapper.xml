@@ -10,14 +10,15 @@
 	    <result property="userId" column="ID"/>
 	    <result property="userPwd" column="PWD"/>
 	    <result property="name" column="NAME"/>
-	    <result property="nickName" column="NICK_NAME"/>
+	    <result property="nickname" column="NICKNAME"/>
+	    <result property="role" column="ROLE"/>
 	</resultMap>
 	<resultMap id="memberJoinMap" type="MemberJoin">
 	    <result property="memberNo" column="MEMBERS_NO"/>
 	    <result property="userId" column="ID"/>
 	    <result property="userPwd" column="PWD"/>
 	    <result property="name" column="NAME"/>
-	    <result property="nickName" column="NICK_NAME"/>
+	    <result property="nickname" column="NICKNAME"/>
 	</resultMap>
 
 	<select id="selectMemberById" parameterType="memberDetailMap" resultType="string" >
@@ -26,34 +27,41 @@
 			,ID
 			,PWD
 			,NAME
-			,NICK_NAME
+			,NICKNAME
+			,ROLE
 		from MEMBER
 		where ID = #{userId}
 	</select>
 	
 	<insert id="insertJoin" parameterType="memberJoinMap" >
 		<selectKey keyProperty="memberNo" resultType="int" order="BEFORE">
-			SELECT SEQ_MEMBERS.nextval FROM DUAL
+			SELECT SEQ_MEMBER.nextval FROM DUAL
 		</selectKey>
 		insert into MEMBER (
 			MEMBER_NO
 			,ID
 			,PWD
 			,NAME
-			,NICK_NAME
+			,NICKNAME
 			)
 		values
 			#{memberNo}
 			,#{userId}
 			,#{userPwd}
 			,#{name}
-			,#{nickName}
+			,#{nickname}
 	</insert>
 	
 	<select id="selectCheckId" parameterType="string" resultType="_int" >
 		select count(*)
 		from MEMBER
 		where ID = #{userId}
+	</select>
+	
+	<select id="selectCheckNickname" parameterType="string" resultType="_int" >
+		select count(*)
+		from MEMBER
+		where NICKNAME = #{nickname}
 	</select>
 	
 </mapper>

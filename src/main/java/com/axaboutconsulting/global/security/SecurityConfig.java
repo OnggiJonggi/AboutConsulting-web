@@ -26,6 +26,8 @@ public class SecurityConfig {
             .requestMatchers("/templates/**", "/favicon.ico").permitAll()
             .requestMatchers("/", "/member/join", "/member/login").permitAll()
             .anyRequest().permitAll()
+//            .anyRequest().access(customAuthManager) // 커스텀한 클래스에서 결정
+
         );
         // requestMatchers(url경로) : 해당 경로
         // permitAll() : 접근 제한 없음

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 @Builder
 public class MemberVO {
 	@NoArgsConstructor
@@ -27,12 +28,14 @@ public class MemberVO {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Getter
+	@Setter
 	public static class Detail{
 		private int memberNo;
 		private String userId;
 		private String userPwd;
 		private String name;
-		private String nickName;
+		private String nickname;
+		private String role;
 	}
 	
 	@NoArgsConstructor
@@ -55,7 +58,26 @@ public class MemberVO {
 		
 		@NotBlank(message="별명없는 고객이 트리링크를 떠돈다.")
 		@Pattern(regexp = MemberRegexp.NAME_REGEXP, message="제대로 된 별명 주세요.")
-		private String nickName;
+		private String nickname;
 	}
 
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Getter
+	public static class SearchRequest{
+		private String userId;
+		private String name;
+		private String nickname;
+	}
+	
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Getter
+	public static class SearchResponse{
+		private int memberNo;
+		private String memberNoEncrypted;
+		private String userId;
+		private String name;
+		private String nickname;
+	}
 }
