@@ -35,6 +35,9 @@ public class MemberServiceImpl implements MemberService{
 			throw new CustomException(ErrorCode.ID_IS_DUPLICATED);
 	}
 
+	/**
+	 * 닉네임 중복 확인
+	 */
 	@Override
 	public void checkNick(String nickname) {
 		if(memberMapper.selectCheckNickname(nickname) > 0)
