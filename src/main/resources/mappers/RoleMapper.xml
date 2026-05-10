@@ -3,10 +3,10 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="roleMapper">
+<mapper namespace="com.axaboutconsulting.global.security.RoleMapper">
 	<select id="selectRoleByMemberNo" parameterType="_int" resultType="string" >
 		select ROLE_NAME
-		from ROLE R
+		from ROLE_INFO R
 		left join MEMBER_ROLE MR on (MR.ROLE_NO = R.ROLE_NO)
 		left join MEMBER M on (M.MEMBER_NO = MR.MEMBER_NO)
 		where M.MEMBER_NO = #{memberNo}
