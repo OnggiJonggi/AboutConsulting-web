@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.axaboutconsulting.global.common.SearchResultVO;
-
 import jakarta.validation.Valid;
 
 @Controller
@@ -19,6 +17,14 @@ public class MemberController {
 
 	@Autowired
 	private MemberService service;
+	
+	/**
+	 * 로그인 페이지로
+	 */
+	@GetMapping("/login")
+	public String login() {
+		return "member/login";
+	}
 	
 	/**
 	 * 회원 가입 페이지로 가세요라
@@ -71,15 +77,4 @@ public class MemberController {
 		return ResponseEntity.ok().build();
 	}
 	
-	/**
-	 * 회원 목록
-	 * 관리자 권한
-	 * @param search
-	 * @return List<MemberVO.SearchResponse>
-	 * @return count
-	 */
-	@PostMapping("/list")
-	public ResponseEntity<SearchResultVO<MemberVO.SearchResponse>> getList(MemberVO.SearchRequest search){
-		return service.getList(search);
-	}
 }

@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-	@Autowired
-	private AdminService service;
+//	@Autowired
+//	private AdminService service;
 	
 	// 관리자 메인 페이지로
 	@GetMapping

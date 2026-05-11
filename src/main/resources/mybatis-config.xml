@@ -3,6 +3,15 @@
   "-//mybatis.org//DTD Config 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-config.dtd">	
 <configuration>
+
+    <settings>
+    	<!-- 오라클 NULL 설정 -->
+		<setting name="jdbcTypeForNull" value="NULL"/>
+		
+    	<!-- 카멜 케이스 -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+    
     <typeAliases>
     	<!-- Member -->
         <typeAlias type="com.axaboutconsulting.member.MemberVO$Login" alias="MemberLogin"/>
@@ -17,5 +26,7 @@
         <!-- Student -->
         <typeAlias type="com.axaboutconsulting.student.StudentVO$Add" alias="StudentAdd"/>
         
+        <!-- 전역 설정 -->
+        <package name="website.treelink"/>
     </typeAliases>
 </configuration>

@@ -5,7 +5,7 @@
 
 <mapper namespace="com.axaboutconsulting.member.MemberMapper">
 
-	<resultMap id="memberDetailMap" type="MemberDetail">
+	<resultMap id="MemberDetailMap" type="MemberDetail">
 	    <result property="memberNo" column="MEMBERS_NO"/>
 	    <result property="userId" column="ID"/>
 	    <result property="userPwd" column="PWD"/>
@@ -13,7 +13,7 @@
 	    <result property="nickname" column="NICKNAME"/>
 	    <result property="role" column="ROLE"/>
 	</resultMap>
-	<resultMap id="memberJoinMap" type="MemberJoin">
+	<resultMap id="MemberJoinMap" type="MemberJoin">
 	    <result property="memberNo" column="MEMBERS_NO"/>
 	    <result property="userId" column="ID"/>
 	    <result property="userPwd" column="PWD"/>
@@ -21,7 +21,7 @@
 	    <result property="nickname" column="NICKNAME"/>
 	</resultMap>
 
-	<select id="selectMemberById" parameterType="memberDetailMap" resultType="string" >
+	<select id="selectMemberById" parameterType="string" resultMap="MemberDetailMap" >
 		select
 			MEMBERS_NO
 			,ID
@@ -33,7 +33,7 @@
 		where ID = #{userId}
 	</select>
 	
-	<insert id="insertJoin" parameterType="memberJoinMap" >
+	<insert id="insertJoin" parameterMap="MemberJoinMap" >
 		<selectKey keyProperty="memberNo" resultType="int" order="BEFORE">
 			SELECT SEQ_MEMBER.nextval FROM DUAL
 		</selectKey>

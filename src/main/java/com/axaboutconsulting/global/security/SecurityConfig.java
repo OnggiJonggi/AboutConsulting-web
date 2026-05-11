@@ -1,5 +1,6 @@
 package com.axaboutconsulting.global.security;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -12,22 +13,23 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
 	// 비밀번호 해싱
+	@Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     // filterChain : CSRF방어, 세션/로그인/http요청 관리
     // 타임리프는 <form th:action>으로 토큰 자동 생성
+	@Bean
     public SecurityFilterChain filterChain(HttpSecurity http
-    		) throws Exception {
+    		,CustomDynamicAuthorizationManager customAuthManager) throws Exception {
 
         // http요청 관리
         http.authorizeHttpRequests(auth -> auth
-            .requestMatchers("/templates/**", "/favicon.ico").permitAll()
+            .requestMatchers("/templates/**", "/static/favicon.png").permitAll()
             .requestMatchers("/", "/member/join", "/member/login").permitAll()
             .anyRequest().permitAll()
 //            .anyRequest().access(customAuthManager) // 커스텀한 클래스에서 결정
-
         );
         // requestMatchers(url경로) : 해당 경로
         // permitAll() : 접근 제한 없음
@@ -59,4 +61,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-
