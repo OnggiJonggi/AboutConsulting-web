@@ -1,3 +1,6 @@
+# 키 파일
+src/main/resources/key.properties
+
 ### Eclipse ###
 .metadata
 bin/

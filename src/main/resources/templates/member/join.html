@@ -1,139 +1,123 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원가입</title>
-    <th:block th:replace="~{/common/fragment :: library}"></th:block>
+    <th:block th:replace="~{/common/fragment :: common}"></th:block>
     <link rel="stylesheet" th:href="@{/css/member/join.css}">
 </head>
+
 <body>
 
-    <main class="join-wrapper">
+    <div class="join-wrapper">
 
         <!-- 로고 -->
-        <div class="logo-area">
-            <a th:href="@{/}">
-                <img th:src="@{/img/main-logo.png}" alt="TreeLink 로고" width="240" height="80" loading="eager">
-            </a>
+        <div class="logo-wrap">
+            <img th:src="@{/img/main-logo.png}" alt="어바웃컨설팅 로고" class="main-logo">
         </div>
 
-        <!-- 회원가입 카드 -->
+        <!-- 카드 -->
         <div class="join-card">
             <div class="join-card__header">
-                <div class="join-card__icon">
-                    <i data-lucide="user-plus"></i>
-                </div>
-                <h1 class="join-card__title">회원가입</h1>
-                <p class="join-card__desc">TreeLink에 오신 것을 환영합니다</p>
+                <i data-lucide="user-plus" class="join-header-icon"></i>
+                <h1 class="join-title">회원가입</h1>
+                <p class="join-subtitle">계정을 만들어 서비스를 이용하세요.</p>
             </div>
 
             <form th:action="@{/member/join}" th:object="${memberJoin}" method="post" id="joinForm" novalidate>
 
-                <!-- ① 아이디 -->
-                <div class="form-group" id="group-userId">
-                    <label class="form-label" for="userId">
-                        <i data-lucide="at-sign"></i>
+                <!-- 서버 측 유효성 오류 전체 표시 (BindingResult) -->
+                <div th:if="${#fields.hasErrors('*')}" class="alert alert--error">
+                    <i data-lucide="circle-alert" class="alert__icon"></i>
+                    <span>입력 정보를 다시 확인해 주세요.</span>
+                </div>
+
+                <!-- 아이디 -->
+                <div class="form-group">
+                    <label for="userId" class="form-label">
+                        <i data-lucide="at-sign" class="label-icon"></i>
                         아이디
                     </label>
-                    <div class="input-row">
-                        <input
-                            type="text"
-                            id="userId"
-                            th:field="*{userId}"
-                            class="form-input"
-                            placeholder="영문·숫자 4~12자"
-                            autocomplete="username"
-                            maxlength="12"
-                            required>
-                        <button type="button" class="btn-check" id="btn-check-id" aria-label="아이디 중복 확인">
-                            중복 확인
-                        </button>
+                    <div class="input-with-btn">
+                        <input type="text" id="userId" th:field="*{userId}" class="form-input"
+                            th:classappend="${#fields.hasErrors('userId')} ? ' input--error'" placeholder="영문·숫자 4~12자"
+                            autocomplete="username">
+                        <button type="button" id="btnCheckId" class="btn-check">중복확인</button>
                     </div>
-                    <span class="form-feedback" id="feedback-userId" aria-live="polite"></span>
+                    <!-- 서버 오류 -->
+                    <span th:if="${#fields.hasErrors('userId')}" th:errors="*{userId}" class="field-error"></span>
+                    <!-- 클라이언트 오류 -->
+                    <span id="userIdError" class="field-error" style="display:none;"></span>
+                    <!-- 중복확인 결과 -->
+                    <span id="userIdCheckMsg" class="field-check-msg" style="display:none;"></span>
                 </div>
 
-                <!-- ② 비밀번호 -->
-                <div class="form-group" id="group-userPwd">
-                    <label class="form-label" for="userPwd">
-                        <i data-lucide="lock"></i>
+                <!-- 비밀번호 -->
+                <div class="form-group">
+                    <label for="userPwd" class="form-label">
+                        <i data-lucide="lock-keyhole" class="label-icon"></i>
                         비밀번호
                     </label>
-                    <div class="input-row input-row--single">
-                        <input
-                            type="password"
-                            id="userPwd"
-                            th:field="*{userPwd}"
-                            class="form-input"
-                            placeholder="영문·숫자·특수문자(@$!%*#?&) 4~20자"
-                            autocomplete="new-password"
-                            maxlength="20"
-                            required>
-                        <button type="button" class="btn-eye" id="btn-eye-pwd" aria-label="비밀번호 표시/숨기기">
-                            <i data-lucide="eye"></i>
+                    <div class="input-pw-wrap">
+                        <input type="password" id="userPwd" th:field="*{userPwd}" class="form-input"
+                            th:classappend="${#fields.hasErrors('userPwd')} ? ' input--error'"
+                            placeholder="영문·숫자·특수문자 4~20자" autocomplete="new-password">
+                        <button type="button" class="btn-toggle-pw" aria-label="비밀번호 표시/숨기기" data-target="userPwd">
+                            <i data-lucide="eye" class="icon-sm"></i>
                         </button>
                     </div>
-                    <span class="form-feedback" id="feedback-userPwd" aria-live="polite"></span>
+                    <span th:if="${#fields.hasErrors('userPwd')}" th:errors="*{userPwd}" class="field-error"></span>
+                    <span id="userPwdError" class="field-error" style="display:none;"></span>
                 </div>
 
-                <!-- ③ 이름 -->
-                <div class="form-group" id="group-name">
-                    <label class="form-label" for="name">
-                        <i data-lucide="user"></i>
+                <!-- 이름 -->
+                <div class="form-group">
+                    <label for="name" class="form-label">
+                        <i data-lucide="user" class="label-icon"></i>
                         이름
                     </label>
-                    <input
-                        type="text"
-                        id="name"
-                        th:field="*{name}"
-                        class="form-input"
-                        placeholder="한글·영문·숫자 1~10자"
-                        maxlength="10"
-                        required>
-                    <span class="form-feedback" id="feedback-name" aria-live="polite"></span>
+                    <input type="text" id="name" th:field="*{name}" class="form-input"
+                        th:classappend="${#fields.hasErrors('name')} ? ' input--error'" placeholder="한글·영문·숫자 1~10자">
+                    <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="field-error"></span>
+                    <span id="nameError" class="field-error" style="display:none;"></span>
                 </div>
 
-                <!-- ④ 닉네임 -->
-                <div class="form-group" id="group-nickname">
-                    <label class="form-label" for="nickname">
-                        <i data-lucide="smile"></i>
+                <!-- 닉네임 -->
+                <div class="form-group">
+                    <label for="nickname" class="form-label">
+                        <i data-lucide="badge-check" class="label-icon"></i>
                         닉네임
                     </label>
-                    <div class="input-row">
-                        <input
-                            type="text"
-                            id="nickname"
-                            th:field="*{nickname}"
-                            class="form-input"
-                            placeholder="한글·영문·숫자 1~10자"
-                            maxlength="10"
-                            required>
-                        <button type="button" class="btn-check" id="btn-check-nickname" aria-label="닉네임 중복 확인">
-                            중복 확인
-                        </button>
+                    <div class="input-with-btn">
+                        <input type="text" id="nickname" th:field="*{nickname}" class="form-input"
+                            th:classappend="${#fields.hasErrors('nickname')} ? ' input--error'"
+                            placeholder="한글·영문·숫자 1~10자">
+                        <button type="button" id="btnCheckNickname" class="btn-check">중복확인</button>
                     </div>
-                    <span class="form-feedback" id="feedback-nickname" aria-live="polite"></span>
+                    <span th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}" class="field-error"></span>
+                    <span id="nicknameError" class="field-error" style="display:none;"></span>
+                    <span id="nicknameCheckMsg" class="field-check-msg" style="display:none;"></span>
                 </div>
 
                 <!-- 제출 버튼 -->
-                <button type="submit" class="btn-submit" id="btn-submit">
-                    <i data-lucide="user-check"></i>
+                <button type="submit" class="btn-submit" id="btnSubmit">
+                    <i data-lucide="user-check" class="icon-sm"></i>
                     가입하기
                 </button>
 
+                <div class="join-footer-link">
+                    이미 계정이 있으신가요?
+                    <a th:href="@{/member/login}">로그인하기</a>
+                </div>
+
             </form>
-
-            <p class="join-card__login-link">
-                이미 계정이 있으신가요?
-                <a th:href="@{/member/login}">로그인</a>
-            </p>
         </div>
-
-    </main>
+    </div>
 
     <script th:src="@{/js/member/join.js}"></script>
-    <script>
-        lucide.createIcons();
-    </script>
+    <script>lucide.createIcons();</script>
 </body>
+
 </html>

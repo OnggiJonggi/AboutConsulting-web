@@ -1,6 +1,26 @@
-<th:block th:fragment="library">
-<link rel="icon" type="image/x-icon" th:href="@{/favicon.png}">
-<script src="https://ajax.googleapis.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+<th:block th:fragment="common">
+
+  <!-- lucide 아이콘 -->
+  <link rel="icon" type="image/x-icon" th:href="@{/favicon.png}">
+
+  <!-- spring security + ajax용 csrf토큰 -->
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+  <!-- 라이브러리 CDN -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <script>
+    // spring security + ajax용 csrf토큰
+    $(function () {
+      const token = $("meta[name='_csrf']").attr("content");
+      const header = $("meta[name='_csrf_header']").attr("content");
+
+      $(document).ajaxSend(function (e, xhr) {
+        xhr.setRequestHeader(header, token);
+      });
+    });
+  </script>
 </th:block>

@@ -1,22 +1,26 @@
 메인 페이지
 비 로그인
-  '로그인하기'(get, /member/login)
-  '회원가입하기'(get, /member/join)
+  로그인(get, /member/login)
+  회원가입(get, /member/join)
 로그인, 권한 'ADMIN'
-  닉네임 누르기 (get, /member/myinfo)
-  '컨설턴트 목록'(get, /consultant/list)
-  '컨설턴트 등록'(get, /consultant/register)
-  '학생 목록'(get, /student/list)
-  '학생 등록'(get, /student/register)
+  내정보(get, /member/myinfo)
+  컨설턴트 목록(get, /consultant/list)
+  컨설턴트 등록(get, /consultant/register)
+  학생 목록(get, /student/list)
+  학생 등록(get, /student/register)
+  로그아웃(get, /member/logout)
 로그인, 권한 'CONSULTANT'
-  닉네임 누르기(get, /member/myinfo)
-  '담당 학생 목록'(get, /consultant/mystudent)
-
+  내정보(get, /member/myinfo)
+  담당 학생 목록(get, /consultant/mystudent)
+  로그아웃(get, /member/logout)
 
 회원가입 페이지(/member/join)
-'아이디 중복확인'(post, /api/member/check-id)
-'닉네임 중복확인'(post, /api/member/check-nickname)
-폼 제출(post, /member/join)
+  아이디 중복확인(post, /member/check-id)
+  닉네임 중복확인(post, /member/check-nickname)
+  폼 제출(post, /member/join)
 
 로그인 페이지(/member/login)
-폼 제출(post, /member/login-proc)
+  폼 제출(post, /member/login)
+
+컨설턴트 목록(/consultant/list)
+  목록 불러오기(post, /consultant/list)

@@ -11,7 +11,15 @@ public class ConsultantVO {
 	@AllArgsConstructor
 	@Getter
 	public static class Detail{
-		private int memberNo;
 		private int consultantNo;
+		private int memberNo;
+	}
+	
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Getter
+	public static class Search{
+		private String nickname;
+		private String studentName;
 	}
 }

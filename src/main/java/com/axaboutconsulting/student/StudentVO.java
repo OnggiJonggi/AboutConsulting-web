@@ -15,7 +15,7 @@ public class StudentVO {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	@Getter
-	public static class Add {
+	public static class Register {
 		
 		@NotBlank(message="이름이 뭐에요")
 		@Pattern(regexp = StudentRegexp.NAME_REGEXP, message="이름이 뭐이래")
@@ -36,5 +36,13 @@ public class StudentVO {
 		@NotBlank(message="목표 대학이 뭐에요")
 		@Pattern(regexp = StudentRegexp.TARGET_UNIV_REGEXP, message="대학을 보여줘")
 		private String targetUniv;
+	}
+	
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Getter
+	public static class Detail{
+		private int studentNo;
+		private String studentNoCrypt;
 	}
 }

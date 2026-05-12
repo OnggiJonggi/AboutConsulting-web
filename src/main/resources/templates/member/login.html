@@ -1,86 +1,87 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>로그인</title>
-    <th:block th:replace="~{/common/fragment :: library}"></th:block>
+    <th:block th:replace="~{/common/fragment :: common}"></th:block>
     <link rel="stylesheet" th:href="@{/css/member/login.css}">
 </head>
+
 <body>
 
-    <main class="login-wrapper">
+    <div class="login-wrapper">
 
         <!-- 로고 -->
-        <div class="logo-area">
-            <a th:href="@{/}">
-                <img th:src="@{/img/main-logo.png}" alt="TreeLink 로고" width="360" height="120" loading="eager">
-            </a>
+        <div class="logo-wrap">
+            <img th:src="@{/img/main-logo.png}" alt="어바웃컨설팅 로고" class="main-logo">
         </div>
 
         <!-- 로그인 카드 -->
         <div class="login-card">
+            <h1 class="login-title">
+                <i data-lucide="log-in" class="login-title__icon"></i>
+                로그인
+            </h1>
 
-            <!-- 로그인 실패 알림 (error=true 파라미터 존재 시 노출) -->
-            <div class="alert-error" th:if="${param.error}">
-                <i data-lucide="circle-alert"></i>
-                <span>아이디 또는 비밀번호가 올바르지 않습니다.</span>
+            <!-- 에러 메시지 (Spring Security 로그인 실패 시) -->
+            <div th:if="${param.error}" class="alert alert--error">
+                <i data-lucide="alert-circle" class="alert__icon"></i>
+                아이디 또는 비밀번호가 올바르지 않습니다.
             </div>
 
-            <form th:action="@{/member/loginProc}" method="post" id="loginForm" novalidate>
+            <form id="loginForm" th:action="@{/member/login}" method="post" novalidate>
 
                 <!-- 아이디 -->
-                <div class="field-group" id="group-userId">
-                    <label for="userId" class="field-label">아이디</label>
+                <div class="form-group" id="group-userId">
+                    <label for="userId" class="form-label">
+                        <i data-lucide="user" class="icon-sm"></i>
+                        아이디
+                    </label>
                     <div class="input-wrap">
-                        <i data-lucide="user" class="input-icon"></i>
-                        <input
-                            type="text"
-                            id="userId"
-                            name="userId"
-                            class="field-input"
-                            placeholder="영문·숫자 4~12자"
-                            autocomplete="username"
-                            maxlength="12"
-                        >
+                        <input type="text" id="userId" name="userId" class="form-input"
+                            placeholder="영문 또는 숫자 4~12자로 입력해주세요." autocomplete="username" maxlength="12">
                     </div>
-                    <span class="field-msg" id="msg-userId"></span>
+                    <span class="form-feedback" id="feedback-userId"></span>
                 </div>
 
                 <!-- 비밀번호 -->
-                <div class="field-group" id="group-userPwd">
-                    <label for="userPwd" class="field-label">비밀번호</label>
+                <div class="form-group" id="group-userPwd">
+                    <label for="userPwd" class="form-label">
+                        <i data-lucide="lock" class="icon-sm"></i>
+                        비밀번호
+                    </label>
                     <div class="input-wrap">
-                        <i data-lucide="lock" class="input-icon"></i>
-                        <input
-                            type="password"
-                            id="userPwd"
-                            name="userPwd"
-                            class="field-input"
-                            placeholder="영문·숫자·특수문자 포함 4~20자"
-                            autocomplete="current-password"
-                            maxlength="20"
-                        >
-                        <button type="button" class="toggle-pwd" id="togglePwd" aria-label="비밀번호 표시/숨기기">
-                            <i data-lucide="eye" id="eyeIcon"></i>
+                        <input type="password" id="userPwd" name="userPwd" class="form-input"
+                            placeholder="영문·숫자·특수문자(@$!%*#?&) 4~20자로 입력해 주세요." autocomplete="current-password"
+                            maxlength="20">
+                        <button type="button" class="btn-toggle-pw" id="togglePwd" aria-label="비밀번호 표시 전환">
+                            <i data-lucide="eye" id="togglePwdIcon"></i>
                         </button>
                     </div>
-                    <span class="field-msg" id="msg-userPwd"></span>
+                    <span class="form-feedback" id="feedback-userPwd"></span>
                 </div>
 
-                <!-- 로그인 버튼 -->
+                <!-- 제출 버튼 -->
                 <button type="submit" class="btn-login" id="btnLogin">
+                    <i data-lucide="log-in" class="icon-sm"></i>
                     로그인
                 </button>
 
             </form>
-        </div><!-- /.login-card -->
+        </div>
 
-    </main>
+        <!-- 하단 링크 -->
+        <div class="login-footer">
+            <span class="login-footer__text">아직 계정이 없으신가요?</span>
+            <a th:href="@{/member/join}" class="login-footer__link">회원가입</a>
+        </div>
 
-    <script>
-        lucide.createIcons();
-    </script>
+    </div>
+
     <script th:src="@{/js/member/login.js}"></script>
+    <script>lucide.createIcons();</script>
 </body>
+
 </html>

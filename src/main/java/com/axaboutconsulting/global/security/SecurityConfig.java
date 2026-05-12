@@ -18,7 +18,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // filterChain : CSRF방어, 세션/로그인/http요청 관리
+    // filterChain : CSRF방어(th:action 사용 시), 세션/로그인/http요청 관리
     // 타임리프는 <form th:action>으로 토큰 자동 생성
 	@Bean
     public SecurityFilterChain filterChain(HttpSecurity http
@@ -26,7 +26,6 @@ public class SecurityConfig {
 
         // http요청 관리
         http.authorizeHttpRequests(auth -> auth
-            .requestMatchers("/templates/**", "/static/favicon.png").permitAll()
             .requestMatchers("/", "/member/join", "/member/login").permitAll()
             .anyRequest().permitAll()
 //            .anyRequest().access(customAuthManager) // 커스텀한 클래스에서 결정
@@ -40,8 +39,8 @@ public class SecurityConfig {
         
         // 로그인 페이지 연결
         http.formLogin(form -> form
-            .loginPage("/member/login") // 로그인 페이지
-            .loginProcessingUrl("/member/login-proc") // 로그인 버튼 누르면 작동하는 페이지
+            .loginPage("/member/login") // 로그인 페이지, 컨트롤러 필수(get)
+            .loginProcessingUrl("/member/login") // 로그인 버튼 누르면 작동하는 페이지(post)
             .usernameParameter("userId") // form태그 아이디 속성값 (기본값 username)
             .passwordParameter("userPwd") // form태그 비번 속성값 (기본값 password)
             .defaultSuccessUrl("/") // 로그인 성공 시 이동할 페이지
@@ -51,7 +50,7 @@ public class SecurityConfig {
 
         // 로그아웃 페이지 연결
         http.logout(logout -> logout
-            .logoutUrl("/member/logout") //로그아웃 페이지
+            .logoutUrl("/member/logout") //로그아웃 페이지(post)
             .logoutSuccessUrl("/") //로그아웃 성공 시 이동할 페이지
             .invalidateHttpSession(true) //세션 삭제
             .deleteCookies("JSESSIONID") //쿠키 삭제

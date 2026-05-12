@@ -24,7 +24,12 @@
         <typeAlias type="com.axaboutconsulting.global.security.RoleVO$UrlAccessCheck" alias="RoleUrlAccessCheck"/>
         
         <!-- Student -->
-        <typeAlias type="com.axaboutconsulting.student.StudentVO$Add" alias="StudentAdd"/>
+        <typeAlias type="com.axaboutconsulting.student.StudentVO$Register" alias="StudentRegister"/>
+        <typeAlias type="com.axaboutconsulting.student.StudentVO$Detail" alias="StudentDetail"/>
+        
+        <!-- Consultant -->
+        <typeAlias type="com.axaboutconsulting.consultant.ConsultantVO$Detail" alias="ConsultantDetail"/>
+        <typeAlias type="com.axaboutconsulting.consultant.ConsultantVO$Search" alias="ConsultantSearch"/>
         
         <!-- 전역 설정 -->
         <package name="website.treelink"/>

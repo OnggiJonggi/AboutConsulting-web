@@ -1,0 +1,46 @@
+@Controller : HTML 뷰 반환
+@RestController : @Controller + @ResponseBody
+
+Multipart : 텍스트/바이너리 데이터 등을 하나의 HTTP 바디에 넣어 보냄
+MultipartFile : 각 파일을 캡슐화한 객체
+
+서블릿 : WAS에서 실행되는 자바 클래스
+  웹 어플리케이션에서 요청-응답 사이를 담당
+  서버가 실행되고 첫 요청이 들어오면 새 서블릿 인스턴스 생성
+  생성된 서블릿 인스턴스는 모든 요청을 처리
+서블릿 컨테이너 : 서블릿 객체의 생명주기 관리
+  최초 요청 시 서블릿 클래스를 메모리에 로드, 객체 생성 및 init()메소드로 초기화
+
+WS(웹 서버)
+  : 정적 콘텐츠(이미지, 동영상 등) 응답
+
+WAS(웹 어플리케이션 서버)
+  : 동적 콘텐츠(DB조회 등 비지니스 로직) 응답. 서블릿 컨테이너 역할 포함
+
+
+HTTP요청 흐름
+  1. 클라이언트에서 '이거 해줘'요청
+  2. WAS가 서블릿 표준에 따라 HTTP요청을 해석
+  3. WAS에서 DispatcherServlet로 요청 넘김
+  4. 요청이 multipart/form-data(파일)이면 MultipartResolver로 파일과 일반 파라미터 분리
+  5. URL, 메소드 기준으로 HandlerMapping을 통해 컨트롤러를 찾음
+  6. HandlerAdapter가 해당 컨트롤러 샐행
+  7. 파라미터 바인딩
+    @RequestParam, @ModelAttribute : WebDataBinder
+    @RequestBody : HttpMessageConverter
+    MultipartFile : MultipartResolver
+  8. 비지니스 로직 수행
+  9. 응답 생성
+    @RestController/@ResponseBody : HttpMessageConverter
+    뷰 : ViewResolver
+  10. 응답 반환 : DispatcherServlet가 클라이언트에게 반환
+
+파라미터 바인딩 도구
+  1. WebDataBinder : 요청 파라미터를 객체에 바인딩.
+    @InitBinder으로 커스텀 에디터를 등록하거나, 전역 설정으로 바인딩 방식을 조절
+  2. HttpMessageConverter : http body(JSON,XML 등)와 객체를 직렬화(객체->ResponseBody)/역직렬화
+  3. MultipartResolver : multipart 담당
+  4. 기타 : 특수 데이터 해석 전문
+
+서브 도메인
+  : 도메인 앞에 두어 웹 사이트의 영역을 구별하는 용도

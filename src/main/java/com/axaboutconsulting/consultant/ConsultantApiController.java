@@ -1,4 +1,4 @@
-package com.axaboutconsulting.member;
+package com.axaboutconsulting.consultant;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,21 +9,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.axaboutconsulting.global.common.SearchResultVO;
 
 @RestController
-@RequestMapping("/api/member")
-public class MemberApiController {
-
+@RequestMapping("/consultant")
+public class ConsultantApiController {
 	@Autowired
-	private MemberService service;
+	public ConsultantService service;
 	
-	/**
-	 * 회원 목록
-	 * 관리자 권한
-	 * @param search
-	 * @return List<MemberVO.SearchResponse>
-	 * @return count
-	 */
 	@PostMapping("/list")
-	public ResponseEntity<SearchResultVO<MemberVO.SearchResponse>> getList(MemberVO.SearchRequest search){
-		return service.getList(search);
+	public ResponseEntity<SearchResultVO> list(ConsultantVO.Search consultantSearch){
+		
+		return null;
 	}
+
 }

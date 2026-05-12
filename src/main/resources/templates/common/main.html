@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org"
-    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>어바웃컨설팅</title>
-    <th:block th:replace="~{/common/fragment :: library}"></th:block>
+    <th:block th:replace="~{/common/fragment :: common}"></th:block>
     <link rel="stylesheet" th:href="@{/css/common/main.css}">
 </head>
 
@@ -14,76 +13,96 @@
 
     <div class="main-wrapper">
 
-        <!-- 로고 영역 -->
-        <div class="logo-area">
+        <!-- ── 상단 유저 정보 바 ── -->
+
+        <!-- 비로그인: 빈 공간 -->
+        <div sec:authorize="isAnonymous()" class="user-bar user-bar--empty"></div>
+
+        <!-- ADMIN 유저 바 -->
+        <div sec:authorize="hasRole('ADMIN')" class="user-bar">
+            <div class="user-bar__inner">
+                <div class="user-bar__left">
+                    <a th:href="@{/member/myinfo}" class="user-nickname">
+                        <i data-lucide="user-circle-2" class="icon-sm"></i>
+                        <span sec:authentication="principal.nickname">관리자</span>
+                    </a>
+                    <span class="badge badge--admin">ADMIN</span>
+                </div>
+                <a th:href="@{/member/logout}" class="btn-logout">
+                    <i data-lucide="log-out" class="icon-sm"></i>
+                    로그아웃
+                </a>
+            </div>
+        </div>
+
+        <!-- CONSULTANT 유저 바 -->
+        <div sec:authorize="hasRole('CONSULTANT')" class="user-bar">
+            <div class="user-bar__inner">
+                <div class="user-bar__left">
+                    <a th:href="@{/member/myinfo}" class="user-nickname">
+                        <i data-lucide="user-circle-2" class="icon-sm"></i>
+                        <span sec:authentication="principal.nickname">컨설턴트</span>
+                    </a>
+                    <span class="badge badge--consultant">CONSULTANT</span>
+                </div>
+                <a th:href="@{/member/logout}" class="btn-logout">
+                    <i data-lucide="log-out" class="icon-sm"></i>
+                    로그아웃
+                </a>
+            </div>
+        </div>
+
+        <!-- ── 로고 ── -->
+        <div class="logo-wrap">
             <img th:src="@{/img/main-logo.png}" alt="어바웃컨설팅 로고" class="main-logo">
         </div>
 
-        <!-- 닉네임 영역 (로그인 시) -->
-        <div class="nickname-area" sec:authorize="isAuthenticated()">
-            <a th:href="@{/member/myinfo}" class="nickname-link">
-                <i data-lucide="circle-user-round"></i>
-                <span sec:authentication="principal.nickname"></span>
-                <span class="nickname-suffix">님</span>
+        <!-- ── 메뉴 카드 영역 ── -->
+
+        <!-- 비로그인: 로그인 / 회원가입 -->
+        <div sec:authorize="isAnonymous()" class="card-grid">
+            <a th:href="@{/member/login}" class="menu-card">
+                <i data-lucide="log-in" class="menu-card__icon"></i>
+                <span class="menu-card__label">로그인하기</span>
+            </a>
+            <a th:href="@{/member/join}" class="menu-card">
+                <i data-lucide="user-plus" class="menu-card__icon"></i>
+                <span class="menu-card__label">회원가입하기</span>
             </a>
         </div>
 
-        <!-- 메뉴 박스 영역 -->
-        <div class="menu-grid">
-
-            <!-- 비로그인 상태 -->
-            <div sec:authorize="isAnonymous()">
-                <div class="menu-box-row">
-                    <a th:href="@{/member/login}" class="menu-box">
-                        <i data-lucide="log-in"></i>
-                        <span>로그인하기</span>
-                    </a>
-                    <a th:href="@{/member/join}" class="menu-box">
-                        <i data-lucide="user-plus"></i>
-                        <span>회원가입하기</span>
-                    </a>
-                </div>
-            </div>
-
-            <!-- ADMIN 권한 -->
-            <div sec:authorize="hasRole('ADMIN')">
-                <div class="menu-box-row menu-box-row--grid4">
-                    <a th:href="@{/consultant/list}" class="menu-box">
-                        <i data-lucide="users"></i>
-                        <span>컨설턴트 목록</span>
-                    </a>
-                    <a th:href="@{/consultant/register}" class="menu-box">
-                        <i data-lucide="user-round-plus"></i>
-                        <span>컨설턴트 등록</span>
-                    </a>
-                    <a th:href="@{/student/list}" class="menu-box">
-                        <i data-lucide="graduation-cap"></i>
-                        <span>학생 목록</span>
-                    </a>
-                    <a th:href="@{/student/register}" class="menu-box">
-                        <i data-lucide="notebook-pen"></i>
-                        <span>학생 등록</span>
-                    </a>
-                </div>
-            </div>
-
-            <!-- CONSULTANT 권한 -->
-            <div sec:authorize="hasRole('CONSULTANT')">
-                <div class="menu-box-row">
-                    <a th:href="@{/consultant/mystudent}" class="menu-box menu-box--single">
-                        <i data-lucide="book-open-check"></i>
-                        <span>담당 학생 목록</span>
-                    </a>
-                </div>
-            </div>
-
+        <!-- ADMIN: 4개 메뉴 -->
+        <div sec:authorize="hasRole('ADMIN')" class="card-grid card-grid--4">
+            <a th:href="@{/consultant/list}" class="menu-card">
+                <i data-lucide="users" class="menu-card__icon"></i>
+                <span class="menu-card__label">컨설턴트 목록</span>
+            </a>
+            <a th:href="@{/consultant/register}" class="menu-card">
+                <i data-lucide="user-round-plus" class="menu-card__icon"></i>
+                <span class="menu-card__label">컨설턴트 등록</span>
+            </a>
+            <a th:href="@{/student/list}" class="menu-card">
+                <i data-lucide="graduation-cap" class="menu-card__icon"></i>
+                <span class="menu-card__label">학생 목록</span>
+            </a>
+            <a th:href="@{/student/register}" class="menu-card">
+                <i data-lucide="user-round-plus" class="menu-card__icon"></i>
+                <span class="menu-card__label">학생 등록</span>
+            </a>
         </div>
-        <!-- /menu-grid -->
+
+        <!-- CONSULTANT: 1개 메뉴 -->
+        <div sec:authorize="hasRole('CONSULTANT')" class="card-grid">
+            <a th:href="@{/consultant/mystudent}" class="menu-card">
+                <i data-lucide="book-open-check" class="menu-card__icon"></i>
+                <span class="menu-card__label">담당 학생 목록</span>
+            </a>
+        </div>
 
     </div>
-    <!-- /main-wrapper -->
 
     <script th:src="@{/js/common/main.js}"></script>
+    <script>lucide.createIcons();</script>
 </body>
 
 </html>

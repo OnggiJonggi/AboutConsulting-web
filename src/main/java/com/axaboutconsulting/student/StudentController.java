@@ -20,30 +20,32 @@ public class StudentController {
 	/**
 	 * 학생 추가 페이지로
 	 * 컨설턴트 / 관리자
-	 * @param model
+	 * @param StudentRegister model
 	 */
-	@GetMapping("/add")
+	@GetMapping("/register")
 	public String addStudent(Model model) {
-		model.addAttribute("addStudent", new StudentVO.Add());
+		model.addAttribute("addStudent", new StudentVO.Register());
 		return "student/add";
 	}
 	
 	/**
 	 * 학생 추가
-	 * @param studentAdd
+	 * @param studentRegister
 	 * @param bindingResult
 	 * @return 성공 200, 유효성 검사 오류 400, 실패 500
 	 */
-	@PostMapping("/add")
-	public ResponseEntity<Void> addStudent(@Valid StudentVO.Add studentAdd
+	@PostMapping("/register")
+	public ResponseEntity<Void> addStudent(@Valid StudentVO.Register studentRegister
 			,BindingResult bindingResult){
 		
 		if(bindingResult.hasErrors()) return ResponseEntity.badRequest().build();
 		
-		service.addStudent(studentAdd);
+		service.addStudent(studentRegister);
 		
 		return ResponseEntity.ok().build();
 	}
+	
+	
 	
 	@PostMapping("/connect-consultant")
 	public ResponseEntity<Void> connectConsultant(){

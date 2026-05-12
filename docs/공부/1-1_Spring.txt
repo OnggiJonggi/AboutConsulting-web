@@ -1,0 +1,9 @@
+인터셉터
+  : 클라의 요청이 컨트롤러에 도달하기 전/후 요청/응답을 가로채 작업
+  : preHandle() - 요청 가로채기
+  : postHandle() - 응답 가로채기, 뷰 랜더링 전
+  : afterCompletion() - 뷰 랜더링 후
+
+인터셉터의 반환값 : preHandle의 반환값이 true이면
+  나머지 진행 체인이 그대로 작동. false이면 즉시 멈춤
+  postHandle(메소드 후 뷰 랜더링 이전)와 afterCompletion는 반환값이 없다.
