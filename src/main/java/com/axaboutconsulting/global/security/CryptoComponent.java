@@ -2,6 +2,7 @@ package com.axaboutconsulting.global.security;
 
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.List;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -10,6 +11,9 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * AES-CBC 128
+ */
 @Component
 public class CryptoComponent {
 
@@ -66,6 +70,19 @@ public class CryptoComponent {
 		cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
 
 		return new String(cipher.doFinal(encrypted), "UTF-8");
+	}
+	
+	/**
+	 * number를 암호화하기
+	 * @param <T CryptedNumberVO>
+	 * @param list
+	 * @throws Exception
+	 */
+	public <T extends CryptedNumberVO> void encryptList(List<T> list) throws Exception{
+		for(CryptedNumberVO detail : list) {
+			detail.setEncryptedNumber(encrypt(String.valueOf(detail.getNumber())));
+			detail.setNumber(0);
+		}
 	}
 
 }

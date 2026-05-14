@@ -1,5 +1,5 @@
 # 키 파일
-src/main/resources/key.properties
+src/main/resources/config/key.properties
 
 ### Eclipse ###
 .metadata

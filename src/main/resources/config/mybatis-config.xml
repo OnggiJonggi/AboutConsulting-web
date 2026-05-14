@@ -25,6 +25,7 @@
         
         <!-- Student -->
         <typeAlias type="com.axaboutconsulting.student.StudentVO$Register" alias="StudentRegister"/>
+        <typeAlias type="com.axaboutconsulting.student.StudentVO$Search" alias="StudentSearch"/>
         <typeAlias type="com.axaboutconsulting.student.StudentVO$Detail" alias="StudentDetail"/>
         
         <!-- Consultant -->

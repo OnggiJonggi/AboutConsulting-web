@@ -23,7 +23,7 @@ public class StudentController {
 	 * @param StudentRegister model
 	 */
 	@GetMapping("/register")
-	public String addStudent(Model model) {
+	public String register(Model model) {
 		model.addAttribute("addStudent", new StudentVO.Register());
 		return "student/add";
 	}
@@ -35,21 +35,14 @@ public class StudentController {
 	 * @return 성공 200, 유효성 검사 오류 400, 실패 500
 	 */
 	@PostMapping("/register")
-	public ResponseEntity<Void> addStudent(@Valid StudentVO.Register studentRegister
+	public ResponseEntity<Void> register(@Valid StudentVO.Register studentRegister
 			,BindingResult bindingResult){
 		
 		if(bindingResult.hasErrors()) return ResponseEntity.badRequest().build();
 		
-		service.addStudent(studentRegister);
+		service.register(studentRegister);
 		
 		return ResponseEntity.ok().build();
 	}
 	
-	
-	
-	@PostMapping("/connect-consultant")
-	public ResponseEntity<Void> connectConsultant(){
-		
-		return ResponseEntity.ok().build();
-	}
 }

@@ -1,4 +1,4 @@
-package com.axaboutconsulting.consultant;
+package com.axaboutconsulting.student;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,19 +9,20 @@ import org.springframework.web.bind.annotation.RestController;
 import com.axaboutconsulting.global.common.SearchResultVO;
 
 @RestController
-@RequestMapping("/consultant")
-public class ConsultantApiController {
+@RequestMapping("/student")
+public class StudentApiController {
 	@Autowired
-	public ConsultantService service;
+	public StudentService service;
 	
 	/**
-	 * 컨설턴트 목록 조회
-	 * @param consultantSearch
-	 * @return 200, SearchResultVO
+	 * 학생 목록 조회
+	 * @param studentSearch
+	 * @return 200 + SearchResultVO
+	 * @throws Exception 
 	 */
 	@PostMapping("/list")
-	public ResponseEntity<SearchResultVO<ConsultantVO.Detail>> getList(ConsultantVO.Search consultantSearch){
-		return ResponseEntity.ok(service.getList(consultantSearch));
+	public ResponseEntity<SearchResultVO<StudentVO.Detail>> list(StudentVO.Search studentSearch) throws Exception{
+		return ResponseEntity.ok(service.getList(studentSearch));
 	}
 
 }
