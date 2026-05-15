@@ -1,6 +1,9 @@
 package com.axaboutconsulting.member;
 
+import java.util.List;
+
 import com.axaboutconsulting.global.regex.MemberRegexp;
+import com.axaboutconsulting.global.security.CryptedNumberVO;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -29,18 +32,18 @@ public class MemberVO {
 	@AllArgsConstructor
 	@Getter
 	@Setter
-	public static class Detail{
-		private int memberNo;
+	public static class Detail extends CryptedNumberVO{
 		private String userId;
 		private String userPwd;
 		private String name;
 		private String nickname;
-		private String role;
+		private List<String> role;
 	}
 	
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Getter
+	@Setter
 	public static class Join{
 		private int memberNo;
 		

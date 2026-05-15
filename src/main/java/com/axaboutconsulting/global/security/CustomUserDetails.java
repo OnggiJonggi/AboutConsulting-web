@@ -26,7 +26,11 @@ public class CustomUserDetails implements UserDetails{
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(member.getRole()));
+        if (member.getRole() != null) {
+            for (String role : member.getRole()) {
+                authorities.add(new SimpleGrantedAuthority(role));
+            }
+        }
         return authorities;
     }
 
@@ -54,7 +58,7 @@ public class CustomUserDetails implements UserDetails{
     
     // 회원번호 꺼내쓰기
     public int getMemberNo() {
-    	return member.getMemberNo();
+    	return member.getNumber();
     }
     
     // 계정 만료 여부

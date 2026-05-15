@@ -1,5 +1,7 @@
 package com.axaboutconsulting.global.security;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import com.axaboutconsulting.global.security.RoleVO.UrlAccessCheck;
@@ -7,7 +9,7 @@ import com.axaboutconsulting.global.security.RoleVO.UrlAccessCheck;
 @Mapper
 public interface RoleMapper {
 
-	public String selectRoleByMemberNo(int memberNo);
+	public List<String> selectMemberRole(int number);
 
 	public int selectUrlAccessCheck(UrlAccessCheck urlAccessCheck);
 	

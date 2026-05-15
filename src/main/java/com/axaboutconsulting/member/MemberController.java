@@ -45,10 +45,14 @@ public class MemberController {
 	 */
 	@PostMapping("/join")
 	public String join(@Valid MemberVO.Join member
-			,BindingResult bindingResult){
+			,BindingResult bindingResult
+			,Model model){
 		
 		// 유효성 검사 실패하면 가세요라
-		if(bindingResult.hasErrors()) return "member/join";
+		if(bindingResult.hasErrors()) {
+			model.addAttribute("memberJoin", new MemberVO.Join());
+			return "member/join";
+		}
 		
 		service.join(member);
 		

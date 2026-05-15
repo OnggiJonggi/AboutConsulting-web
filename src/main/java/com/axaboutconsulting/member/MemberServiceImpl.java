@@ -1,6 +1,7 @@
 package com.axaboutconsulting.member;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.axaboutconsulting.global.common.SearchResultVO;
@@ -12,9 +13,11 @@ import com.axaboutconsulting.member.MemberVO.SearchResponse;
 @Service
 public class MemberServiceImpl implements MemberService{
 	
+	private final PasswordEncoder passwordEncoder;
 	private final MemberMapper memberMapper;
-    public MemberServiceImpl(MemberMapper memberMapper) {
+    public MemberServiceImpl(MemberMapper memberMapper, PasswordEncoder passwordEncoder) {
         this.memberMapper = memberMapper;
+        this.passwordEncoder = passwordEncoder;
     }
     
 	/**
@@ -22,6 +25,13 @@ public class MemberServiceImpl implements MemberService{
 	 */
 	@Override
 	public void join(MemberVO.Join member) {
+		// 아이디 중복 검사
+		
+		// 닉네임 중복 검사
+		
+		// 비밀번호 암호화
+		member.setUserPwd(passwordEncoder.encode(member.getUserPwd()));
+		
 		if(memberMapper.insertJoin(member)==0)
 			throw new CustomException(ErrorCode.CANNOT_CREATE_MEMBER);
 	}

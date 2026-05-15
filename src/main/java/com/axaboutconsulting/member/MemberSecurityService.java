@@ -33,7 +33,7 @@ public class MemberSecurityService implements UserDetailsService{
             throw new UsernameNotFoundException("그런 사람 없다는데요");
         }
         
-        memberDetail.setRole(roleMapper.selectRoleByMemberNo(memberDetail.getMemberNo()));
+        memberDetail.setRole(roleMapper.selectMemberRole(memberDetail.getNumber()));
 
         return new CustomUserDetails(memberDetail);
 	}
