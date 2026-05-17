@@ -118,3 +118,6 @@ UUID(Universally Unique Identifier)
     : 버전 5 - 네임스페이스 + 이름(SHA-1 해시)
       	V3과 유사하나 해시 함수만 다름(MD5→SHA-1), 고정 생성, 해시 강도 보완.
     : 버전 6-8 - 타임스탬스 기반 정렬. 최신 버전
+
+IDOR(Insecure Direct Object Reference)
+	: 쿼리스트링 파라미터에 숫자 하나씩 바꿔 가며 요청

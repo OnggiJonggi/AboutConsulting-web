@@ -23,7 +23,7 @@ public class StudentController {
 	 * @param StudentRegister model
 	 */
 	@GetMapping("/register")
-	public String register(Model model) {
+	public String goRegister(Model model) {
 		model.addAttribute("addStudent", new StudentVO.Register());
 		return "student/add";
 	}
