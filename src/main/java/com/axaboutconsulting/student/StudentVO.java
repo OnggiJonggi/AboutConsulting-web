@@ -10,16 +10,20 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Builder
 public class StudentVO {
 	
 	@AllArgsConstructor
 	@NoArgsConstructor
-	@Getter
-	public static class Register {
+	@Data
+	@ToString(callSuper = true)
+	public static class Register{
 		private int studentNo;
 		
 		@NotBlank(message="이름이 뭐에요")
@@ -28,34 +32,31 @@ public class StudentVO {
 		
 		@Min(value = 1, message = "학년은 1 이상이어야 합니다.")
 		@Max(value = 3, message = "학년은 3 이하이어야 합니다.")
-		private int grade;
+		private Integer grade;
 		
 		@NotBlank(message="계열이 뭐에요")
-		@Pattern(regexp = StudentRegexp.TRACK_REGEXP, message="이과생이 아니라면 들어올 수 없다")
+		@Pattern(regexp = StudentRegexp.TRACK_REGEXP, message="계열이 왜이래")
 		private String track;
+
+		private int schoolCode;
 		
-		@NotBlank(message="목표 전공이 뭐에요")
-		@Pattern(regexp = StudentRegexp.TARGET_MAJOR_REGEXP, message="네놈의 그 하찮은 전공이 뭐지?")
-		private String targetMajor;
-		
-		@NotBlank(message="목표 대학이 뭐에요")
-		@Pattern(regexp = StudentRegexp.TARGET_UNIV_REGEXP, message="대학을 보여줘")
-		private String targetUniv;
-		
-		private int highSchoolCode;
+		private TargetInfoVO.Register target;
 	}
 	
 	@NoArgsConstructor
 	@AllArgsConstructor
-	@Getter
+	@Data
+	@ToString(callSuper = true)
+	@EqualsAndHashCode(callSuper = true)
 	public static class Search extends SearchPageVO{
 		private String name;
 		private String grade;
 		private String track;
-		private String targetMajor;
-		private String targetUniv;
 		
 		private String schoolName;
+		
+		private TargetInfoVO.Detail target;
+		
 	}
 	
 	@NoArgsConstructor
@@ -65,10 +66,11 @@ public class StudentVO {
 		private String name;
 		private int grade;
 		private String track;
-		private String targetMajor;
-		private String targetUniv;
 		
 		private String schoolName;
+		
+		private TargetInfoVO.Detail target;
+		
 	}
 	
 }

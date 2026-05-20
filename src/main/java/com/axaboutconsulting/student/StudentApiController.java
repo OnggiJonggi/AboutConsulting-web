@@ -16,6 +16,7 @@ public class StudentApiController {
 	
 	/**
 	 * 학생 목록 조회
+	 * 컨설턴트/관리자
 	 * @param studentSearch
 	 * @return 200 + SearchResultVO
 	 * @throws Exception 

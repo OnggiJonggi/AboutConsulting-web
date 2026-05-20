@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학생 등록</title>
+  <th:block th:replace="~{/common/fragment :: common}"></th:block>
+  <link rel="stylesheet" th:href="@{/css/student/register.css}">
+</head>
+
+<body>
+
+  <div class="register-wrapper">
+
+    <!-- 페이지 타이틀 -->
+    <div class="page-title-wrap">
+      <i data-lucide="user-round-plus" class="page-title-icon"></i>
+      <h1 class="page-title">학생 등록</h1>
+    </div>
+
+    <!-- 등록 폼 -->
+    <form id="registerForm" th:action="@{/student/register}" th:object="${studentRegister}" method="post"
+      class="register-card" novalidate>
+
+      <!-- ① 이름 -->
+      <div class="form-group">
+        <label class="form-label" for="name">
+          <i data-lucide="user" class="label-icon"></i>
+          이름 <span class="required">*</span>
+        </label>
+        <input type="text" id="name" th:field="*{name}" class="form-control" placeholder="이름을 입력하세요 (한글 1~10자)"
+          maxlength="10" autocomplete="off">
+        <div class="invalid-feedback" id="nameError"></div>
+      </div>
+
+      <!-- ② 학교 -->
+      <div class="form-group">
+        <label class="form-label">
+          <i data-lucide="school" class="label-icon"></i>
+          학교 <span class="required">*</span>
+        </label>
+
+        <!-- 선택된 학교 표시 영역 -->
+        <div class="school-selected-area" id="schoolSelectedArea">
+          <input type="hidden" id="schoolCode" th:field="*{schoolCode}">
+          <div class="school-selected-display" id="schoolDisplay" onclick="openSchoolPanel()">
+            <i data-lucide="search" class="icon-sm"></i>
+            <span id="schoolDisplayText" class="school-display-placeholder">학교를 검색하여 선택하세요</span>
+            <i data-lucide="chevron-down" class="icon-sm ml-auto"></i>
+          </div>
+        </div>
+        <div class="invalid-feedback" id="schoolError"></div>
+
+        <!-- 학교 검색 패널 -->
+        <div class="school-panel" id="schoolPanel" style="display:none;">
+          <div class="school-panel__header">
+            <span class="school-panel__title">학교 검색</span>
+            <button type="button" class="school-panel__close" onclick="closeSchoolPanel()">
+              <i data-lucide="x" class="icon-sm"></i>
+            </button>
+          </div>
+          <div class="school-panel__search-row">
+            <input type="text" id="schoolNameInput" class="form-control" placeholder="학교 이름을 입력하세요" autocomplete="off">
+            <button type="button" class="btn btn-primary btn-sm" id="btnSearchSchool">
+              <i data-lucide="search" class="icon-sm"></i>
+              검색
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" id="btnAddSchool">
+              <i data-lucide="plus" class="icon-sm"></i>
+              학교 추가하기
+            </button>
+          </div>
+          <div id="schoolResultArea" class="school-result-area" style="display:none;"></div>
+        </div>
+      </div>
+
+      <!-- ③ 학년 -->
+      <div class="form-group">
+        <label class="form-label" for="grade">
+          <i data-lucide="layers" class="label-icon"></i>
+          학년 <span class="required">*</span>
+        </label>
+        <select id="grade" th:field="*{grade}" class="form-control form-select">
+          <option value="">학년 선택</option>
+          <option value="1">1학년</option>
+          <option value="2">2학년</option>
+          <option value="3">3학년</option>
+        </select>
+        <div class="invalid-feedback" id="gradeError"></div>
+      </div>
+
+      <!-- ④ 계열 -->
+      <div class="form-group">
+        <label class="form-label">
+          <i data-lucide="git-branch" class="label-icon"></i>
+          계열 <span class="required">*</span>
+        </label>
+        <div class="track-group">
+          <label class="track-option">
+            <input type="radio" th:field="*{track}" value="문과" name="track">
+            <span class="track-label">문과</span>
+          </label>
+          <label class="track-option">
+            <input type="radio" th:field="*{track}" value="이과" name="track">
+            <span class="track-label">이과</span>
+          </label>
+          <label class="track-option">
+            <input type="radio" th:field="*{track}" value="예체능" name="track">
+            <span class="track-label">예체능</span>
+          </label>
+        </div>
+        <div class="invalid-feedback" id="trackError"></div>
+      </div>
+
+      <!-- ⑤⑥ 목표 대학 & 전공 (최대 3개) -->
+      <div class="form-group">
+        <label class="form-label">
+          <i data-lucide="graduation-cap" class="label-icon"></i>
+          목표 대학 &amp; 전공
+        </label>
+        <div class="target-list" id="targetList">
+
+          <!-- 1지망 -->
+          <div class="target-item" data-index="0">
+            <div class="target-rank-badge">1지망</div>
+            <div class="target-inputs">
+              <div class="target-input-wrap">
+                <input type="text" name="target.targetUniv[0]" class="form-control target-univ"
+                  placeholder="목표 대학 (한글/영문/숫자 1~30자)" maxlength="20" autocomplete="off">
+                <div class="invalid-feedback target-univ-error"></div>
+              </div>
+              <div class="target-input-wrap">
+                <input type="text" name="target.targetMajor[0]" class="form-control target-major"
+                  placeholder="목표 전공 (한글/영문/숫자 1~30자)" maxlength="20" autocomplete="off">
+                <div class="invalid-feedback target-major-error"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2지망 -->
+          <div class="target-item" data-index="1">
+            <div class="target-rank-badge">2지망</div>
+            <div class="target-inputs">
+              <div class="target-input-wrap">
+                <input type="text" name="target.targetUniv[1]" class="form-control target-univ"
+                  placeholder="목표 대학 (한글/영문/숫자 1~20자)" maxlength="20" autocomplete="off">
+                <div class="invalid-feedback target-univ-error"></div>
+              </div>
+              <div class="target-input-wrap">
+                <input type="text" name="target.targetMajor[1]" class="form-control target-major"
+                  placeholder="목표 전공 (한글/영문/숫자 1~20자)" maxlength="20" autocomplete="off">
+                <div class="invalid-feedback target-major-error"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3지망 -->
+          <div class="target-item" data-index="2">
+            <div class="target-rank-badge">3지망</div>
+            <div class="target-inputs">
+              <div class="target-input-wrap">
+                <input type="text" name="target.targetUniv[2]" class="form-control target-univ"
+                  placeholder="목표 대학 (한글/영문/숫자 1~20자)" maxlength="20" autocomplete="off">
+                <div class="invalid-feedback target-univ-error"></div>
+              </div>
+              <div class="target-input-wrap">
+                <input type="text" name="target.targetMajor[2]" class="form-control target-major"
+                  placeholder="목표 전공 (한글/영문/숫자 1~20자)" maxlength="20" autocomplete="off">
+                <div class="invalid-feedback target-major-error"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="invalid-feedback" id="targetPairError"></div>
+      </div>
+
+      <!-- 제출 버튼 -->
+      <div class="form-actions">
+        <a th:href="@{/student/list}" class="btn btn-outline">
+          <i data-lucide="arrow-left" class="icon-sm"></i>
+          취소
+        </a>
+        <button type="submit" class="btn btn-primary" id="submitBtn">
+          <i data-lucide="save" class="icon-sm"></i>
+          등록하기
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <script th:src="@{/js/student/register.js}"></script>
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

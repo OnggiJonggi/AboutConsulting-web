@@ -100,8 +100,8 @@
     btn.disabled = true;
 
     $.ajax({
-      url: '/member/check-id',
-      type: 'POST',
+      url: '/api/member/check-id',
+      type: 'GET',
       data: { userId: input.value.trim() },
       statusCode: {
         200: function () {
@@ -141,8 +141,8 @@
     btn.disabled = true;
 
     $.ajax({
-      url: '/member/check-nickname',
-      type: 'POST',
+      url: '/api/member/check-nickname',
+      type: 'GET',
       data: { nickname: input.value.trim() },
       statusCode: {
         200: function () {

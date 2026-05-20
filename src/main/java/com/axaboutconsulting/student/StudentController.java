@@ -1,7 +1,6 @@
 package com.axaboutconsulting.student;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,31 +17,36 @@ public class StudentController {
 	private StudentService service;
 	
 	/**
-	 * 학생 추가 페이지로
-	 * 컨설턴트 / 관리자
-	 * @param StudentRegister model
+	 * 학생 등록 페이지로
 	 */
 	@GetMapping("/register")
 	public String goRegister(Model model) {
-		model.addAttribute("addStudent", new StudentVO.Register());
-		return "student/add";
+		model.addAttribute("studentRegister", new StudentVO.Register());
+		return "student/register";
 	}
 	
 	/**
-	 * 학생 추가
-	 * @param studentRegister
-	 * @param bindingResult
-	 * @return 성공 200, 유효성 검사 오류 400, 실패 500
+	 * 학생 등록
 	 */
 	@PostMapping("/register")
-	public ResponseEntity<Void> register(@Valid StudentVO.Register studentRegister
-			,BindingResult bindingResult){
+	public String register(@Valid StudentVO.Register studentRegister
+			,BindingResult bindingResult
+			,Model model)throws Exception {
 		
-		if(bindingResult.hasErrors()) return ResponseEntity.badRequest().build();
+		if(bindingResult.hasErrors()) {
+			model.addAttribute("studentRegister", new StudentVO.Register());
+			return "student/register";
+		}
 		
-		service.register(studentRegister);
+		return "redirect:/student/view"+service.register(studentRegister);
+	}
+	
+	
+	@GetMapping("/view/{encryptedStudentNo}")
+	public String goView() {
+		//암호화된 학생 번호를 받아야 해요!!
 		
-		return ResponseEntity.ok().build();
+		return "company/view";
 	}
 	
 }

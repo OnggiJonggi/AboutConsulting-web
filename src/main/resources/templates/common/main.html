@@ -13,48 +13,40 @@
 
     <div class="main-wrapper">
 
+        <!-- ── 로고 ── -->
+        <div class="logo-wrap">
+            <img th:src="@{/img/main-logo.png}" alt="어바웃컨설팅 로고" class="main-logo">
+        </div>
+
         <!-- ── 상단 유저 정보 바 ── -->
 
         <!-- 비로그인: 빈 공간 -->
         <div sec:authorize="isAnonymous()" class="user-bar user-bar--empty"></div>
 
-        <!-- ADMIN 유저 바 -->
-        <div sec:authorize="hasRole('ADMIN')" class="user-bar">
+        <!-- 로그인한 사용자 전체에게 표시 -->
+        <div sec:authorize="isAuthenticated()" class="user-bar">
             <div class="user-bar__inner">
                 <div class="user-bar__left">
                     <a th:href="@{/member/myinfo}" class="user-nickname">
                         <i data-lucide="user-circle-2" class="icon-sm"></i>
-                        <span sec:authentication="principal.nickname">관리자</span>
+                        <span sec:authentication="principal.nickname">닉네임</span>
                     </a>
-                    <span class="badge badge--admin">ADMIN</span>
-                </div>
-                <a th:href="@{/member/logout}" class="btn-logout">
-                    <i data-lucide="log-out" class="icon-sm"></i>
-                    로그아웃
-                </a>
-            </div>
-        </div>
 
-        <!-- CONSULTANT 유저 바 -->
-        <div sec:authorize="hasRole('CONSULTANT')" class="user-bar">
-            <div class="user-bar__inner">
-                <div class="user-bar__left">
-                    <a th:href="@{/member/myinfo}" class="user-nickname">
-                        <i data-lucide="user-circle-2" class="icon-sm"></i>
-                        <span sec:authentication="principal.nickname">컨설턴트</span>
-                    </a>
-                    <span class="badge badge--consultant">CONSULTANT</span>
+                    <!-- 권한에 따라 badge 스타일과 텍스트를 동적으로 표시 -->
+                    <span th:with="role=${#authentication.principal.authorities[0].authority}"
+                        th:text="${role.replace('ROLE_', '')}" th:classappend="${role == 'ROLE_ADMIN'} ? 'badge--admin' :
+                                  (${role == 'ROLE_CONSULTANT'} ? 'badge--consultant' : 'badge--user')" class="badge">
+                    </span>
                 </div>
-                <a th:href="@{/member/logout}" class="btn-logout">
-                    <i data-lucide="log-out" class="icon-sm"></i>
-                    로그아웃
-                </a>
-            </div>
-        </div>
 
-        <!-- ── 로고 ── -->
-        <div class="logo-wrap">
-            <img th:src="@{/img/main-logo.png}" alt="어바웃컨설팅 로고" class="main-logo">
+                <!-- 로그아웃 -->
+                <form th:action="@{/member/logout}" method="post">
+                    <button type="submit" class="btn-logout">
+                        <i data-lucide="log-out" class="icon-sm"></i>
+                        로그아웃
+                    </button>
+                </form>
+            </div>
         </div>
 
         <!-- ── 메뉴 카드 영역 ── -->
@@ -73,11 +65,11 @@
 
         <!-- ADMIN: 4개 메뉴 -->
         <div sec:authorize="hasRole('ADMIN')" class="card-grid card-grid--4">
-            <a th:href="@{/consultant/list}" class="menu-card">
+            <a th:href="@{/admin/consultant/list}" class="menu-card">
                 <i data-lucide="users" class="menu-card__icon"></i>
                 <span class="menu-card__label">컨설턴트 목록</span>
             </a>
-            <a th:href="@{/consultant/register}" class="menu-card">
+            <a th:href="@{/admin/consultant/register}" class="menu-card">
                 <i data-lucide="user-round-plus" class="menu-card__icon"></i>
                 <span class="menu-card__label">컨설턴트 등록</span>
             </a>

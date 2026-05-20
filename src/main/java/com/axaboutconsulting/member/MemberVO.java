@@ -8,11 +8,12 @@ import com.axaboutconsulting.global.security.CryptedNumberVO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-@Builder
+import lombok.ToString;
+
 public class MemberVO {
 	@NoArgsConstructor
 	@AllArgsConstructor
@@ -30,8 +31,9 @@ public class MemberVO {
 	
 	@NoArgsConstructor
 	@AllArgsConstructor
-	@Getter
-	@Setter
+	@Data
+	@ToString(callSuper = true)
+	@EqualsAndHashCode(callSuper = true)
 	public static class Detail extends CryptedNumberVO{
 		private String userId;
 		private String userPwd;
@@ -42,8 +44,7 @@ public class MemberVO {
 	
 	@NoArgsConstructor
 	@AllArgsConstructor
-	@Getter
-	@Setter
+	@Data
 	public static class Join{
 		private int memberNo;
 		
@@ -66,7 +67,7 @@ public class MemberVO {
 
 	@NoArgsConstructor
 	@AllArgsConstructor
-	@Getter
+	@Data
 	public static class SearchRequest{
 		private String userId;
 		private String name;

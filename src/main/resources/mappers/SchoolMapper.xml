@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.axaboutconsulting.school.SchoolMapper">
+	<resultMap id="SchoolDetailMap" type="SchoolDetail">
+		<result property="schoolCode"     column="SCHOOL_CODE"/>
+		<result property="name"           column="NAME"/>
+		<result property="sido"           column="SIDO"/>
+		<result property="sigungu"        column="SIGUNGU"/>
+		<result property="coeducation"    column="COEDUCATION"/>
+		<result property="specialized"    column="SPECIALIZED"/>
+		<result property="specializedType" column="SPECIALIZED_TYPE"/>
+	</resultMap>
+
+	<select id="selectSchoolList" parameterType="string" resultMap="SchoolDetailMap">
+		select
+			SCHOOL_CODE
+			,NAME
+			,SIDO
+			,SIGUNGU
+			,COEDUCATION
+			,SPECIALIZED
+			,SPECIALIZED_TYPE
+		from SCHOOL
+		where NAME like '%' || #{schoolName} || '%'
+	</select>
+
+
+	<insert id="insertSchool" parameterType="SchoolRegister" >
+		insert into SCHOOL(
+			SCHOOL_CODE
+			,NAME
+			,SIDO
+			,SIGUNGU
+			,COEDUCATION
+			,SPECIALIZED
+			,SPECIALIZED_TYPE
+		)VALUES(
+			#{schoolCode}
+			,#{name}
+			,#{sido}
+			,#{sigungu}
+			,#{coeducation}
+			,#{specialized}
+			,#{specializedType}
+		)
+	</insert>
+</mapper>

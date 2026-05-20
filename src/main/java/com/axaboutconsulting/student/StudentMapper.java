@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface StudentMapper {
 
-	public int insertStudent(StudentVO.Register studentRegister);
+	public void insertStudent(StudentVO.Register studentRegister);
 
 	public List<StudentVO.Detail> selectStudentList(StudentVO.Search studentSearch);
 

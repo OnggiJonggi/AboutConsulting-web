@@ -24,12 +24,11 @@
 
 	<select id="selectMemberById" parameterType="string" resultMap="MemberDetailMap" >
 		select
-			MEMBERS_NO
+			MEMBER_NO
 			,ID
 			,PWD
 			,NAME
 			,NICKNAME
-			,ROLE
 		from MEMBER
 		where ID = #{userId}
 	</select>
@@ -45,12 +44,13 @@
 			,NAME
 			,NICKNAME
 			)
-		values
+		values(
 			#{memberNo}
 			,#{userId}
 			,#{userPwd}
 			,#{name}
 			,#{nickname}
+			)
 	</insert>
 	
 	<select id="selectCheckId" parameterType="string" resultType="_int" >

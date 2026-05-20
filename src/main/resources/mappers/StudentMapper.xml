@@ -4,24 +4,22 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.axaboutconsulting.student.StudentMapper">
-	<insert id="insertStudent" parameterType="StudentAdd" >
+	<insert id="insertStudent" parameterType="StudentRegister" >
+		<selectKey keyProperty="studentNo" resultType="int" order="BEFORE">
+			SELECT SEQ_STUDENT.nextval FROM DUAL
+		</selectKey>
 		insert into STUDENT(
 			STUDENT_NO
+			,SCHOOL_CODE
 			,NAME
 			,GRADE
 			,TRACK
-			,TARGET_MAJOR
-			,TARGET_UNIV
 		)VALUES(
-			SEQ_STUDENT.nextval
+			#{studentNo}
+			,#{schoolCode}
 			,#{name}
 			,#{grade}
 			,#{track}
-			,#{targetMajor}
-			,#{targetUniv}
 		)
 	</insert>
-	
-	<select id="selectUrlAccessCheck" parameterType="RoleUrlAccessCheck" resultType="_int" >
-	</select>
 </mapper>

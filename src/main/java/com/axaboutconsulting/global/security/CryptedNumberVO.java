@@ -1,9 +1,8 @@
 package com.axaboutconsulting.global.security;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * 회원 식별번호 등 서버 내부에서 사용하는 식별번호를
@@ -14,8 +13,7 @@ import lombok.Setter;
  */
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 public class CryptedNumberVO {
 	private int number;
 	private String encryptedNumber;

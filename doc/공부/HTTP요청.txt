@@ -44,3 +44,7 @@ HTTP요청 흐름
 
 서브 도메인
   : 도메인 앞에 두어 웹 사이트의 영역을 구별하는 용도
+
+URI (Uniform Resource Identifier)
+  : 자원 식별자. 어떤 자원에 접근할지 식별함
+  : URL + 쿼리 파라미터 = URI

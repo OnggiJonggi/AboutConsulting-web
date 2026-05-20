@@ -1,5 +1,5 @@
 package com.axaboutconsulting.admin;
 
-public interface AdminService {
+public interface AdminStudentService {
 
 }

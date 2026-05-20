@@ -123,6 +123,10 @@ a {
 
 /* 로그아웃 버튼 */
 .btn-logout {
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.35rem;
