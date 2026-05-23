@@ -1,6 +1,5 @@
 package com.axaboutconsulting.school;
 
-import com.axaboutconsulting.api.ApiSchoolVO;
 import com.axaboutconsulting.global.regex.SchoolRegexp;
 
 import jakarta.validation.constraints.NotBlank;
@@ -66,15 +65,15 @@ public class SchoolVO {
 		 * @param ApiSchoolVO.apiResponse
 		 * @Return SchoolVO.Detail
 		 */
-		public static SchoolVO.Detail from(ApiSchoolVO.apiResponse response) {
+		public static SchoolVO.Detail from(ApiSchoolVO.ApiRowBlock response) {
 			String coeducation;
 			String sigungu = "";
 			String specialized = "";
 			String specializedType = "";
 			
 			// 주소
-			if(response.getORG_RDNMA()!=null) {
-				String[] addresses = response.getORG_RDNMA().split(" ");
+			if(response.getOrgRdnma()!=null) {
+				String[] addresses = response.getOrgRdnma().split(" ");
 				if (addresses.length > 1) {
 					if (addresses[1].endsWith("시")
 						|| addresses[1].endsWith("군")
@@ -85,34 +84,34 @@ public class SchoolVO {
 			}
 			
 			// 남녀공학
-		    if(response.getCOEDU_SC_NM() == null) {
+		    if(response.getCoeduScNm() == null) {
 		    	coeducation = "";
-		    }else if(response.getCOEDU_SC_NM().equals("남여공학")) {
+		    }else if(response.getCoeduScNm().equals("남여공학")) {
 				coeducation = "공학";
 			}else {
-				coeducation = response.getCOEDU_SC_NM();
+				coeducation = response.getCoeduScNm();
 			}
 			
 			// 특성화고
-		    if(response.getHS_SC_NM() != null) {
-			    if(response.getHS_SC_NM().equals("자율고")
-					|| response.getHS_SC_NM().equals("특성화고")
-					|| response.getHS_SC_NM().equals("특목고")
+		    if(response.getHsScNm() != null) {
+			    if(response.getHsScNm().equals("자율고")
+					|| response.getHsScNm().equals("특성화고")
+					|| response.getHsScNm().equals("특목고")
 					) {
-					specialized = response.getHS_SC_NM();
+					specialized = response.getHsScNm();
 				}
 		    }
 		    
 		    // 특성화고 구분명
-		    if(response.getSPCLY_PURPS_HS_ORD_NM()!=null
-							&& !response.getSPCLY_PURPS_HS_ORD_NM().isEmpty()) {
-		    	specializedType = response.getSPCLY_PURPS_HS_ORD_NM();
+		    if(response.getSpclyPurpsHsOrdNm()!=null
+							&& !response.getSpclyPurpsHsOrdNm().isEmpty()) {
+		    	specializedType = response.getSpclyPurpsHsOrdNm();
 		    }
 			
 			return SchoolVO.Detail.builder()
-					.schoolCode(response.getSD_SCHUL_CODE())
-					.name(response.getSCHUL_NM())
-					.sido(response.getLCTN_SC_NM())
+					.schoolCode(response.getSdSchulCode())
+					.name(response.getSchulNm())
+					.sido(response.getLctnScNm())
 					.sigungu(sigungu)
 					.coeducation(coeducation)
 					.specialized(specialized)

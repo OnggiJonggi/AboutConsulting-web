@@ -9,9 +9,9 @@ import lombok.Getter;
 public class CustomException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 	
-	private final ErrorCode errorCode;
+	private final ErrorCodeEnum errorCode;
 	
-	public CustomException(ErrorCode errorCode) {
+	public CustomException(ErrorCodeEnum errorCode) {
 		
 		// RuntimeException에 메시지 넘겨주기
         super(errorCode.getMessage());

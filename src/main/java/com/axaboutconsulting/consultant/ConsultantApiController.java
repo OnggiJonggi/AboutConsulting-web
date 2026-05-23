@@ -1,6 +1,5 @@
 package com.axaboutconsulting.consultant;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,9 +10,11 @@ import com.axaboutconsulting.global.common.SearchResultVO;
 @RestController
 @RequestMapping("/consultant")
 public class ConsultantApiController {
-	@Autowired
-	public ConsultantService service;
-	
+	public final ConsultantService service;
+	public ConsultantApiController(ConsultantService service) {
+		this.service = service;
+	}
+
 	/**
 	 * 컨설턴트 목록 조회
 	 * @param consultantSearch

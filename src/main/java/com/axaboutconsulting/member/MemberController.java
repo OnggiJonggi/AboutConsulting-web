@@ -1,6 +1,5 @@
 package com.axaboutconsulting.member;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,9 +12,10 @@ import jakarta.validation.Valid;
 @Controller
 @RequestMapping("/member")
 public class MemberController {
-
-	@Autowired
-	private MemberService service;
+	private final MemberService service;
+	public MemberController(MemberService service) {
+		this.service = service;
+	}
 	
 	/**
 	 * 로그인 페이지로
@@ -24,7 +24,7 @@ public class MemberController {
 	public String GoLogin() {
 		return "member/login";
 	}
-	
+
 	/**
 	 * 회원 가입 페이지로 가세요라
 	 * @return 회원가입 페이지

@@ -77,17 +77,44 @@
 
       <!-- ③ 학년 -->
       <div class="form-group">
-        <label class="form-label" for="grade">
+        <label class="form-label">
           <i data-lucide="layers" class="label-icon"></i>
           학년 <span class="required">*</span>
         </label>
-        <select id="grade" th:field="*{grade}" class="form-control form-select">
-          <option value="">학년 선택</option>
-          <option value="1">1학년</option>
-          <option value="2">2학년</option>
-          <option value="3">3학년</option>
-        </select>
+        <div class="track-group">
+          <label class="track-option">
+            <input type="radio" th:field="*{grade}" value="1" name="grade">
+            <span class="track-label">1학년</span>
+          </label>
+          <label class="track-option">
+            <input type="radio" th:field="*{grade}" value="2" name="grade">
+            <span class="track-label">2학년</span>
+          </label>
+          <label class="track-option">
+            <input type="radio" th:field="*{grade}" value="3" name="grade">
+            <span class="track-label">3학년</span>
+          </label>
+        </div>
         <div class="invalid-feedback" id="gradeError"></div>
+      </div>
+
+      <!-- ③-1 학기 -->
+      <div class="form-group">
+        <label class="form-label">
+          <i data-lucide="calendar" class="label-icon"></i>
+          학기 <span class="required">*</span>
+        </label>
+        <div class="track-group">
+          <label class="track-option">
+            <input type="radio" th:field="*{semester}" value="1" name="semester">
+            <span class="track-label">1학기</span>
+          </label>
+          <label class="track-option">
+            <input type="radio" th:field="*{semester}" value="2" name="semester">
+            <span class="track-label">2학기</span>
+          </label>
+        </div>
+        <div class="invalid-feedback" id="semesterError"></div>
       </div>
 
       <!-- ④ 계열 -->
@@ -124,14 +151,15 @@
           <!-- 1지망 -->
           <div class="target-item" data-index="0">
             <div class="target-rank-badge">1지망</div>
+            <input type="hidden" name="target[0].ranking" value="1">
             <div class="target-inputs">
               <div class="target-input-wrap">
-                <input type="text" name="target.targetUniv[0]" class="form-control target-univ"
+                <input type="text" name="target[0].univ" class="form-control target-univ"
                   placeholder="목표 대학 (한글/영문/숫자 1~30자)" maxlength="20" autocomplete="off">
                 <div class="invalid-feedback target-univ-error"></div>
               </div>
               <div class="target-input-wrap">
-                <input type="text" name="target.targetMajor[0]" class="form-control target-major"
+                <input type="text" name="target[0].major" class="form-control target-major"
                   placeholder="목표 전공 (한글/영문/숫자 1~30자)" maxlength="20" autocomplete="off">
                 <div class="invalid-feedback target-major-error"></div>
               </div>
@@ -141,14 +169,15 @@
           <!-- 2지망 -->
           <div class="target-item" data-index="1">
             <div class="target-rank-badge">2지망</div>
+            <input type="hidden" name="target[1].ranking" value="2">
             <div class="target-inputs">
               <div class="target-input-wrap">
-                <input type="text" name="target.targetUniv[1]" class="form-control target-univ"
+                <input type="text" name="target[1].univ" class="form-control target-univ"
                   placeholder="목표 대학 (한글/영문/숫자 1~20자)" maxlength="20" autocomplete="off">
                 <div class="invalid-feedback target-univ-error"></div>
               </div>
               <div class="target-input-wrap">
-                <input type="text" name="target.targetMajor[1]" class="form-control target-major"
+                <input type="text" name="target[1].major" class="form-control target-major"
                   placeholder="목표 전공 (한글/영문/숫자 1~20자)" maxlength="20" autocomplete="off">
                 <div class="invalid-feedback target-major-error"></div>
               </div>
@@ -158,14 +187,15 @@
           <!-- 3지망 -->
           <div class="target-item" data-index="2">
             <div class="target-rank-badge">3지망</div>
+            <input type="hidden" name="target[2].ranking" value="3">
             <div class="target-inputs">
               <div class="target-input-wrap">
-                <input type="text" name="target.targetUniv[2]" class="form-control target-univ"
+                <input type="text" name="target[2].univ" class="form-control target-univ"
                   placeholder="목표 대학 (한글/영문/숫자 1~20자)" maxlength="20" autocomplete="off">
                 <div class="invalid-feedback target-univ-error"></div>
               </div>
               <div class="target-input-wrap">
-                <input type="text" name="target.targetMajor[2]" class="form-control target-major"
+                <input type="text" name="target[2].major" class="form-control target-major"
                   placeholder="목표 전공 (한글/영문/숫자 1~20자)" maxlength="20" autocomplete="off">
                 <div class="invalid-feedback target-major-error"></div>
               </div>

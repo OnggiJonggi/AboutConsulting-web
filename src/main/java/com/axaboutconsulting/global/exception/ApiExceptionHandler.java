@@ -13,7 +13,7 @@ public class ApiExceptionHandler {
 
 	@ExceptionHandler(CustomException.class)
 	protected ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
-		ErrorCode errorCode = e.getErrorCode();
+		ErrorCodeEnum errorCode = e.getErrorCode();
 
 		ErrorResponse response = ErrorResponse.builder()
 				.timestamp(LocalDateTime.now())

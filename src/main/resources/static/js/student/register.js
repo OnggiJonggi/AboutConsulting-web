@@ -258,14 +258,19 @@ function validateForm() {
   }
 
   // 학년
-  const grade = document.getElementById('grade').value;
+  const grade = document.querySelector('input[name="grade"]:checked');
   hideError('gradeError');
   if (!grade) {
     showError('gradeError', '학년을 선택해 주세요.');
-    document.getElementById('grade').classList.add('is-invalid');
     valid = false;
-  } else {
-    document.getElementById('grade').classList.remove('is-invalid');
+  }
+
+  // 학기
+  const semester = document.querySelector('input[name="semester"]:checked');
+  hideError('semesterError');
+  if (!semester) {
+    showError('semesterError', '학기를 선택해 주세요.');
+    valid = false;
   }
 
   // 계열
@@ -280,20 +285,26 @@ function validateForm() {
   hideError('targetPairError');
   const items = document.querySelectorAll('.target-item');
   let targetPairError = false;
+  let completePairCount = 0;
 
   items.forEach(item => {
+    const index = item.getAttribute('data-index');
     const univInput = item.querySelector('.target-univ');
     const majorInput = item.querySelector('.target-major');
+
+    const rankingInput = item.querySelector(`input[name="target[${index}].ranking"]`);
+    if (rankingInput) rankingInput.value = parseInt(index, 10) + 1;
+
     const univ = univInput.value.trim();
     const major = majorInput.value.trim();
 
     clearTargetFieldError(univInput);
     clearTargetFieldError(majorInput);
 
-    // 둘 다 비었으면 통과
+    // 둘 다 비어 있으면 일단 통과, 나중에 전체 개수 검사
     if (!univ && !major) return;
 
-    // 대학만 있고 전공 없음
+    // 둘 중 하나만 입력된 경우
     if (univ && !major) {
       showTargetFieldError(majorInput, '목표 전공도 함께 입력해 주세요.');
       targetPairError = true;
@@ -301,7 +312,6 @@ function validateForm() {
       return;
     }
 
-    // 전공만 있고 대학 없음
     if (!univ && major) {
       showTargetFieldError(univInput, '목표 대학도 함께 입력해 주세요.');
       targetPairError = true;
@@ -309,16 +319,32 @@ function validateForm() {
       return;
     }
 
-    // 둘 다 있을 때 정규식 검사
+    // 둘 다 입력된 경우 형식 검사
+    let rowValid = true;
+
     if (!REGEXP.TARGET_UNIV.test(univ)) {
       showTargetFieldError(univInput, '대학 이름은 한글/영문/숫자 1~20자로 입력해 주세요.');
       valid = false;
+      rowValid = false;
     }
+
     if (!REGEXP.TARGET_MAJOR.test(major)) {
       showTargetFieldError(majorInput, '전공은 한글/영문/숫자 1~20자로 입력해 주세요.');
       valid = false;
+      rowValid = false;
+    }
+
+    // 형식까지 정상인 완성 쌍만 카운트
+    if (rowValid) {
+      completePairCount++;
     }
   });
+
+  // 최소 1쌍 이상 입력 여부 검사
+  if (completePairCount === 0) {
+    showError('targetPairError', '목표 대학/전공은 최소 1쌍 이상 입력해 주세요.');
+    valid = false;
+  }
 
   return valid;
 }

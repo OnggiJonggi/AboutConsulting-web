@@ -4,22 +4,68 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.axaboutconsulting.student.StudentMapper">
-	<insert id="insertStudent" parameterType="StudentRegister" >
+	<resultMap id="StudentDetailMap" type="StudentDetail">
+		<!-- 
+		id는 '이 컬럼 값이 같으면 같은 객체'를 나타냄
+		pk에만 사용하자
+		 -->
+		<id column="STUDENT_NO"/>
+		<result property="name"       column="NAME"/>
+		<result property="grade"      column="GRADE"/>
+		<result property="semester"   column="SEMESTER"/>
+		<result property="track"      column="TRACK"/>
+		<result property="schoolName" column="SCHOOL_NAME"/>
+		<collection property="target" resultMap="pairMap"/>
+	</resultMap>
+	<resultMap id="pairMap" type="TargetInfoPair">
+		<result property="ranking" column="RANKING"/>
+		<result property="major"   column="MAJOR"/>
+		<result property="univ"    column="UNIV"/>
+	</resultMap>
+	
+	<insert id="insertStudent" parameterType="StudentRegister">
 		<selectKey keyProperty="studentNo" resultType="int" order="BEFORE">
 			SELECT SEQ_STUDENT.nextval FROM DUAL
 		</selectKey>
 		insert into STUDENT(
-			STUDENT_NO
-			,SCHOOL_CODE
-			,NAME
-			,GRADE
-			,TRACK
-		)VALUES(
-			#{studentNo}
-			,#{schoolCode}
-			,#{name}
-			,#{grade}
-			,#{track}
+			STUDENT_NO, SCHOOL_CODE, NAME, GRADE, SEMESTER, TRACK
+		) VALUES (
+			#{studentNo}, #{schoolCode}, #{name}, #{grade}, #{semester}, #{track}
 		)
 	</insert>
+
+	<select id="selectStudent" parameterType="_int" resultMap="StudentDetailMap">
+		select
+			S.STUDENT_NO -- 객체에 안 담는 식별용
+			,S.NAME
+			,S.GRADE
+			,S.SEMESTER
+			,S.TRACK
+			,SCH.NAME AS SCHOOL_NAME
+			,T.MAJOR
+			,T.UNIV
+			,T.RANKING
+		from STUDENT S
+		left join SCHOOL SCH on (S.SCHOOL_CODE = SCH.SCHOOL_CODE)
+		left join TARGET_INFO T on (S.STUDENT_NO = T.STUDENT_NO)
+		where S.STUDENT_NO = #{studentNo}
+		order by T.RANKING ASC
+	</select>
+
+	<select id="selectStudentForRecordApi" parameterType="_int" resultMap="ApiRecordApiRequest">
+		select
+			S.STUDENT_NO -- 객체에 안 담는 식별용
+			,S.NAME
+			,S.GRADE
+			,S.SEMESTER
+			,S.TRACK
+			,T.MAJOR
+			,T.UNIV
+			,T.RANKING
+		from STUDENT S
+		left join TARGET_INFO T on (S.STUDENT_NO = T.STUDENT_NO)
+		where S.STUDENT_NO = #{studentNo}
+		order by T.RANKING ASC
+	</select>
+	
 </mapper>

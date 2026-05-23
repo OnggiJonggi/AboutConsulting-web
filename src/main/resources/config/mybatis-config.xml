@@ -25,12 +25,20 @@
         
         <!-- Student -->
         <typeAlias type="com.axaboutconsulting.student.StudentVO$Register" alias="StudentRegister"/>
-        <typeAlias type="com.axaboutconsulting.student.StudentVO$Register" alias="StudentRegister"/>
+        <typeAlias type="com.axaboutconsulting.student.StudentVO$Detail" alias="StudentDetail"/>
         <typeAlias type="com.axaboutconsulting.student.StudentVO$Search" alias="StudentSearch"/>
+        <typeAlias type="com.axaboutconsulting.student.StudentVO$SearchResult" alias="StudentSearchResult"/>
 
         <!-- TargetInfo -->
-        <typeAlias type="com.axaboutconsulting.student.TargetInfoVO$Update" alias="TargetInfoUpdate"/>
+        <typeAlias type="com.axaboutconsulting.student.TargetInfoVO$Register" alias="TargetInfoRegister"/>
         <typeAlias type="com.axaboutconsulting.student.TargetInfoVO$Pair" alias="TargetInfoPair"/>
+        
+        <!-- Record -->
+        <typeAlias type="com.axaboutconsulting.student.RecordVO$Insert" alias="RecordInsert"/>
+        <typeAlias type="com.axaboutconsulting.student.RecordVO$Detail" alias="RecordDetail"/>
+        
+        <!-- ApiRecord -->
+        <typeAlias type="com.axaboutconsulting.student.ApiRecordVO$ApiRequest" alias="ApiRecordApiRequest"/>
         
         <!-- School -->
         <typeAlias type="com.axaboutconsulting.school.SchoolVO$Registor" alias="SchoolRegister"/>
@@ -40,7 +48,10 @@
         <typeAlias type="com.axaboutconsulting.consultant.ConsultantVO$Detail" alias="ConsultantDetail"/>
         <typeAlias type="com.axaboutconsulting.consultant.ConsultantVO$Search" alias="ConsultantSearch"/>
         
-
+        <!-- AsyncStatus -->
+        <typeAlias type="com.axaboutconsulting.global.async.AsyncVO$Insert" alias="AsyncInsert"/>
+        <typeAlias type="com.axaboutconsulting.global.async.AsyncVO$Select" alias="AsyncSelect"/>
+        <typeAlias type="com.axaboutconsulting.global.async.AsyncVO$Update" alias="AsyncUpdate"/>
 
         <!-- 전역 설정 -->
         <package name="com.axaboutconsulting"/>

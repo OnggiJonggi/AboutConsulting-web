@@ -1,6 +1,8 @@
-package com.axaboutconsulting.api;
+package com.axaboutconsulting.school;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,10 +17,10 @@ public class ApiSchoolVO {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	@Data
-	public static class apiResponseWrapper {
-		private List<apiSchoolInfoBlock> schoolInfo;
+	public static class ApiResponseWrapper {
+		private List<ApiSchoolInfoBlock> schoolInfo;
 		
-		public List<apiResponse> getData() {
+		public List<ApiRowBlock> getData() {
 			if (schoolInfo == null || schoolInfo.size() < 2)
 				return List.of();
 			return schoolInfo.get(1).getRow(); // 1번째 블록이 실제 데이터
@@ -31,11 +33,11 @@ public class ApiSchoolVO {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	@Data
-	public static class apiSchoolInfoBlock {
+	public static class ApiSchoolInfoBlock {
 		private List<Object> head;
-		private List<apiResponse> row;
+		private List<ApiRowBlock> row;
 
-		public List<apiResponse> getRow() {
+		public List<ApiRowBlock> getRow() {
 			return row != null ? row : List.of();
 		}
 	}
@@ -44,14 +46,27 @@ public class ApiSchoolVO {
 	@NoArgsConstructor
 	@Getter
 	@ToString
-	public static class apiResponse {
-		private String SD_SCHUL_CODE; // 학교행정코드
-		private String SCHUL_NM; // 학교명
-		private String LCTN_SC_NM; // 시도명
-		private String ORG_RDNMA; // 도로롱주소
-		private String COEDU_SC_NM; // 공학
-		private String HS_SC_NM; // 고등학교구분명
-		private String SPCLY_PURPS_HS_ORD_NM; // 특수고등학교계열명
+	public static class ApiRowBlock {
+		@JsonProperty("SD_SCHUL_CODE")
+		private String sdSchulCode;         // 학교행정코드
+		
+		@JsonProperty("SCHUL_NM")
+		private String schulNm;             // 학교명
+		
+		@JsonProperty("LCTN_SC_NM")
+		private String lctnScNm;            // 시도명
+		
+		@JsonProperty("ORG_RDNMA")
+		private String orgRdnma;            // 도로명주소
+		
+		@JsonProperty("COEDU_SC_NM")
+		private String coeduScNm;           // 공학여부
+		
+		@JsonProperty("HS_SC_NM")
+		private String hsScNm;              // 고등학교구분명
+		
+		@JsonProperty("SPCLY_PURPS_HS_ORD_NM")
+		private String spclyPurpsHsOrdNm;   // 특수고등학교계열명
 	}
 	/*
 	 * api 응답 json : 

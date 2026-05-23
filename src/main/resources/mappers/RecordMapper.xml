@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.axaboutconsulting.student.RecordMapper">
+  <resultMap id="detailMap" type="RecordDetail">
+    <association property="result" javaType="RecordApi">
+      <result property="gradeStrengthWeakness" column="grade_strength_weakness"/>
+      <result property="gradeInDepthAnalysis" column="grade_in_depth_analysis"/>
+      <result property="lifeRecordStrengthWeakness" column="life_record_strength_weakness"/>
+      <result property="lifeRecordDiagnosisOverview" column="life_record_diagnosis_overview"/>
+      <result property="academicRoadmap" column="academic_roadmap"/>
+      <result property="projectRecommendations" column="project_recommendations"/>
+      <result property="careerBookRecommendations" column="career_book_recommendations"/>
+      <result property="parentStudentMessage" column="parent_student_message"/>
+    </association>
+  </resultMap>
+
+
+  <select id="selectReord" parameterType="_int" resultType="StudentDetailMap">
+    select (
+      R.GRADE_STRENGTH_WEAKNESS
+      ,R.GRADE_IN_DEPTH_ANALYSIS
+      ,R.LIFE_RECORD_STRENGTH_WEAKNESS
+      ,R.LIFE_RECORD_DIAGNOSIS_OVERVIEW
+      ,R.ACADEMIC_ROADMAP
+      ,R.PROJECT_RECOMMENDATIONS
+      ,R.CAREER_BOOK_RECOMMENDATIONS
+      ,R.PARENT_STUDENT_MESSAGE
+    )
+    from RECORD_ANALYSIS R
+    left join STUDENT S on (S.STUDENT_NO = R.STUDENT_NO)
+    where STUDENT_NO = #{StudentNo}
+	</select>
+
+  <insert id="insertRecord" parameterType="RecordInsert">
+    insert into RECORD_ANALYSIS(
+      STUDENT_NO
+      ,GRADE_STRENGTH_WEAKNESS
+      ,GRADE_IN_DEPTH_ANALYSIS
+      ,LIFE_RECORD_STRENGTH_WEAKNESS
+      ,LIFE_RECORD_DIAGNOSIS_OVERVIEW
+      ,ACADEMIC_ROADMAP
+      ,PROJECT_RECOMMENDATIONS
+      ,CAREER_BOOK_RECOMMENDATIONS
+      ,PARENT_STUDENT_MESSAGE
+      ,CREATED_AT
+    ) values(
+      #{studentNo}
+      ,#{result.gradeStrengthWeakness}
+      ,#{result.gradeInDepthAnalysis}
+      ,#{result.lifeRecordStrengthWeakness}
+      ,#{result.lifeRecordDiagnosisOverview}
+      ,#{result.academicRoadmap}
+      ,#{result.projectRecommendations}
+      ,#{result.careerBookRecommendations}
+      ,#{result.parentStudentMessage}
+      ,SYSDATE
+    )
+	</insert>
+</mapper>

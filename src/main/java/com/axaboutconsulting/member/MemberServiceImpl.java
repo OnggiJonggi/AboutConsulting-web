@@ -6,13 +6,12 @@ import org.springframework.stereotype.Service;
 
 import com.axaboutconsulting.global.common.SearchResultVO;
 import com.axaboutconsulting.global.exception.CustomException;
-import com.axaboutconsulting.global.exception.ErrorCode;
+import com.axaboutconsulting.global.exception.ErrorCodeEnum;
 import com.axaboutconsulting.member.MemberVO.SearchRequest;
 import com.axaboutconsulting.member.MemberVO.SearchResponse;
 
 @Service
 public class MemberServiceImpl implements MemberService{
-	
 	private final PasswordEncoder passwordEncoder;
 	private final MemberMapper memberMapper;
     public MemberServiceImpl(MemberMapper memberMapper, PasswordEncoder passwordEncoder) {
@@ -25,15 +24,17 @@ public class MemberServiceImpl implements MemberService{
 	 */
 	@Override
 	public void join(MemberVO.Join member) {
-		// 아이디 중복 검사
+		//요 쿼리 세 개 못 합치나?
 		
-		// 닉네임 중복 검사
+		// 아이디, 닉네임 중복 검사
+		if(memberMapper.selectCheckId(member.getUserId()) > 0
+				|| memberMapper.selectCheckNickname(member.getNickname()) > 0)
+			throw new CustomException(ErrorCodeEnum.CANNOT_CREATE_MEMBER);
 		
 		// 비밀번호 암호화
 		member.setUserPwd(passwordEncoder.encode(member.getUserPwd()));
 		
-		if(memberMapper.insertJoin(member)==0)
-			throw new CustomException(ErrorCode.CANNOT_CREATE_MEMBER);
+		memberMapper.insertJoin(member);
 	}
 
 	/**
@@ -42,7 +43,7 @@ public class MemberServiceImpl implements MemberService{
 	@Override
 	public void checkId(String userId) {
 		if(memberMapper.selectCheckId(userId) > 0)
-			throw new CustomException(ErrorCode.ID_IS_DUPLICATED);
+			throw new CustomException(ErrorCodeEnum.ID_IS_DUPLICATED);
 	}
 
 	/**
@@ -51,7 +52,7 @@ public class MemberServiceImpl implements MemberService{
 	@Override
 	public void checkNick(String nickname) {
 		if(memberMapper.selectCheckNickname(nickname) > 0)
-			throw new CustomException(ErrorCode.NICKNAME_IS_DUPLICATED);
+			throw new CustomException(ErrorCodeEnum.NICKNAME_IS_DUPLICATED);
 	}
 
 	@Override

@@ -67,4 +67,5 @@ public class SearchResultVO<T> {
 
 		this.hasNext = this.endPage < this.totalPage;
 	}
+
 }

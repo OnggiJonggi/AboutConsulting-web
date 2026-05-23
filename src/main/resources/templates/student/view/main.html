@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학생 상세</title>
+  <th:block th:replace="~{/common/fragment :: common}"></th:block>
+  <link rel="stylesheet" th:href="@{/css/student/view.css}">
+</head>
+
+<body>
+
+  <div class="detail-wrapper">
+
+    <!-- ── 헤더 영역 ── -->
+    <div class="detail-header">
+      <div class="detail-header__top">
+        <button class="btn-back" onclick="history.back()">
+          <i data-lucide="chevron-left" class="icon-sm"></i>
+        </button>
+        <h1 class="student-name" th:text="${studentBasicInfo.name}">김학생</h1>
+      </div>
+      <div class="student-meta">
+        <span th:text="${studentBasicInfo.schoolName}">현대고등학교</span>
+        <span class="meta-divider">|</span>
+        <span th:text="${studentBasicInfo.grade} + '학년'">3학년</span>
+      </div>
+    </div>
+
+    <!-- ── 네비 바 ── -->
+    <nav class="detail-nav">
+      <a th:href="@{/student/view/{no}(no=${encryptedStudentNo})}"
+        th:classappend="${studentMenu == 'basic'} ? 'active' : ''" class="detail-nav__item" th:id="nav-basic">
+        기본 정보
+      </a>
+      <a th:href="@{/student/view/{no}/record(no=${encryptedStudentNo})}"
+        th:classappend="${studentMenu == 'record'} ? 'active' : ''" class="detail-nav__item" th:id="nav-record">
+        생기부 분석
+      </a>
+      <a th:href="@{/student/view/{no}/mock(no=${encryptedStudentNo})}"
+        th:classappend="${studentMenu == 'mock'} ? 'active' : ''" class="detail-nav__item" th:id="nav-mock">
+        모의고사 분석
+      </a>
+      <a th:href="@{/student/view/{no}/overview(no=${encryptedStudentNo})}"
+        th:classappend="${studentMenu == 'overview'} ? 'active' : ''" class="detail-nav__item" th:id="nav-overview">
+        종합 분석
+      </a>
+    </nav>
+
+    <!-- ── 콘텐츠 영역 ── -->
+    <div class="detail-content" id="detail-content">
+
+      <!-- 기본 정보 조각 (서버 최초 응답 시 inline 렌더링) -->
+      <div th:if="${studentMenu == 'basic'}" th:fragment="basicFragment" id="basic-fragment">
+
+        <!-- 계열 / 지망 카드 -->
+        <div class="info-section">
+          <div class="info-card">
+            <div class="info-card__header">
+              <i data-lucide="layers" class="icon-sm"></i>
+              <span class="info-card__title">계열</span>
+            </div>
+            <p class="info-card__value" th:text="${studentBasicInfo.track}">이공계열</p>
+          </div>
+        </div>
+
+        <!-- 지망 목록 -->
+        <div class="info-section">
+          <div class="section-title">
+            <i data-lucide="target" class="icon-sm"></i>
+            <span>희망 지원 대학</span>
+          </div>
+          <div class="target-list" id="basic-target-list">
+            <div th:if="${studentBasicInfo.target == null or studentBasicInfo.target.isEmpty()}" class="empty-state">
+              <p>등록된 지망 대학이 없습니다.</p>
+            </div>
+            <div th:each="t : ${studentBasicInfo.target}" class="target-item"
+              th:classappend="${t.ranking == 1} ? 'target-item--first' : (${t.ranking == 2} ? 'target-item--second' : 'target-item--third')">
+              <span class="target-item__rank" th:text="${t.ranking} + '지망'">1지망</span>
+              <div class="target-item__info">
+                <span class="target-item__univ" th:text="${t.univ}">서울대학교</span>
+                <span class="target-item__major" th:text="${t.major}">컴퓨터공학과</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 버튼 영역 -->
+        <div class="action-bar" id="basic-action-bar">
+          <div sec:authorize="hasRole('ADMIN') or hasRole('CONSULTANT')">
+            <a th:href="@{/student/view/{no}/basic/update(no=${encryptedStudentNo})}" class="btn-primary"
+              id="basic-btn-update">
+              <i data-lucide="pencil-line" class="icon-sm"></i>
+              정보 수정하기
+            </a>
+          </div>
+          <div sec:authorize="hasRole('ADMIN')">
+            <button class="btn-danger" id="basic-btn-delete"
+              th:data-url="@{/student/view/{no}/basic/delete(no=${encryptedStudentNo})}">
+              <i data-lucide="trash-2" class="icon-sm"></i>
+              학생 삭제하기
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 다른 메뉴에서 진입 시 Ajax로 조각 교체 -->
+      <div th:if="${studentMenu != 'basic'}" id="basic-fragment">
+        <!-- Ajax 로드 영역 -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 삭제 확인 모달 -->
+  <div class="modal-backdrop" id="basic-delete-modal" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-icon">
+        <i data-lucide="alert-triangle"></i>
+      </div>
+      <h3 class="modal-title">학생을 삭제하시겠습니까?</h3>
+      <p class="modal-desc">삭제된 학생 정보는 복구할 수 없습니다.</p>
+      <div class="modal-actions">
+        <button class="btn-secondary" id="basic-delete-cancel">취소</button>
+        <button class="btn-danger" id="basic-delete-confirm">삭제하기</button>
+      </div>
+    </div>
+  </div>
+
+  <script th:src="@{/js/student/view.js}"></script>
+  <script th:inline="javascript">
+    const ENCRYPTED_NO = /*[[${encryptedStudentNo}]]*/ '';
+    const STUDENT_MENU = /*[[${studentMenu}]]*/ 'basic';
+  </script>
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

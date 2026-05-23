@@ -4,11 +4,11 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.axaboutconsulting.student.TargetInfoMapper">
-	<insert id="insertTargetUniv" parameterType="TargetInfoUpdate" >
+	<insert id="insertTarget">
 		insert all
-		<foreach collection="targetPair" item="pair">
-			into TARGET_INFO (STUDENT_NO, MAJOR, UNIV)
-			values (#{studentNo}, #{pair.major}, #{pair.univ})
+		<foreach collection="list" item="pair">
+			into TARGET_INFO (STUDENT_NO, UNIV, MAJOR, RANKING)
+			values (#{studentNo}, #{pair.univ}, #{pair.major}, #{pair.ranking})
 		</foreach>
 		select * from dual
 	</insert>

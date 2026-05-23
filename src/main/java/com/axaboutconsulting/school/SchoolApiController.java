@@ -2,7 +2,6 @@ package com.axaboutconsulting.school;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,17 +9,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.axaboutconsulting.api.ApiSchoolService;
-
 import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/school")
 public class SchoolApiController {
-	@Autowired
 	private SchoolService service;
-	@Autowired
 	private ApiSchoolService apiService;
+	public SchoolApiController(SchoolService service, ApiSchoolService apiService) {
+		this.service = service;
+		this.apiService = apiService;
+	}
 
 	/**
 	 * 학교 데이터 db조회
@@ -67,7 +66,7 @@ public class SchoolApiController {
 		// 세션 만료
 		if (cachedList == null)
 			return ResponseEntity.badRequest().build();
-
+		
 		// schoolCode로 대상 schoolDetail찾기
 		SchoolVO.Detail target = cachedList
 				.stream() // 컬렉션 반복문

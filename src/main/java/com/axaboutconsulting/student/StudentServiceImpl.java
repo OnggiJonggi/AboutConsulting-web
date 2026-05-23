@@ -1,20 +1,30 @@
 package com.axaboutconsulting.student;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.axaboutconsulting.global.common.SearchResultVO;
+import com.axaboutconsulting.global.exception.CustomException;
+import com.axaboutconsulting.global.exception.ErrorCodeEnum;
 import com.axaboutconsulting.global.security.CryptoComponent;
 
 @Service
 public class StudentServiceImpl implements StudentService{
 	private final StudentMapper studentMapper;
-	private final TargetInfoMapper targetUnivMapper;
+	private final TargetInfoMapper targetInfoMapper;
 	private final CryptoComponent cryptoComponent;
-	public StudentServiceImpl(StudentMapper studentMapper, CryptoComponent cryptoComponent, TargetInfoMapper targetUnivMapper){
+	public StudentServiceImpl(StudentMapper studentMapper
+			,CryptoComponent cryptoComponent
+			,TargetInfoMapper targetInfoMapper){
 		this.studentMapper = studentMapper;
 		this.cryptoComponent = cryptoComponent;
-		this.targetUnivMapper = targetUnivMapper;
+		this.targetInfoMapper = targetInfoMapper;
 	}
 	
 	
@@ -28,28 +38,38 @@ public class StudentServiceImpl implements StudentService{
 		// 학생 등록
 		studentMapper.insertStudent(studentRegister);
 		
-		// 목표 학과, 대학이 있는 경우
-		if(studentRegister.getTarget() != null
-			&& studentRegister.getTarget().getTargetMajor() != null
-			&& !studentRegister.getTarget().getTargetMajor().isEmpty()) {
-			// major유무만 검사하고 univ는 검사 안 함.
-			// 학생 번호, 목표 대학, 학과 담당 객체 전환
-			TargetInfoVO.Update targetUpdate = new TargetInfoVO.Update(
-					studentRegister.getTarget()
-					,studentRegister.getStudentNo());
-			
-			// 목표 대학 등록
-			targetUnivMapper.insertTargetUniv(targetUpdate);
+		/*
+		 * 지망 학교/학과 등록
+		 * 지망 순위가 높은 학교가 없고 낮은 학교가 있으면 순위 당기기
+		 */
+		List<TargetInfoVO.Register> filtered = Optional.ofNullable(studentRegister.getTarget())
+			    .orElse(Collections.emptyList())
+			    .stream()
+			    .filter(t -> t.getUniv() != null && !t.getUniv().trim().isEmpty())
+			    .filter(t -> t.getMajor() != null && !t.getMajor().trim().isEmpty())
+			    .sorted(Comparator.comparingInt(TargetInfoVO.Register::getRanking))
+			    .collect(Collectors.toList());
+		
+		if (filtered.isEmpty())
+		    throw new CustomException(ErrorCodeEnum.TARGET_REQUIRED);
+
+		for (int i = 0; i < filtered.size(); i++) {
+		    filtered.get(i).setRanking(i + 1);
 		}
+
+		targetInfoMapper.insertTarget(studentRegister.getStudentNo(), filtered);
 		
 		// 암호화된 학생 식별번호 반납
 		return cryptoComponent.encrypt(String.valueOf(studentRegister.getStudentNo()));
 	}
 
+	/**
+	 * 학생 목록 조회
+	 */
 	@Override
-	public SearchResultVO<StudentVO.Detail> getList(StudentVO.Search studentSearch) throws Exception {
+	public SearchResultVO<StudentVO.SearchResult> getList(StudentVO.Search studentSearch) throws Exception {
 		
-		SearchResultVO<StudentVO.Detail> searchResult = new SearchResultVO<StudentVO.Detail>(
+		SearchResultVO<StudentVO.SearchResult> searchResult = new SearchResultVO<StudentVO.SearchResult>(
 				studentMapper.selectStudentList(studentSearch)
 				,studentMapper.selectStudentListTotalCount(studentSearch)
 				,studentSearch.getPage()
@@ -60,5 +80,14 @@ public class StudentServiceImpl implements StudentService{
 		return searchResult;
 	}
 
+
+	/**
+	 * 학생 기본 정보 조회
+	 */
+	@Override
+	public StudentVO.Detail getStudentBasicInfo(String encryptedStudentNo) throws Exception {
+		int studentNo = Integer.valueOf(cryptoComponent.decrypt(encryptedStudentNo));
+		return studentMapper.selectStudent(studentNo);
+	}
 
 }

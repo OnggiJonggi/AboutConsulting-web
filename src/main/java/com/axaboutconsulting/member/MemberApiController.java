@@ -1,6 +1,5 @@
 package com.axaboutconsulting.member;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,11 +10,11 @@ import com.axaboutconsulting.global.common.SearchResultVO;
 @RestController
 @RequestMapping("/api/member")
 public class MemberApiController {
+	private final MemberService service;
+	public MemberApiController(MemberService service) {
+		this.service = service;
+	}
 
-	@Autowired
-	private MemberService service;
-	
-	
 	/**
 	 * 아이디 중복 확인
 	 * @param member

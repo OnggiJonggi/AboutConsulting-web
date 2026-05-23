@@ -21,12 +21,33 @@
 로그인 페이지(/member/login)
   폼 제출(post, /member/login)
 
-학생 등록 (/admin/student/register)
+학생 등록 (/student/register)
   학교 DB검색(get, /api/school/search)
   학교 공공데이터 검색(get, /api/school/search/open)
   학교 추가(post, /api/shool/register)
   폼 제출(post, /student/register)
   
+학생 세부사항(/student/view/{encryptedStudentNo})
+네비 바
+  기본 정보(get, /student/view/{encryptedStudentNo})
+  생기부 분석(get, /student/view/{encryptedStudentNo}/record)
+  모의고사 분석(get, /student/view/{encryptedStudentNo}/mock)
+  종합 분석(get, /student/view/{encryptedStudentNo}/overview)
+기본 정보
+  수정(put, /student/view/{encryptedStudentNo}/basic/update)
+  삭제(delete, /student/view/{encryptedStudentNo}/basic/delete)
+생기부 분석
+  원본 업로드(post, /api/student/{encryptedStudentNo}/record/upload)
+  원본, 분석 삭제(delete, /api/student/{encryptedStudentNo}/record/delete)
+  원본 재업로드(put, /api/student/{encryptedStudentNo}/record/delete)
+  원본 확인(get, /api/student/{encryptedStudentNo}/record/original)
+  분석 시작(post, /api/student/{encryptedStudentNo}/record/analysis)
+모의고사 분석
+  원본 업로드(post, /api/student/{encryptedStudentNo}/mock/upload)
+  원본, 분석 삭제(delete, /api/student/{encryptedStudentNo}/mock/delete)
+  원본 재업로드(put, /api/student/{encryptedStudentNo}/mock/delete)
+  원본 확인(get, /api/student/{encryptedStudentNo}/mock/original)
+  분석 시작(post, /api/student/{encryptedStudentNo}/mock/analysis)
 
 컨설턴트 목록(/consultant/list)
   목록 불러오기(get, /api/consultant/list)

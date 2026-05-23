@@ -1,4 +1,4 @@
-package com.axaboutconsulting.api;
+package com.axaboutconsulting.school;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -15,13 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.axaboutconsulting.school.SchoolVO;
-
 @Service
 public class ApiSchoolService {
-
 	private final RestTemplate restTemplate;
-
 	public ApiSchoolService(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
 	}
@@ -44,16 +40,16 @@ public class ApiSchoolService {
 		HttpEntity<Void> httpEntity = new HttpEntity<>(headers);
 
 		// 요청
-		ResponseEntity<ApiSchoolVO.apiResponseWrapper> response = 
+		ResponseEntity<ApiSchoolVO.ApiResponseWrapper> response = 
 				restTemplate.exchange(uri, HttpMethod.GET, httpEntity,
-				ApiSchoolVO.apiResponseWrapper.class);
+				ApiSchoolVO.ApiResponseWrapper.class);
 		
-		ApiSchoolVO.apiResponseWrapper body = response.getBody();
+		ApiSchoolVO.ApiResponseWrapper body = response.getBody();
 		
 		// 파싱, Detail로 옮기기
 		List<SchoolVO.Detail> result = new ArrayList<>();
 		if (body != null && body.getData() != null) {
-			for (ApiSchoolVO.apiResponse school : body.getData()) {
+			for (ApiSchoolVO.ApiRowBlock school : body.getData()) {
 				result.add(SchoolVO.Detail.from(school));
 			}
 		}
