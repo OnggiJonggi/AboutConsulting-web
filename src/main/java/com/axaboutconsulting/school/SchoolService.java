@@ -2,12 +2,22 @@ package com.axaboutconsulting.school;
 
 import java.util.List;
 
-import com.axaboutconsulting.school.SchoolVO;
+import org.springframework.stereotype.Service;
 
-public interface SchoolService {
+import lombok.RequiredArgsConstructor;
 
-	public List<SchoolVO.Detail> search(String schoolName);
+@Service
+@RequiredArgsConstructor
+public class SchoolService{
+	private final SchoolMapper schoolMapper;
+	
+	public List<SchoolVO.Detail> search(String schoolName) {
+		return schoolMapper.selectSchoolList(schoolName);
+	}
 
-	public void registor(SchoolVO.Detail target);
+	public void registor(SchoolVO.Detail target) {
+		schoolMapper.insertSchool(target);
+	}
+	
 
 }

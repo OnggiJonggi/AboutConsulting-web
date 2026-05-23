@@ -1,5 +1,11 @@
 package com.axaboutconsulting.consultant;
 
-public interface ConnectService {
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class ConnectService{
 
 }

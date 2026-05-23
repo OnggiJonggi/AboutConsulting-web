@@ -9,15 +9,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.axaboutconsulting.global.common.SearchResultVO;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/student")
+@RequiredArgsConstructor
 public class StudentApiController {
 	private StudentService service;
 	private ApiRecordService recordAnalysisService;
-	public StudentApiController(StudentService service, ApiRecordService recordAnalysisService) {
-		this.service = service;
-		this.recordAnalysisService = recordAnalysisService;
-	}
 
 
 	/**

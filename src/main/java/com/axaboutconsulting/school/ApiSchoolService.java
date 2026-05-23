@@ -15,12 +15,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class ApiSchoolService {
 	private final RestTemplate restTemplate;
-	public ApiSchoolService(RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
-	}
 
 	@Value("${nies-data.key}")
 	private String keyStr;

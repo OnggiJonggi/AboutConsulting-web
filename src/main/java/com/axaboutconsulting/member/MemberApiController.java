@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.axaboutconsulting.global.common.SearchResultVO;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/member")
+@RequiredArgsConstructor
 public class MemberApiController {
-	private final MemberService service;
-	public MemberApiController(MemberService service) {
-		this.service = service;
-	}
+	private final MemberService memberService;
 
 	/**
 	 * 아이디 중복 확인
@@ -22,7 +22,7 @@ public class MemberApiController {
 	 */
 	@GetMapping("/check-id")
 	public ResponseEntity<Void> checkId(String userId) {
-		service.checkId(userId);
+		memberService.checkId(userId);
 		return ResponseEntity.ok().build();
 	}
 	
@@ -33,7 +33,7 @@ public class MemberApiController {
 	 */
 	@GetMapping("/check-nickname")
 	public ResponseEntity<Void> checkNickName(String nickname) {
-		service.checkNick(nickname);
+		memberService.checkNick(nickname);
 		return ResponseEntity.ok().build();
 	}
 	
@@ -46,7 +46,7 @@ public class MemberApiController {
 	 */
 	@GetMapping("/list")
 	public ResponseEntity<SearchResultVO<MemberVO.SearchResponse>> getList(MemberVO.SearchRequest search){
-		return service.getList(search);
+		return memberService.getList(search);
 	}
 	
 }

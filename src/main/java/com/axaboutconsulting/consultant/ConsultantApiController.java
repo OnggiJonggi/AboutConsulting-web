@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.axaboutconsulting.global.common.SearchResultVO;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/consultant")
+@RequiredArgsConstructor
 public class ConsultantApiController {
 	public final ConsultantService service;
-	public ConsultantApiController(ConsultantService service) {
-		this.service = service;
-	}
 
 	/**
 	 * 컨설턴트 목록 조회

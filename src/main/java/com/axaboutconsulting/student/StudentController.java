@@ -9,16 +9,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/student")
+@RequiredArgsConstructor
 public class StudentController {
-	private final StudentService service;
+	private final StudentService studentService;
 	private final RecordService recordService;
-	public StudentController(StudentService service, RecordService recordService) {
-		this.service = service;
-		this.recordService = recordService;
-	}
 
 	/**
 	 * 학생 등록 페이지로
@@ -42,7 +40,7 @@ public class StudentController {
 			return "student/register";
 		}
 		
-		return "redirect:/student/view/"+service.register(studentRegister);
+		return "redirect:/student/view/"+studentService.register(studentRegister);
 	}
 	
 	
@@ -60,7 +58,7 @@ public class StudentController {
 		model.addAttribute("encryptedStudentNo", encryptedStudentNo);
 		
 		// 학생 기본 정보 조회
-		StudentVO.Detail studentBasicInfo = service.getStudentBasicInfo(encryptedStudentNo);
+		StudentVO.Detail studentBasicInfo = studentService.getStudentBasicInfo(encryptedStudentNo);
 		model.addAttribute("studentBasicInfo", studentBasicInfo);
 		
 		return "student/view/main";

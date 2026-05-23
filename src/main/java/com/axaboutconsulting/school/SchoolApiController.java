@@ -10,16 +10,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/school")
+@RequiredArgsConstructor
 public class SchoolApiController {
-	private SchoolService service;
-	private ApiSchoolService apiService;
-	public SchoolApiController(SchoolService service, ApiSchoolService apiService) {
-		this.service = service;
-		this.apiService = apiService;
-	}
+	private final SchoolService schoolService;
+	private final ApiSchoolService apiService;
 
 	/**
 	 * 학교 데이터 db조회
@@ -30,7 +28,7 @@ public class SchoolApiController {
 	 */
 	@GetMapping("/search")
 	public ResponseEntity<List<SchoolVO.Detail>> search(String schoolName) {
-		return ResponseEntity.ok(service.search(schoolName));
+		return ResponseEntity.ok(schoolService.search(schoolName));
 	}
 
 	/**
@@ -79,7 +77,7 @@ public class SchoolApiController {
 			return ResponseEntity.notFound().build();
 		
 		try {
-			service.registor(target);
+			schoolService.registor(target);
 		} catch (DuplicateKeyException e) {
 			// 중복된 경우
 			session.removeAttribute("schoolSearchResult");

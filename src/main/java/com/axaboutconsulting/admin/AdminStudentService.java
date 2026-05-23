@@ -1,5 +1,12 @@
 package com.axaboutconsulting.admin;
 
-public interface AdminStudentService {
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class AdminStudentService{
+
 
 }

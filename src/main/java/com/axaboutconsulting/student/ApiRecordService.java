@@ -23,21 +23,16 @@ import com.axaboutconsulting.global.exception.CustomException;
 import com.axaboutconsulting.global.exception.ErrorCodeEnum;
 import com.axaboutconsulting.global.security.CryptoComponent;
 
+import lombok.RequiredArgsConstructor;
 import tools.jackson.databind.ObjectMapper;
 
 @Service
+@RequiredArgsConstructor
 public class ApiRecordService {
 	private final StudentMapper studentMapper;
 	private final AsyncMapper asyncMapper;
 	private final RecordMapper recordMapper;
 	private final CryptoComponent cryptoComponent;
-	public ApiRecordService(StudentMapper studentMapper, AsyncMapper asyncMapper, RecordMapper recordMapper,
-			CryptoComponent cryptoComponent) {
-		this.studentMapper = studentMapper;
-		this.asyncMapper = asyncMapper;
-		this.recordMapper = recordMapper;
-		this.cryptoComponent = cryptoComponent;
-	}
 
 	/**
 	 * 생기부 api요청 및 DB저장

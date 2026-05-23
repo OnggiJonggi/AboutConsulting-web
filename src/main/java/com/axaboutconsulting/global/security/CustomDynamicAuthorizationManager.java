@@ -11,17 +11,15 @@ import org.springframework.security.web.access.intercept.RequestAuthorizationCon
 import org.springframework.stereotype.Component;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 클라이언트가 url접속을 시도하면 해당 url에 접근 권한이 있는지 확인
  */
 @Component
+@RequiredArgsConstructor
 public class CustomDynamicAuthorizationManager implements AuthorizationManager<RequestAuthorizationContext> {
-	
 	private final RoleMapper roleMapper;
-	public CustomDynamicAuthorizationManager(RoleMapper roleMapper) {
-		this.roleMapper = roleMapper;
-	}
 	
 	
 	public AuthorizationDecision check(Supplier<? extends @Nullable Authentication> authentication2, 

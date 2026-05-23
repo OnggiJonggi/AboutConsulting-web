@@ -9,18 +9,16 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.axaboutconsulting.member.MemberVO;
-import com.axaboutconsulting.member.MemberVO.Detail;
+
+import lombok.RequiredArgsConstructor;
 
 //spring security에서 사용하는 UserDetails 수정
+@RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails{
 	
 	private static final long serialVersionUID = 1L;
 	
     private final MemberVO.Detail member;
-    
-    public CustomUserDetails(Detail memberDetail) {
-        this.member = memberDetail;
-    }
 
     //사용자 권한 식별 장치
     @Override
