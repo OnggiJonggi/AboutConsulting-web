@@ -34,8 +34,10 @@
         <typeAlias type="com.axaboutconsulting.student.TargetInfoVO$Pair" alias="TargetInfoPair"/>
         
         <!-- Record -->
+        <typeAlias type="com.axaboutconsulting.student.RecordVO$GroupStatus" alias="RecordGroupStatus"/>
         <typeAlias type="com.axaboutconsulting.student.RecordVO$Insert" alias="RecordInsert"/>
         <typeAlias type="com.axaboutconsulting.student.RecordVO$Detail" alias="RecordDetail"/>
+        <typeAlias type="com.axaboutconsulting.student.RecordVO$AnalysisPair" alias="RecordAnalysisPair"/>
         
         <!-- ApiRecord -->
         <typeAlias type="com.axaboutconsulting.student.ApiRecordVO$ApiRequest" alias="ApiRecordApiRequest"/>

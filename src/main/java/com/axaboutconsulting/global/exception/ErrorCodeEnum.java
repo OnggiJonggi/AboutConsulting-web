@@ -21,7 +21,7 @@ public enum ErrorCodeEnum {
 	TARGET_REQUIRED(HttpStatus.BAD_REQUEST, "STUDENT-101", "지망 대학/학과가 없습니다"),
 	
 	
-	RECORD_ANALYSIS_IS_DUPLICATED(HttpStatus.BAD_REQUEST, "RECORD-101", "작업이 진행 중입니다"),
+	RECORD_ANALYZING(HttpStatus.BAD_REQUEST, "RECORD-101", "작업이 진행 중입니다"),
 	RECORD_IS_EMPTY(HttpStatus.NOT_FOUND, "RECORD-102", "등록된 생기부가 없어요"),
 	RECORD_API_NOT_WORKING(HttpStatus.INTERNAL_SERVER_ERROR, "RECORD-103", "생기부 API가 작동하지 않아요");
 	

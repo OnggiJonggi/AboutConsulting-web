@@ -49,7 +49,7 @@ public class StudentController {
 	 * 관리자/컨설턴트
 	 * @param encryptedStudentNo 암호화된 학생 번호
 	 */
-	@GetMapping("/view/{encryptedStudentNo}")
+	@GetMapping("/{encryptedStudentNo}")
 	public String goView(@PathVariable("encryptedStudentNo") String encryptedStudentNo
 			,Model model) throws Exception {
 		
@@ -68,7 +68,7 @@ public class StudentController {
 	 * 학생 상세 - 생기부 조각 응답
 	 * @param encryptedStudentNo
 	 */
-	@GetMapping("/view/{encryptedStudentNo}/record")
+	@GetMapping("/{encryptedStudentNo}/record")
 	public String getRecordFragment(@PathVariable("encryptedStudentNo") String encryptedStudentNo
 			,Model model) throws Exception {
 		model.addAttribute("studentMenu", "record");

@@ -6,7 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>학생 상세</title>
   <th:block th:replace="~{/common/fragment :: common}"></th:block>
-  <link rel="stylesheet" th:href="@{/css/student/view.css}">
+  <link rel="stylesheet" th:href="@{/css/student/view/main.css}">
+  <link rel="stylesheet" th:href="@{/css/student/view/record.css}">
+  <link rel="stylesheet" th:href="@{/css/student/view/record-history.css}">
+  <link rel="stylesheet" th:href="@{/css/student/view/mock.css}">
+  <link rel="stylesheet" th:href="@{/css/student/view/overview.css}">
 </head>
 
 <body>
@@ -30,19 +34,19 @@
 
     <!-- ── 네비 바 ── -->
     <nav class="detail-nav">
-      <a th:href="@{/student/view/{no}(no=${encryptedStudentNo})}"
+      <a th:href="@{/student/{no}(no=${encryptedStudentNo})}"
         th:classappend="${studentMenu == 'basic'} ? 'active' : ''" class="detail-nav__item" th:id="nav-basic">
         기본 정보
       </a>
-      <a th:href="@{/student/view/{no}/record(no=${encryptedStudentNo})}"
+      <a th:href="@{/student/{no}/record(no=${encryptedStudentNo})}"
         th:classappend="${studentMenu == 'record'} ? 'active' : ''" class="detail-nav__item" th:id="nav-record">
         생기부 분석
       </a>
-      <a th:href="@{/student/view/{no}/mock(no=${encryptedStudentNo})}"
+      <a th:href="@{/student/{no}/mock(no=${encryptedStudentNo})}"
         th:classappend="${studentMenu == 'mock'} ? 'active' : ''" class="detail-nav__item" th:id="nav-mock">
         모의고사 분석
       </a>
-      <a th:href="@{/student/view/{no}/overview(no=${encryptedStudentNo})}"
+      <a th:href="@{/student/{no}/overview(no=${encryptedStudentNo})}"
         th:classappend="${studentMenu == 'overview'} ? 'active' : ''" class="detail-nav__item" th:id="nav-overview">
         종합 분석
       </a>
@@ -89,7 +93,7 @@
         <!-- 버튼 영역 -->
         <div class="action-bar" id="basic-action-bar">
           <div sec:authorize="hasRole('ADMIN') or hasRole('CONSULTANT')">
-            <a th:href="@{/student/view/{no}/basic/update(no=${encryptedStudentNo})}" class="btn-primary"
+            <a th:href="@{/api/student/{no}/update(no=${encryptedStudentNo})}" class="btn-primary"
               id="basic-btn-update">
               <i data-lucide="pencil-line" class="icon-sm"></i>
               정보 수정하기
@@ -97,7 +101,7 @@
           </div>
           <div sec:authorize="hasRole('ADMIN')">
             <button class="btn-danger" id="basic-btn-delete"
-              th:data-url="@{/student/view/{no}/basic/delete(no=${encryptedStudentNo})}">
+              th:data-url="@{/api/student/{no}/delete(no=${encryptedStudentNo})}">
               <i data-lucide="trash-2" class="icon-sm"></i>
               학생 삭제하기
             </button>
@@ -129,7 +133,11 @@
     </div>
   </div>
 
-  <script th:src="@{/js/student/view.js}"></script>
+  <script th:src="@{/js/student/view/main.js}"></script>
+  <script th:src="@{/js/student/view/record.js}"></script>
+  <script th:src="@{/js/student/view/record-history.js}"></script>
+  <script th:src="@{/js/student/view/mock.js}"></script>
+  <script th:src="@{/js/student/view/overview.js}"></script>
   <script th:inline="javascript">
     const ENCRYPTED_NO = /*[[${encryptedStudentNo}]]*/ '';
     const STUDENT_MENU = /*[[${studentMenu}]]*/ 'basic';

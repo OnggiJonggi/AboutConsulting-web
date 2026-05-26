@@ -4,59 +4,85 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.axaboutconsulting.student.RecordMapper">
-  <resultMap id="detailMap" type="RecordDetail">
-    <association property="result" javaType="RecordApi">
-      <result property="gradeStrengthWeakness" column="grade_strength_weakness"/>
-      <result property="gradeInDepthAnalysis" column="grade_in_depth_analysis"/>
-      <result property="lifeRecordStrengthWeakness" column="life_record_strength_weakness"/>
-      <result property="lifeRecordDiagnosisOverview" column="life_record_diagnosis_overview"/>
-      <result property="academicRoadmap" column="academic_roadmap"/>
-      <result property="projectRecommendations" column="project_recommendations"/>
-      <result property="careerBookRecommendations" column="career_book_recommendations"/>
-      <result property="parentStudentMessage" column="parent_student_message"/>
-    </association>
+  <resultMap id="RecordDetailMap" type="RecordDetail">
+    <result property="createAt" column="created_at"/>
+    <result property="status" column="status"/>
+    <collection property="analysisPair" resultMap="pairMap"/>
+  </resultMap>
+  <resultMap id="pairMap" type="RecordAnalysisPair">
+    <result property="field" column="field"/>
+    <result property="analysis" column="analysis"/>
   </resultMap>
 
-
-  <select id="selectReord" parameterType="_int" resultType="StudentDetailMap">
-    select (
-      R.GRADE_STRENGTH_WEAKNESS
-      ,R.GRADE_IN_DEPTH_ANALYSIS
-      ,R.LIFE_RECORD_STRENGTH_WEAKNESS
-      ,R.LIFE_RECORD_DIAGNOSIS_OVERVIEW
-      ,R.ACADEMIC_ROADMAP
-      ,R.PROJECT_RECOMMENDATIONS
-      ,R.CAREER_BOOK_RECOMMENDATIONS
-      ,R.PARENT_STUDENT_MESSAGE
+  <insert id="insertAnalysisGroup" parameterType="RecordGroupStatus">
+    <selectKey keyProperty="groupNo" resultType="int" order="BEFORE">
+			SELECT SEQ_MEMBER.nextval FROM DUAL
+		</selectKey>
+    insert into RECORD_ANALYSIS_GROUP(
+      GROUP_NO, STUDENT_NO, STATUS
+    ) VALUES(
+      #{groupNo}
+      ,#{studentNo}
+      ,#{status}
     )
-    from RECORD_ANALYSIS R
-    left join STUDENT S on (S.STUDENT_NO = R.STUDENT_NO)
-    where STUDENT_NO = #{StudentNo}
+	</insert>
+
+  <update id="updateRecordStatus" parameterType="RecordGroupStatus">
+    update RECORD_ANALYSIS_GROUP
+    set(
+      COMPLETED_AT = SYSDATE
+      ,status = #{status}
+    )
+    where GROUP_NO = #{groupNo}
+	</update>
+
+  <select id="selectRecordStatus" parameterType="RecordGroupStatus" resultType="_int">
+    select count(*)
+    from RECORD_ANALYSIS_GROUP
+    where STUDENT_NO = #{studentNo}
+    and STATUS = #{status}
 	</select>
 
   <insert id="insertRecord" parameterType="RecordInsert">
-    insert into RECORD_ANALYSIS(
-      STUDENT_NO
-      ,GRADE_STRENGTH_WEAKNESS
-      ,GRADE_IN_DEPTH_ANALYSIS
-      ,LIFE_RECORD_STRENGTH_WEAKNESS
-      ,LIFE_RECORD_DIAGNOSIS_OVERVIEW
-      ,ACADEMIC_ROADMAP
-      ,PROJECT_RECOMMENDATIONS
-      ,CAREER_BOOK_RECOMMENDATIONS
-      ,PARENT_STUDENT_MESSAGE
-      ,CREATED_AT
-    ) values(
-      #{studentNo}
-      ,#{result.gradeStrengthWeakness}
-      ,#{result.gradeInDepthAnalysis}
-      ,#{result.lifeRecordStrengthWeakness}
-      ,#{result.lifeRecordDiagnosisOverview}
-      ,#{result.academicRoadmap}
-      ,#{result.projectRecommendations}
-      ,#{result.careerBookRecommendations}
-      ,#{result.parentStudentMessage}
-      ,SYSDATE
-    )
+    INSERT ALL
+      INTO RECORD_ANALYSIS (GROUP_NO, ITEM_NO, ANALYSIS)
+      VALUES (#{groupNo}, 1, #{result.gradeStrengthWeakness})
+      
+      INTO RECORD_ANALYSIS (GROUP_NO, ITEM_NO, ANALYSIS)
+      VALUES (#{groupNo}, 2, #{result.gradeInDepthAnalysis})
+      
+      INTO RECORD_ANALYSIS (GROUP_NO, ITEM_NO, ANALYSIS)
+      VALUES (#{groupNo}, 3, #{result.lifeRecordStrengthWeakness})
+      
+      INTO RECORD_ANALYSIS (GROUP_NO, ITEM_NO, ANALYSIS)
+      VALUES (#{groupNo}, 4, #{result.lifeRecordDiagnosisOverview})
+      
+      INTO RECORD_ANALYSIS (GROUP_NO, ITEM_NO, ANALYSIS)
+      VALUES (#{groupNo}, 5, #{result.academicRoadmap})
+      
+      INTO RECORD_ANALYSIS (GROUP_NO, ITEM_NO, ANALYSIS)
+      VALUES (#{groupNo}, 6, #{result.projectRecommendations})
+      
+      INTO RECORD_ANALYSIS (GROUP_NO, ITEM_NO, ANALYSIS)
+      VALUES (#{groupNo}, 7, #{result.careerBookRecommendations})
+      
+      INTO RECORD_ANALYSIS (GROUP_NO, ITEM_NO, ANALYSIS)
+      VALUES (#{groupNo}, 8, #{result.parentStudentMessage})
+    SELECT * FROM DUAL
 	</insert>
+
+  <select id="selectRecord" parameterType="_int" resultMap="RecordDetailMap">
+    select
+      AI.FIELD
+      ,RA.ANALYSIS
+      ,RAG.STARTED_AT
+      ,RAG.COMPLETED_AT
+      ,RAG.STATUS
+    from RECORD_ANALYSIS_GROUP RAG
+    left join RECORD_ANALYSIS RA on(RA.GROUP_NO = RAG.GROUP_NO)
+    left join ANALYSIS_ITEM AI on(AI.ITEM_NO = RA.ITEM_NO)
+    where RAG.STUDENT_NO = #{studentNo}
+    and RAG.STATUS = 'ACTIVE'
+	</select>
+  
 </mapper>
