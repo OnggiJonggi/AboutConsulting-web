@@ -9,9 +9,10 @@
       if (!href) return;
 
       // '기본 정보'로 돌아올 때는 새로고침
-      const isBasicTab = href.match(/\/view\/[^/]+$/);
+      const isBasicTab = this.id === 'nav-basic';
       if (isBasicTab) {
         location.href = href;
+        return;
       }
 
       // 이미 active인 탭은 무시
@@ -34,6 +35,11 @@
         // 콘텐츠 교체
         document.getElementById('detail-content').innerHTML = html;
         lucide.createIcons();
+
+        // record 초기화
+        if (typeof window.initRecord === 'function') window.initRecord();
+        if (typeof window.initMock === 'function') window.initMock();
+        if (typeof window.initOverview === 'function') window.initOverview();
       },
       error: function () {
         alert('페이지를 불러오는 중 오류가 발생했습니다.');

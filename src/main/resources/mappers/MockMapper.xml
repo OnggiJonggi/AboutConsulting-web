@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ax.student.mock.MockMapper">
+	<resultMap id="MockDetailMap" type="MockDetail">
+		<id property="mockNo" column="MOCK_NO"/>
+		<result property="yearMonth" column="YEAR_MONTH"/>
+		<result property="startedAt" column="STARTED_AT"/>
+		<result property="completedAt" column="COMPLETED_AT"/>
+		<collection property="subject" ofType="MockSubjectScore" resultMap="subjectMap"/>
+	</resultMap>
+	<resultMap id="subjectMap" type="MockSubjectScore">
+		<result property="subject" column="RANKING"/>
+		<result property="chosenSubject" column="CHOSEN_SUBJECT"/>
+		<result property="normalScore" column="NORMAL_SCORE"/>
+		<result property="standardScore" column="STANDARD_SCORE"/>
+		<result property="percentile" column="PERCENTILE"/>
+		<result property="grade" column="GRADE"/>
+	</resultMap>
+
+	<select id="selectMockScoreList" parameterType="_int" resultMap="MockDetailMap">
+		select
+			MG.MOCK_NO
+			,MG.YEAR_MONTH
+			,MG.STARTED_AT
+			,MG.COMPLETED_AT
+			,MG.STATUS
+			,MSS.SUBJECT
+			,MSS.CHOSEN_SUBJECT
+			,MSS.NORMAL_SCORE
+			,MSS.STANDARD_SCORE
+			,MSS.PERCENTILE
+			,MSS.GRADE
+		from MOCK_GROUP MG
+		left join MOCK_SUBJECT_SCORE MSS on (MSS.GROUP_NO = MG.GROUP_NO)
+		where MG.STUDENT_NO = #{studentNo}
+	</select>
+</mapper>

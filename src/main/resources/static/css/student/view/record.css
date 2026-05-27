@@ -1,6 +1,10 @@
-/* ── record 조각 전용 스타일 ── */
+/* ──────────────────────────────────────────
+   record.css  —  생기부 분석 조각 전용 스타일
+   Bootstrap / main.css 충돌 방지:
+   모든 클래스는 .record- 또는 .btn-outline-sm 접두사 사용
+────────────────────────────────────────── */
 
-/* 루트 래퍼 */
+/* ── 루트 래퍼 ── */
 .record-root {
   display: flex;
   flex-direction: column;
@@ -8,7 +12,7 @@
   padding: 0.25rem 0;
 }
 
-/* ── 상단 바 (타이틀 + 분석 기록 버튼) ── */
+/* ── 상단 바 ── */
 .record-topbar {
   display: flex;
   align-items: center;
@@ -25,6 +29,7 @@
   color: var(--primary);
 }
 
+/* outline 소형 버튼 (Bootstrap .btn 과 충돌 방지) */
 .btn-outline-sm {
   display: inline-flex;
   align-items: center;
@@ -38,21 +43,24 @@
   padding: 0.35rem 0.8rem;
   cursor: pointer;
   transition: background var(--transition), color var(--transition);
+  text-decoration: none;
 }
 
 .btn-outline-sm:hover {
   background: var(--primary-light);
+  color: var(--primary-dark);
 }
 
 /* ── 실패 알림 ── */
 .record-alert {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   border-radius: var(--radius-md);
   font-size: 0.9rem;
   font-weight: 500;
+  line-height: 1.6;
 }
 
 .record-alert--danger {
@@ -103,9 +111,16 @@
 .record-upload-card__desc {
   font-size: 0.875rem;
   color: var(--text-muted);
-  margin-top: -0.5rem;
+  margin-top: -0.4rem;
 }
 
+.record-upload-card__err {
+  font-size: 0.8125rem;
+  color: #C62828;
+  margin-top: -0.25rem;
+}
+
+/* 파일 선택 라벨 버튼 */
 .record-file-label {
   display: inline-flex;
   align-items: center;
@@ -125,7 +140,34 @@
   background: var(--primary-light);
 }
 
-/* ── 대기(Pending) 카드 ── */
+/* 업로드 버튼 */
+.record-btn-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1.4rem;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), box-shadow var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.record-btn-upload:hover {
+  background: var(--primary-hover, #1565C0);
+  box-shadow: var(--shadow-md);
+}
+
+.record-btn-upload:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── 분석 중(Pending) 카드 ── */
 .record-pending-card {
   display: flex;
   flex-direction: column;
@@ -148,7 +190,9 @@
 }
 
 @keyframes record-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .record-pending-card__title {
@@ -164,7 +208,7 @@
   text-align: center;
 }
 
-/* ── 분석 결과 카드 ── */
+/* ── 분석 결과 ── */
 .record-result {
   display: flex;
   flex-direction: column;
@@ -202,6 +246,7 @@
   color: var(--text);
   line-height: 1.75;
   white-space: pre-wrap;
+  word-break: break-all;
 }
 
 /* 완료 시각 */
@@ -263,4 +308,16 @@
   padding: 2rem;
   color: var(--text-muted);
   font-size: 0.9rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

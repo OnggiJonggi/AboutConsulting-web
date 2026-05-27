@@ -3,7 +3,7 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.axaboutconsulting.student.StudentMapper">
+<mapper namespace="com.ax.student.StudentMapper">
 	<resultMap id="StudentDetailMap" type="StudentDetail">
 		<!-- 
 		id는 '이 컬럼 값이 같으면 같은 객체'를 나타냄
@@ -15,7 +15,7 @@
 		<result property="semester"   column="SEMESTER"/>
 		<result property="track"      column="TRACK"/>
 		<result property="schoolName" column="SCHOOL_NAME"/>
-		<collection property="target" resultMap="pairMap"/>
+		<collection property="target" ofType="TargetInfoPair" resultMap="pairMap"/>
 	</resultMap>
 	<resultMap id="pairMap" type="TargetInfoPair">
 		<result property="ranking" column="RANKING"/>
@@ -52,18 +52,20 @@
 		order by T.RANKING ASC
 	</select>
 
-	<select id="selectStudentForRecordApi" parameterType="_int" resultMap="ApiRecordApiRequest">
+	<select id="selectStudentForRecordApi" parameterType="_int" resultMap="StudentDetailMap">
 		select
 			S.STUDENT_NO -- 객체에 안 담는 식별용
 			,S.NAME
 			,S.GRADE
 			,S.SEMESTER
 			,S.TRACK
+			,SCH.NAME AS SCHOOL_NAME
 			,T.MAJOR
 			,T.UNIV
 			,T.RANKING
 		from STUDENT S
 		left join TARGET_INFO T on (S.STUDENT_NO = T.STUDENT_NO)
+		left join SCHOOL SCH on (SCH.SCHOOL_CODE = S.SCHOOL_CODE)
 		where S.STUDENT_NO = #{studentNo}
 		order by T.RANKING ASC
 	</select>

@@ -38,17 +38,17 @@
   삭제(delete, /api/student/{encryptedStudentNo}/delete)
 생기부 분석
   원본 업로드(post, /api/student/{encryptedStudentNo}/record/upload)
-  분석된 생기부 있나요(get, /api/student/{encryptedStudentNo}/record/status)
+  분석된 생기부 있나요(get, /api/student/record/status)
   분석 기록(get, /student/{encryptedStudentNo}/record/history)
 생기부 분석 기록(/student/{encryptedStudentNo}/record/history)
   원본, 분석 삭제(delete, /api/student/{encryptedStudentNo}/record/delete)
   원본 재업로드(put, /api/student/{encryptedStudentNo}/record/delete)
   원본 확인(get, /api/student/{encryptedStudentNo}/record/original)
-모의고사 분석
-  원본 업로드(post, /api/student/{encryptedStudentNo}/mock/upload)
-  원본, 분석 삭제(delete, /api/student/{encryptedStudentNo}/mock/delete)
-  원본 재업로드(put, /api/student/{encryptedStudentNo}/mock/delete)
-  원본 확인(get, /api/student/{encryptedStudentNo}/mock/original)
+모의고사 점수
+  성적표 원본 업로드(post, /api/student/{encryptedStudentNo}/mock/upload)
+  원본 삭제(delete, /api/student/mock/delete)
+  점수 수정(put, /api/student/mock/update)
+  원본 확인(get, /api/student/mock/original)
 
 컨설턴트 목록(/consultant/list)
   목록 불러오기(get, /api/consultant/list)

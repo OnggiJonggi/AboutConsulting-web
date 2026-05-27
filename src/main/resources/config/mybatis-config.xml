@@ -14,48 +14,47 @@
     
     <typeAliases>
     	<!-- Member -->
-        <typeAlias type="com.axaboutconsulting.member.MemberVO$Login" alias="MemberLogin"/>
-        <typeAlias type="com.axaboutconsulting.member.MemberVO$Detail" alias="MemberDetail"/>
-        <typeAlias type="com.axaboutconsulting.member.MemberVO$Join" alias="MemberJoin"/>
-        <typeAlias type="com.axaboutconsulting.member.MemberVO$SearchRequest" alias="MemberSearchRequest"/>
-        <typeAlias type="com.axaboutconsulting.member.MemberVO$SearchResponse" alias="MemberSearchResponse"/>
+        <typeAlias type="com.ax.member.MemberVO$Login" alias="MemberLogin"/>
+        <typeAlias type="com.ax.member.MemberVO$Detail" alias="MemberDetail"/>
+        <typeAlias type="com.ax.member.MemberVO$Join" alias="MemberJoin"/>
+        <typeAlias type="com.ax.member.MemberVO$SearchRequest" alias="MemberSearchRequest"/>
+        <typeAlias type="com.ax.member.MemberVO$SearchResponse" alias="MemberSearchResponse"/>
         
         <!-- Role -->
-        <typeAlias type="com.axaboutconsulting.global.security.RoleVO$UrlAccessCheck" alias="RoleUrlAccessCheck"/>
+        <typeAlias type="com.ax.global.security.RoleVO$UrlAccessCheck" alias="RoleUrlAccessCheck"/>
         
         <!-- Student -->
-        <typeAlias type="com.axaboutconsulting.student.StudentVO$Register" alias="StudentRegister"/>
-        <typeAlias type="com.axaboutconsulting.student.StudentVO$Detail" alias="StudentDetail"/>
-        <typeAlias type="com.axaboutconsulting.student.StudentVO$Search" alias="StudentSearch"/>
-        <typeAlias type="com.axaboutconsulting.student.StudentVO$SearchResult" alias="StudentSearchResult"/>
+        <typeAlias type="com.ax.student.StudentVO$Register" alias="StudentRegister"/>
+        <typeAlias type="com.ax.student.StudentVO$Detail" alias="StudentDetail"/>
+        <typeAlias type="com.ax.student.StudentVO$Search" alias="StudentSearch"/>
+        <typeAlias type="com.ax.student.StudentVO$SearchResult" alias="StudentSearchResult"/>
 
         <!-- TargetInfo -->
-        <typeAlias type="com.axaboutconsulting.student.TargetInfoVO$Register" alias="TargetInfoRegister"/>
-        <typeAlias type="com.axaboutconsulting.student.TargetInfoVO$Pair" alias="TargetInfoPair"/>
+        <typeAlias type="com.ax.student.TargetInfoVO$Register" alias="TargetInfoRegister"/>
+        <typeAlias type="com.ax.student.TargetInfoVO$Pair" alias="TargetInfoPair"/>
         
         <!-- Record -->
-        <typeAlias type="com.axaboutconsulting.student.RecordVO$GroupStatus" alias="RecordGroupStatus"/>
-        <typeAlias type="com.axaboutconsulting.student.RecordVO$Insert" alias="RecordInsert"/>
-        <typeAlias type="com.axaboutconsulting.student.RecordVO$Detail" alias="RecordDetail"/>
-        <typeAlias type="com.axaboutconsulting.student.RecordVO$AnalysisPair" alias="RecordAnalysisPair"/>
+        <typeAlias type="com.ax.student.record.RecordVO$GroupStatus" alias="RecordGroupStatus"/>
+        <typeAlias type="com.ax.student.record.RecordVO$Insert" alias="RecordInsert"/>
+        <typeAlias type="com.ax.student.record.RecordVO$Detail" alias="RecordDetail"/>
+        <typeAlias type="com.ax.student.record.RecordVO$AnalysisPair" alias="RecordAnalysisPair"/>
         
         <!-- ApiRecord -->
-        <typeAlias type="com.axaboutconsulting.student.ApiRecordVO$ApiRequest" alias="ApiRecordApiRequest"/>
+        <typeAlias type="com.ax.student.record.ApiRecordVO$ApiRequest" alias="ApiRecordApiRequest"/>
         
+        <!-- Mock -->
+        <typeAlias type="com.ax.student.mock.MockVO$Detail" alias="MockDetail"/>
+        <typeAlias type="com.ax.student.mock.MockVO$SubjectScore" alias="MockSubjectScore"/>
+
         <!-- School -->
-        <typeAlias type="com.axaboutconsulting.school.SchoolVO$Registor" alias="SchoolRegister"/>
-        <typeAlias type="com.axaboutconsulting.school.SchoolVO$Detail" alias="SchoolDetail"/>
+        <typeAlias type="com.ax.school.SchoolVO$Registor" alias="SchoolRegister"/>
+        <typeAlias type="com.ax.school.SchoolVO$Detail" alias="SchoolDetail"/>
         
         <!-- Consultant -->
-        <typeAlias type="com.axaboutconsulting.consultant.ConsultantVO$Detail" alias="ConsultantDetail"/>
-        <typeAlias type="com.axaboutconsulting.consultant.ConsultantVO$Search" alias="ConsultantSearch"/>
+        <typeAlias type="com.ax.consultant.ConsultantVO$Detail" alias="ConsultantDetail"/>
+        <typeAlias type="com.ax.consultant.ConsultantVO$Search" alias="ConsultantSearch"/>
         
-        <!-- AsyncStatus -->
-        <typeAlias type="com.axaboutconsulting.global.async.AsyncVO$Insert" alias="AsyncInsert"/>
-        <typeAlias type="com.axaboutconsulting.global.async.AsyncVO$Select" alias="AsyncSelect"/>
-        <typeAlias type="com.axaboutconsulting.global.async.AsyncVO$Update" alias="AsyncUpdate"/>
-
         <!-- 전역 설정 -->
-        <package name="com.axaboutconsulting"/>
+        <package name="com.ax"/>
     </typeAliases>
 </configuration>

@@ -1,148 +1,105 @@
-<th:block th:fragment="content">
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-  <div class="record-root">
+<body>
 
-    <!-- ── 헤더 (우측 상단 분석 기록 버튼) ── -->
-    <div class="record-topbar">
-      <span class="record-topbar__title">
-        <i data-lucide="book-open" class="icon-sm"></i>
-        생기부 분석
-      </span>
-      <button class="btn-outline-sm" id="record-history-btn"
-              th:data-url="@{/student/{no}/record/history(no=${encryptedStudentNo})}">
-        <i data-lucide="clock-3" class="icon-sm"></i>
-        분석 기록
-      </button>
-    </div>
+  <th:block th:fragment="content">
 
-    <!-- ════════════════════════════════
-         EMPTY : 생활기록부 업로드
-         ════════════════════════════════ -->
-    <th:block th:if="${studentRecord.status == 'EMPTY'}">
-      <div class="record-upload-card" id="record-upload-area">
+    <div class="record-root" id="record-root">
+
+      <!-- ── 상단 바 (타이틀 + 분석 기록 버튼) ── -->
+      <div class="record-topbar">
+        <div class="record-topbar__title">
+          <i data-lucide="book-open" class="icon-sm"></i>
+          <span>생기부 분석</span>
+        </div>
+        <a th:href="@{/student/{no}/record/history(no=${encryptedStudentNo})}" class="btn-outline-sm"
+          id="record-btn-history">
+          <i data-lucide="history" class="icon-sm"></i>
+          분석 기록
+        </a>
+      </div>
+
+      <!-- ── FAILED: 실패 알림 ── -->
+      <div th:if="${studentRecord != null and studentRecord.status == 'FAILED'}"
+        class="record-alert record-alert--danger" id="record-alert-failed">
+        <i data-lucide="alert-circle" class="icon-sm"></i>
+        <span>분석에 실패했습니다.<br>다시 업로드해주세요.</span>
+      </div>
+
+      <!-- ── EMPTY / FAILED: 업로드 카드 ── -->
+      <div th:if="${studentRecord == null
+                  or studentRecord.status == 'EMPTY'
+                  or studentRecord.status == 'FAILED'}" class="record-upload-card" id="record-upload-card">
         <div class="record-upload-card__icon">
           <i data-lucide="file-up"></i>
         </div>
-        <p class="record-upload-card__title">생활기록부를 업로드해 주세요</p>
-        <p class="record-upload-card__desc">PDF 파일만 업로드 가능합니다.</p>
-        <label class="record-file-label" for="record-file-input">
+        <p class="record-upload-card__title">생활기록부 업로드</p>
+        <p class="record-upload-card__desc">PDF 파일 (최대 5MB)</p>
+
+        <!-- 파일 입력 (숨김) -->
+        <input type="file" id="record-file-input" accept=".pdf,application/pdf" style="display:none;">
+
+        <!-- 파일 선택 라벨 -->
+        <label for="record-file-input" class="record-file-label" id="record-file-label">
           <i data-lucide="paperclip" class="icon-sm"></i>
-          <span id="record-file-name">파일 선택</span>
+          <span id="record-file-label-text">파일 선택</span>
         </label>
-        <input type="file" id="record-file-input" accept="application/pdf" style="display:none;">
-        <button class="btn-primary" id="record-upload-btn"
-                th:data-url="@{/api/student/{no}/record/upload(no=${encryptedStudentNo})}"
-                th:data-status-url="@{/api/student/{no}/record/status(no=${encryptedStudentNo})}"
-                th:data-reload-url="@{/student/{no}/record(no=${encryptedStudentNo})}">
-          <i data-lucide="upload" class="icon-sm"></i>
+
+        <!-- 업로드 버튼 (파일 선택 후 노출) -->
+        <button class="record-btn-upload" id="record-btn-upload" style="display:none;"
+          th:data-no="${encryptedStudentNo}">
+          <i data-lucide="upload-cloud" class="icon-sm"></i>
           업로드하기
         </button>
+        <p class="record-upload-card__err" id="record-upload-err" style="display:none;"></p>
       </div>
 
-      <!-- 업로드 후 대기 안내 (숨겨진 상태) -->
-      <div class="record-pending-card" id="record-pending-area" style="display:none;">
+      <!-- ── READY / 업로드 직후: 분석 중 카드 ── -->
+      <div th:if="${studentRecord != null and studentRecord.status == 'READY'}" class="record-pending-card"
+        id="record-pending-card" th:style="'display:flex;'">
+        <div class="record-pending-card__spinner" id="record-spinner"></div>
+        <p class="record-pending-card__title">분석 중</p>
+        <p class="record-pending-card__desc">몇 분 걸릴 수 있으니 기다려 주세요.</p>
+      </div>
+
+      <!-- ── 업로드 직후 동적으로 삽입되는 분석 중 카드 (초기 hidden) ── -->
+      <div class="record-pending-card" id="record-pending-card-dynamic" style="display:none;">
         <div class="record-pending-card__spinner"></div>
         <p class="record-pending-card__title">분석 중</p>
         <p class="record-pending-card__desc">몇 분 걸릴 수 있으니 기다려 주세요.</p>
       </div>
-    </th:block>
 
-    <!-- ════════════════════════════════
-         FAILED : 재업로드
-         ════════════════════════════════ -->
-    <th:block th:if="${studentRecord.status == 'FAILED'}">
-      <div class="record-alert record-alert--danger" id="record-failed-notice">
-        <i data-lucide="alert-triangle" class="icon-sm"></i>
-        분석에 실패했습니다. 다시 업로드해 주세요.
-      </div>
+      <!-- ── ACTIVE: 분석 결과 ── -->
+      <div th:if="${studentRecord != null and studentRecord.status == 'ACTIVE'}" class="record-result"
+        id="record-result">
 
-      <div class="record-upload-card" id="record-upload-area">
-        <div class="record-upload-card__icon">
-          <i data-lucide="file-up"></i>
-        </div>
-        <p class="record-upload-card__title">생활기록부를 다시 업로드해 주세요</p>
-        <p class="record-upload-card__desc">PDF 파일만 업로드 가능합니다.</p>
-        <label class="record-file-label" for="record-file-input">
-          <i data-lucide="paperclip" class="icon-sm"></i>
-          <span id="record-file-name">파일 선택</span>
-        </label>
-        <input type="file" id="record-file-input" accept="application/pdf" style="display:none;">
-        <button class="btn-primary" id="record-upload-btn"
-                th:data-url="@{/api/student/{no}/record/upload(no=${encryptedStudentNo})}"
-                th:data-status-url="@{/api/student/{no}/record/status(no=${encryptedStudentNo})}"
-                th:data-reload-url="@{/student/{no}/record(no=${encryptedStudentNo})}">
-          <i data-lucide="upload" class="icon-sm"></i>
-          업로드하기
-        </button>
-      </div>
-
-      <div class="record-pending-card" id="record-pending-area" style="display:none;">
-        <div class="record-pending-card__spinner"></div>
-        <p class="record-pending-card__title">분석 중</p>
-        <p class="record-pending-card__desc">몇 분 걸릴 수 있으니 기다려 주세요.</p>
-      </div>
-    </th:block>
-
-    <!-- ════════════════════════════════
-         READY : 분석 대기 중 (폴링만)
-         ════════════════════════════════ -->
-    <th:block th:if="${studentRecord.status == 'READY'}">
-      <div class="record-pending-card" id="record-pending-area"
-           th:data-status-url="@{/api/student/{no}/record/status(no=${encryptedStudentNo})}"
-           th:data-reload-url="@{/student/{no}/record(no=${encryptedStudentNo})}">
-        <div class="record-pending-card__spinner"></div>
-        <p class="record-pending-card__title">분석 중</p>
-        <p class="record-pending-card__desc">몇 분 걸릴 수 있으니 기다려 주세요.</p>
-      </div>
-    </th:block>
-
-    <!-- ════════════════════════════════
-         ACTIVE : 분석 결과 표시
-         ════════════════════════════════ -->
-    <th:block th:if="${studentRecord.status == 'ACTIVE'}">
-      <div class="record-result" id="record-result-area">
         <div th:each="pair : ${studentRecord.analysisPair}" class="record-analysis-card">
           <div class="record-analysis-card__field">
-            <i data-lucide="sparkles" class="icon-sm"></i>
-            <span th:text="${pair.field}">성적 강점 및 약점 요약</span>
+            <i data-lucide="file-text" class="icon-sm"></i>
+            <span th:text="${pair.field}">필드명</span>
           </div>
-          <div class="record-analysis-card__body" th:text="${pair.analysis}">
-            분석 내용이 여기에 표시됩니다.
-          </div>
+          <div class="record-analysis-card__body" th:text="${pair.analysis}">분석 내용</div>
         </div>
 
         <!-- 완료 시각 -->
-        <p class="record-completed-at">
-          <i data-lucide="check-circle-2" class="icon-sm"></i>
-          분석 완료 :
-          <span th:text="${#temporals.format(studentRecord.completedAt, 'yyyy년 MM월 dd일 HH:mm:ss')}">
-            2025년 01월 01일 00:00:00
+        <div class="record-completed-at" id="record-completed-at">
+          <i data-lucide="clock" class="icon-sm"></i>
+          <span th:text="${#temporals.format(studentRecord.completedAt, 'yyyy년 MM월 dd일 hh:mm:ss')}">
+            2025년 01월 01일 12:00:00
           </span>
-        </p>
-      </div>
-    </th:block>
-
-  </div>
-
-  <!-- 분석 기록 모달 -->
-  <div class="modal-backdrop" id="record-history-modal" style="display:none;">
-    <div class="modal-box modal-box--wide">
-      <div class="modal-header">
-        <h3 class="modal-title">
-          <i data-lucide="clock-3" class="icon-sm"></i>
-          분석 기록
-        </h3>
-        <button class="modal-close-btn" id="record-history-close">
-          <i data-lucide="x" class="icon-sm"></i>
-        </button>
-      </div>
-      <div class="modal-body" id="record-history-content">
-        <div class="record-history-loading">
-          <div class="record-pending-card__spinner"></div>
-          <span>불러오는 중...</span>
         </div>
-      </div>
-    </div>
-  </div>
 
-</th:block>
+      </div>
+
+    </div><!-- /record-root -->
+
+    <!-- 숨겨진 데이터 전달용 -->
+    <span id="record-encrypted-no" th:data-no="${encryptedStudentNo}"
+      th:data-status="${studentRecord != null ? studentRecord.status : 'EMPTY'}" style="display:none;"></span>
+
+  </th:block>
+
+</body>
+
+</html>
