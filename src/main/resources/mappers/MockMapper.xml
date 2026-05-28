@@ -20,6 +20,45 @@
 		<result property="grade" column="GRADE"/>
 	</resultMap>
 
+	<insert id="insertMockGroup" parameterType="MockGroupStatus">
+		<selectKey keyProperty="groupNo" resultType="int" order="BEFORE">
+			SELECT SEQ_MOCK_ANALYSIS_GROUP.nextval FROM DUAL
+		</selectKey>
+		insert into MOCK_GROUP(
+			GROUP_NO, STUDENT_NO, YEAR_MONTH, STATUS
+		) VALUES(
+			#{groupNo}
+			,#{studentNo}
+			,#{yearMonth}
+			,#{status}
+		)
+	</insert>
+
+	<update id="updateMockStatus" parameterType="MockGroupStatus">
+    update MOCK_GROUP
+    set
+      COMPLETED_AT = SYSDATE
+      ,status = #{status}
+    where GROUP_NO = #{groupNo}
+	</update>
+
+	<insert id="insertMock" parameterType="MockInsert">
+    INSERT ALL
+		<foreach collection="result" item="item" separator=" ">
+				INTO MOCK_SUBJECT_SCORE (GROUP_NO, SUBJECT, CHOSEN_SUBJECT,
+					NORMAL_SCORE, STANDARD_SCORE, PERCENTILE, GRADE)
+				VALUES (#{groupNo}, #{item.subject}, #{item.chosenSubject}, #{item.normalScore},
+					#{item.standardScore}, #{item.percentile}, #{item.grade})
+			SELECT * FROM DUAL
+		</foreach>
+	</insert>
+
+	<select id="selectMockStatus" parameterType="_int" resultType="string">
+    select STATUS
+    from MOCK_GROUP
+    where GROUP_NO = #{groupNo}
+	</select>
+
 	<select id="selectMockScoreList" parameterType="_int" resultMap="MockDetailMap">
 		select
 			MG.MOCK_NO

@@ -25,7 +25,8 @@ public enum ErrorCodeEnum {
 	RECORD_IS_EMPTY(HttpStatus.NOT_FOUND, "RECORD-102", "등록된 생기부가 없어요"),
 	RECORD_API_NOT_WORKING(HttpStatus.INTERNAL_SERVER_ERROR, "RECORD-103", "생기부 API가 작동하지 않아요"),
 	
-	MOCK_IS_EMPTY(HttpStatus.NOT_FOUND, "MOCK-102", "등록된 모의고사가 없어요");
+	MOCK_IS_EMPTY(HttpStatus.NOT_FOUND, "MOCK-102", "등록된 모의고사가 없어요"),
+	MOCK_API_NOT_WORKING(HttpStatus.NOT_FOUND, "MOCK-101", "모의고사 API가 작동하지 않아요");
 	
 	private final HttpStatus httpStatus;
 	private final String code;

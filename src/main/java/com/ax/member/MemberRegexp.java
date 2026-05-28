@@ -1,4 +1,4 @@
-package com.ax.global.regex;
+package com.ax.member;
 
 public class MemberRegexp {
 	// private생성자로 외부(Spring 포함)에서 객체 생성 못 하게 막음

@@ -2,7 +2,6 @@ package com.ax.member;
 
 import java.util.List;
 
-import com.ax.global.regex.MemberRegexp;
 import com.ax.global.security.CryptedNumberVO;
 
 import jakarta.validation.constraints.NotBlank;

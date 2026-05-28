@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,7 +24,6 @@ import com.ax.global.exception.CustomException;
 import com.ax.global.exception.ErrorCodeEnum;
 import com.ax.student.StudentMapper;
 import com.ax.student.StudentVO;
-import com.ax.student.StudentVO.Detail;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +35,11 @@ import tools.jackson.databind.ObjectMapper;
 public class ApiRecordService {
 	private final StudentMapper studentMapper;
 	private final RecordMapper recordMapper;
+	private final RestTemplate restTemplate;
+	private final ObjectMapper objectMapper;
+	
+	@Value("${record-analysis}")
+	private String url;
 	
 	/**
 	 * 생기부 api요청 및 DB저장
@@ -44,7 +49,7 @@ public class ApiRecordService {
 	 * @param filebytes
 	 */
 	@Async
-	public void uploadRecord(int studentNo, int groupNo, byte[] filebytes) throws Exception{
+	public void analysisRecord(int studentNo, int groupNo, byte[] filebytes) throws Exception{
 		/*
 		 * 생기부 원본 저장 로직 필요!
 		 */
@@ -60,7 +65,6 @@ public class ApiRecordService {
 				    "major",  p.getMajor()
 				))
 				.collect(Collectors.toList());
-			ObjectMapper objectMapper = new ObjectMapper();
 			
 			// 생기부 파일 정상화
 		    ByteArrayResource fileResource = new ByteArrayResource(filebytes) {
@@ -87,19 +91,17 @@ public class ApiRecordService {
 		    HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 		    
 		    
-		    // 로깅 인터셉터
+		    // -----로깅 인터셉터
 			BufferingClientHttpRequestFactory factory =
 					new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory());
 			RestTemplate restTemplate = new RestTemplate(factory);
 			restTemplate.setInterceptors(List.of(new RestTemplateLogging()));
-			
-			// 로깅 안 할 때 기본 RestTempleate
-//			RestTemplate restTemplate = new RestTemplate();
-			
+			// 로깅 인터셉터-----
 
+			
 			// 요청
 		    ResponseEntity<String> response = restTemplate.postForEntity(
-		        "http://56.228.25.27/api/v1/analyze/",
+		        url,
 		        requestEntity,
 		        String.class
 		    );
@@ -132,7 +134,6 @@ public class ApiRecordService {
 			recordMapper.updateRecordStatus(RecordVO.GroupStatus.builder()
 					.groupNo(groupNo)
 					.status(RecordStatusEnum.FAILED.name()).build());
-			return;
 		}
 	}
 

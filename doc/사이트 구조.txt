@@ -46,6 +46,7 @@
   원본 확인(get, /api/student/{encryptedStudentNo}/record/original)
 모의고사 점수
   성적표 원본 업로드(post, /api/student/{encryptedStudentNo}/mock/upload)
+  분석된 생기부 있나요(get, /api/student/mock/status)
   원본 삭제(delete, /api/student/mock/delete)
   점수 수정(put, /api/student/mock/update)
   원본 확인(get, /api/student/mock/original)

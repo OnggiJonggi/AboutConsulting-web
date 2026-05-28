@@ -1,4 +1,4 @@
-package com.ax.global.regex;
+package com.ax.school;
 
 public class SchoolRegexp {
 	private SchoolRegexp() {}

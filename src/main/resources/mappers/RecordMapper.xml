@@ -16,7 +16,7 @@
 
   <insert id="insertAnalysisGroup" parameterType="RecordGroupStatus">
     <selectKey keyProperty="groupNo" resultType="int" order="BEFORE">
-			SELECT SEQ_MEMBER.nextval FROM DUAL
+			SELECT SEQ_RECORD_ANALYSIS_GROUP.nextval FROM DUAL
 		</selectKey>
     insert into RECORD_ANALYSIS_GROUP(
       GROUP_NO, STUDENT_NO, STATUS

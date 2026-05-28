@@ -45,6 +45,8 @@
         <!-- Mock -->
         <typeAlias type="com.ax.student.mock.MockVO$Detail" alias="MockDetail"/>
         <typeAlias type="com.ax.student.mock.MockVO$SubjectScore" alias="MockSubjectScore"/>
+        <typeAlias type="com.ax.student.mock.MockVO$GroupStatus" alias="MockGroupStatus"/>
+        <typeAlias type="com.ax.student.mock.MockVO$Insert" alias="MockInsert"/>
 
         <!-- School -->
         <typeAlias type="com.ax.school.SchoolVO$Registor" alias="SchoolRegister"/>

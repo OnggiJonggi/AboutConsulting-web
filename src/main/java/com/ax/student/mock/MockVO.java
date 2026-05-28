@@ -4,12 +4,25 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 public class MockVO {
+	
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Getter
+	@Builder
+	@ToString
+	public static class GroupStatus{
+		private int groupNo;
+		private int studentNo;
+		private String yearMonth; // YYYY-MM
+		private String status;
+	}
 	
 	@NoArgsConstructor
 	@AllArgsConstructor
@@ -34,5 +47,14 @@ public class MockVO {
 		private Integer standardScore;
 		private Integer percentile;
 		private int grade;
+	}
+	
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Data
+	@Builder
+	public static class Insert{
+		private int groupNo;
+		private List<ApiMockVO.ApiResultsBlock> result;
 	}
 }

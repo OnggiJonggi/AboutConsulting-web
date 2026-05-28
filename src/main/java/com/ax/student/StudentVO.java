@@ -3,7 +3,6 @@ package com.ax.student;
 import java.util.List;
 
 import com.ax.global.common.SearchPageVO;
-import com.ax.global.regex.StudentRegexp;
 import com.ax.global.security.CryptedNumberVO;
 
 import jakarta.validation.constraints.Max;

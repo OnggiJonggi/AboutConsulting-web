@@ -1,7 +1,5 @@
 package com.ax.school;
 
-import com.ax.global.regex.SchoolRegexp;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
