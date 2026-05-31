@@ -69,7 +69,10 @@ public class StudentService{
 				,studentSearch.getPage()
 				);
 		
-		cryptoComponent.encryptList(searchResult.getList());
+		for(StudentVO.SearchResult result : searchResult.getList()) {
+			result.setEncryptedStudentNo(cryptoComponent.encrypt(String.valueOf(result.getStudentNo())));
+			result.setStudentNo(0);
+		}
 		
 		return searchResult;
 	}

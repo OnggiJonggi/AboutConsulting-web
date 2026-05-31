@@ -5,10 +5,8 @@
 
 <mapper namespace="com.ax.member.MemberMapper">
 
-	<resultMap id="CryptedNumberMap" type="CryptedNumberVO">
-		<result property="number" column="MEMBER_NO"/>
-	</resultMap>
-	<resultMap id="MemberDetailMap" type="MemberDetail" extends="CryptedNumberMap">
+	<resultMap id="MemberDetailMap" type="MemberDetail">
+	    <result property="memberNo" column="MEMBER_NO"/>
 	    <result property="userId" column="ID"/>
 	    <result property="userPwd" column="PWD"/>
 	    <result property="name" column="NAME"/>

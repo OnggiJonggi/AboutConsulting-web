@@ -1,0 +1,336 @@
+/* ────────────────────────────────────────
+   mock.css  –  모의고사 분석 조각 전용 스타일
+   (main.css의 :root 변수를 공유)
+──────────────────────────────────────── */
+
+/* ── 업로드 카드 ── */
+.mock-upload-section {
+  margin-bottom: 2rem;
+}
+
+.mock-upload-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.mock-upload-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+.mock-upload-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.mock-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.mock-file-name {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mock-upload-btn--hidden {
+  display: none;
+}
+
+.mock-upload-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8125rem;
+  color: var(--text-faint);
+}
+
+.icon-xs {
+  width: 0.8125rem;
+  height: 0.8125rem;
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+
+/* 업로드 메시지 */
+.mock-upload-msg {
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.55rem 0.9rem;
+  border-radius: var(--radius-md);
+}
+
+.mock-upload-msg--error {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+.mock-upload-msg--info {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+/* 분석 중 스피너 */
+.mock-analyzing {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.5rem;
+}
+
+.mock-analyzing__spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2.5px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: mock-spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes mock-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.mock-analyzing__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.mock-analyzing__sub {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+/* ── 모의고사 카드 ── */
+.mock-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.mock-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition), border-color var(--transition);
+}
+
+.mock-card:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md);
+}
+
+.mock-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.mock-card__date {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.mock-card__date .icon-sm {
+  color: var(--primary);
+}
+
+.mock-card__completed {
+  font-size: 0.8125rem;
+  color: var(--text-faint);
+}
+
+/* ── 점수 표 ── */
+.mock-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  margin-bottom: 1rem;
+}
+
+.mock-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.mock-table thead tr {
+  background: var(--primary-light);
+}
+
+.mock-table thead th {
+  padding: 0.55rem 0.9rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  text-align: center;
+  border-bottom: 2px solid var(--border);
+}
+
+.mock-table thead th:first-child {
+  text-align: left;
+  border-radius: var(--radius-md) 0 0 0;
+}
+
+.mock-table thead th:last-child {
+  border-radius: 0 var(--radius-md) 0 0;
+}
+
+.mock-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+}
+
+.mock-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.mock-table tbody tr:hover {
+  background: #F0F7FF;
+}
+
+.mock-table tbody td {
+  padding: 0.6rem 0.9rem;
+  color: var(--text);
+  text-align: center;
+}
+
+.mock-table tbody td:first-child {
+  text-align: left;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* 등급 뱃지 */
+.mock-grade-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  background: var(--bg);
+  color: var(--text-muted);
+}
+
+.mock-grade--1 {
+  background: #1976D2;
+  color: #fff;
+}
+
+.mock-grade--2 {
+  background: #42A5F5;
+  color: #fff;
+}
+
+.mock-grade--3 {
+  background: #90CAF9;
+  color: #1A2233;
+}
+
+/* ── 카드 하단 액션 버튼 ── */
+.mock-card__actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.4rem;
+  padding-top: 0.5rem;
+}
+
+.mock-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.mock-action-btn--view {
+  color: var(--primary);
+}
+
+.mock-action-btn--view:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+}
+
+.mock-action-btn--edit {
+  color: var(--text-muted);
+}
+
+.mock-action-btn--edit:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.mock-action-btn--delete {
+  color: var(--danger);
+}
+
+.mock-action-btn--delete:hover {
+  background: var(--danger-light);
+  border-color: var(--danger);
+}
+
+/* ── 반응형 ── */
+@media (max-width: 600px) {
+  .mock-upload-card {
+    padding: 1rem;
+  }
+
+  .mock-card {
+    padding: 1rem;
+  }
+
+  .mock-table {
+    font-size: 0.8125rem;
+  }
+
+  .mock-table thead th,
+  .mock-table tbody td {
+    padding: 0.45rem 0.6rem;
+  }
+}

@@ -11,7 +11,4 @@
 		left join MEMBER M on (MR.MEMBER_NO = M.MEMBER_NO)
 		where M.MEMBER_NO = #{number}
 	</select>
-	
-	<select id="selectUrlAccessCheck" parameterType="RoleUrlAccessCheck" resultType="_int" >
-	</select>
 </mapper>

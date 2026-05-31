@@ -1,6 +1,7 @@
 package com.ax.consultant;
 
 import com.ax.global.common.SearchPageVO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,8 @@ public class ConsultantVO {
 	@AllArgsConstructor
 	@Getter
 	public static class Detail{
+		
+		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private int consultantNo;
 		
 		// studentNo 암호화 후 뷰 페이지에 대신 내보냄

@@ -3,7 +3,7 @@ package com.ax.student;
 import java.util.List;
 
 import com.ax.global.common.SearchPageVO;
-import com.ax.global.security.CryptedNumberVO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -24,6 +24,8 @@ public class StudentVO {
 	@Data
 	@ToString(callSuper = true)
 	public static class Register{
+		
+		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private int studentNo;
 		
 		@NotBlank(message="이름이 뭐에요")
@@ -80,8 +82,13 @@ public class StudentVO {
 	
 	@NoArgsConstructor
 	@AllArgsConstructor
-	@Getter
-	public static class SearchResult extends CryptedNumberVO{
+	@Data
+	public static class SearchResult {
+		
+		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+		private int studentNo;
+		
+		private String encryptedStudentNo;
 		private Detail detail;
 	}
 }

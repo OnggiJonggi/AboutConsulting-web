@@ -61,7 +61,7 @@
 
 	<select id="selectMockScoreList" parameterType="_int" resultMap="MockDetailMap">
 		select
-			MG.MOCK_NO
+			MG.GROUP_NO
 			,MG.YEAR_MONTH
 			,MG.STARTED_AT
 			,MG.COMPLETED_AT
@@ -75,5 +75,6 @@
 		from MOCK_GROUP MG
 		left join MOCK_SUBJECT_SCORE MSS on (MSS.GROUP_NO = MG.GROUP_NO)
 		where MG.STUDENT_NO = #{studentNo}
+		order by MG.YEAR_MONTH desc
 	</select>
 </mapper>

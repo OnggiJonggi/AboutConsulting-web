@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.ax.student.record.ApiRecordVO.ApiResultsBlock;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,8 +21,13 @@ public class RecordVO {
 	@Builder
 	@ToString
 	public static class GroupStatus{
+		
+		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private int groupNo;
+		
+		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private int studentNo;
+		
 		private String status;
 	}
 	
@@ -51,7 +57,10 @@ public class RecordVO {
 	@Data
 	@Builder
 	public static class Insert{
+		
+		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private int groupNo;
+		
 		private ApiResultsBlock result;
 	}
 }

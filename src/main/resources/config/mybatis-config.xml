@@ -20,9 +20,6 @@
         <typeAlias type="com.ax.member.MemberVO$SearchRequest" alias="MemberSearchRequest"/>
         <typeAlias type="com.ax.member.MemberVO$SearchResponse" alias="MemberSearchResponse"/>
         
-        <!-- Role -->
-        <typeAlias type="com.ax.global.security.RoleVO$UrlAccessCheck" alias="RoleUrlAccessCheck"/>
-        
         <!-- Student -->
         <typeAlias type="com.ax.student.StudentVO$Register" alias="StudentRegister"/>
         <typeAlias type="com.ax.student.StudentVO$Detail" alias="StudentDetail"/>

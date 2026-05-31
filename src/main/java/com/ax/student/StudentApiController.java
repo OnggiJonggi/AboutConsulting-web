@@ -42,6 +42,7 @@ public class StudentApiController {
 			@PathVariable("encryptedStudentNo") String encryptedStudentNo
 			,MultipartFile file, Model model) throws Exception{
 		
+		// 업로드한 파일이 pdf가 맞는지 확장자, MIME검사
 		if(!file.getOriginalFilename().endsWith(".pdf")
 				|| !file.getContentType().equals("application/pdf"))
 			return ResponseEntity.badRequest().build();
@@ -89,6 +90,11 @@ public class StudentApiController {
 	public ResponseEntity<String> mockUpload(
 			@PathVariable("encryptedStudentNo") String encryptedStudentNo
 			,MultipartFile file, Model model) throws Exception{
+		
+		// 업로드한 파일이 pdf가 맞는지 확장자, MIME검사
+		if(!file.getOriginalFilename().endsWith(".pdf")
+				|| !file.getContentType().equals("application/pdf"))
+			return ResponseEntity.badRequest().build();
 		
 		int studentNo = Integer.valueOf(encryptedStudentNo);
 		

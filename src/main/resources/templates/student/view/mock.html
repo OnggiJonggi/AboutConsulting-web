@@ -1,3 +1,134 @@
 <th:block th:fragment="content">
 
+  <!-- ── 업로드 섹션 ── -->
+  <div class="mock-upload-section" id="mock-upload-section">
+    <div class="mock-upload-card">
+      <div class="mock-upload-card__header">
+        <i data-lucide="file-text" class="icon-sm"></i>
+        <span class="mock-upload-card__title">성적표 파일 업로드</span>
+      </div>
+      <div class="mock-upload-card__body">
+        <div class="mock-upload-row">
+          <button class="btn-primary" type="button" id="mock-file-select-btn">
+            <i data-lucide="upload" class="icon-sm"></i>
+            성적표 파일 선택
+          </button>
+          <!-- 실제 파일 input (숨김) -->
+          <input type="file" id="mock-file-input" accept="application/pdf" style="display:none;">
+          <!-- 선택된 파일명 표시 -->
+          <span class="mock-file-name" id="mock-file-name"></span>
+          <!-- 업로드 버튼 (초기 숨김) -->
+          <button class="btn-primary mock-upload-btn--hidden" type="button" id="mock-upload-btn">
+            <i data-lucide="send" class="icon-sm"></i>
+            업로드
+          </button>
+        </div>
+        <p class="mock-upload-hint">
+          <i data-lucide="info" class="icon-xs"></i>
+          5MB 이하 PDF 파일을 업로드 해 주세요
+        </p>
+        <!-- 오류/안내 메시지 영역 -->
+        <div class="mock-upload-msg" id="mock-upload-msg" style="display:none;"></div>
+        <!-- 분석 중 안내 -->
+        <div class="mock-analyzing" id="mock-analyzing" style="display:none;">
+          <div class="mock-analyzing__spinner"></div>
+          <div class="mock-analyzing__text">
+            <span>분석 중입니다...</span>
+            <span class="mock-analyzing__sub">완료되기까지 몇 분 걸릴 수 있어요</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 모의고사 목록 ── -->
+  <div class="mock-list" id="mock-list">
+
+    <!-- 목록이 비어 있을 때 -->
+    <div th:if="${mockList == null or mockList.isEmpty()}" class="empty-state">
+      <i data-lucide="file-search" style="width:2rem;height:2rem;color:var(--text-faint);margin-bottom:0.5rem;"></i>
+      <p>등록된 모의고사 성적이 없습니다.</p>
+    </div>
+
+    <!-- 모의고사 개별 카드 -->
+    <div th:each="mock : ${mockList}" class="mock-card" th:id="'mock-card-' + ${mock.encryptedMockNo}">
+
+      <!-- 카드 헤더 : 날짜 + 등록일 -->
+      <div class="mock-card__header">
+        <div class="mock-card__date">
+          <i data-lucide="calendar" class="icon-sm"></i>
+          <!-- YYYY-MM → YYYY년 MM월 -->
+          <span
+            th:text="${#strings.substring(mock.yearMonth,0,4)} + '년 ' + ${#strings.substring(mock.yearMonth,5,7)} + '월'">
+            2024년 06월
+          </span>
+        </div>
+        <span class="mock-card__completed" th:text="'등록일 ' + ${#temporals.format(mock.completedAt,'yyyy.MM.dd')}">
+          등록일 2024.06.15
+        </span>
+      </div>
+
+      <!-- 점수 표 -->
+      <div class="mock-table-wrap">
+        <table class="mock-table">
+          <thead>
+            <tr>
+              <th>과목</th>
+              <th>선택 과목</th>
+              <th>일반 점수</th>
+              <th>표준 점수</th>
+              <th>백분위</th>
+              <th>등급</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="s : ${mock.subject}">
+              <td th:text="${s.subject} ?: '-'">국어</td>
+              <td th:text="${s.chosenSubject} ?: '-'">언어와 매체</td>
+              <td th:text="${s.normalScore} ?: '-'">92</td>
+              <td th:text="${s.standardScore} ?: '-'">130</td>
+              <td th:text="${s.percentile} ?: '-'">96</td>
+              <!-- grade는 int형이라 0이면 '-' -->
+              <td>
+                <span class="mock-grade-badge" th:classappend="${s.grade == 1} ? ' mock-grade--1' :
+                                      (${s.grade == 2} ? ' mock-grade--2' :
+                                      (${s.grade == 3} ? ' mock-grade--3' : ''))"
+                  th:text="${s.grade != 0} ? ${s.grade} : '-'">
+                  1
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 카드 하단 버튼 (오른쪽 정렬) -->
+      <div class="mock-card__actions">
+        <!-- 원본 확인 -->
+        <button class="mock-action-btn mock-action-btn--view" type="button" title="원본 확인"
+          th:data-encrypted-mock-no="${mock.encryptedMockNo}" onclick="mockViewOriginal(this)">
+          <i data-lucide="file-search" class="icon-sm"></i>
+        </button>
+        <!-- 점수 수정 (ADMIN or CONSULTANT) -->
+        <div sec:authorize="hasRole('ADMIN') or hasRole('CONSULTANT')">
+          <button class="mock-action-btn mock-action-btn--edit" type="button" title="점수 수정"
+            th:data-encrypted-mock-no="${mock.encryptedMockNo}" onclick="mockUpdate(this)">
+            <i data-lucide="pencil-line" class="icon-sm"></i>
+          </button>
+        </div>
+        <!-- 원본 삭제 (ADMIN) -->
+        <div sec:authorize="hasRole('ADMIN')">
+          <button class="mock-action-btn mock-action-btn--delete" type="button" title="원본 삭제"
+            th:data-encrypted-mock-no="${mock.encryptedMockNo}" onclick="mockDelete(this)">
+            <i data-lucide="trash-2" class="icon-sm"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+    <!-- /th:each -->
+
+  </div>
+  <!-- /mock-list -->
+
 </th:block>

@@ -30,7 +30,7 @@ public class MockVO {
 	public static class Detail{
 		private int mockNo;
 		private String encryptedMockNo;
-		private String yearMonth;
+		private String yearMonth; // YYYY-MM
 		private LocalDateTime startedAt;
 		private LocalDateTime completedAt;
 		private List<SubjectScore> subject;
