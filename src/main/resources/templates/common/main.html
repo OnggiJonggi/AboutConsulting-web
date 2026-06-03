@@ -65,15 +65,15 @@
 
         <!-- ADMIN: 4개 메뉴 -->
         <div sec:authorize="hasRole('ADMIN')" class="card-grid card-grid--4">
-            <a th:href="@{/admin/consultant/list}" class="menu-card">
+            <a th:href="@{/member}" class="menu-card">
+                <i data-lucide="book-user" class="menu-card__icon"></i>
+                <span class="menu-card__label">회원 목록</span>
+            </a>
+            <a th:href="@{/consultant}" class="menu-card">
                 <i data-lucide="users" class="menu-card__icon"></i>
                 <span class="menu-card__label">컨설턴트 목록</span>
             </a>
-            <a th:href="@{/admin/consultant/register}" class="menu-card">
-                <i data-lucide="user-round-plus" class="menu-card__icon"></i>
-                <span class="menu-card__label">컨설턴트 등록</span>
-            </a>
-            <a th:href="@{/student/list}" class="menu-card">
+            <a th:href="@{/student}" class="menu-card">
                 <i data-lucide="graduation-cap" class="menu-card__icon"></i>
                 <span class="menu-card__label">학생 목록</span>
             </a>

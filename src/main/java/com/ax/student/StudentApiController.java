@@ -1,6 +1,7 @@
 package com.ax.student;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,7 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ax.global.common.SearchResultVO;
+import com.ax.global.file.FileComponent;
+import com.ax.global.file.TargetEnum;
 import com.ax.global.security.CryptoComponent;
+import com.ax.global.security.CustomUserDetails;
 import com.ax.student.mock.ApiMockService;
 import com.ax.student.mock.MockService;
 import com.ax.student.mock.MockStatusEnum;
@@ -32,6 +36,26 @@ public class StudentApiController {
 	private final MockService mockService;
 	private final ApiMockService apiMockService;
 	private final CryptoComponent cryptoComponent;
+	private final FileComponent fileComponent;
+	
+	/**
+	 * 학생 목록 검색
+	 * 관리자
+	 */
+	@GetMapping("")
+	public ResponseEntity<SearchResultVO<StudentVO.Detail>> getList(Model model,
+			StudentVO.Search search) throws Exception {
+		
+		StudentVO.Search studentSearch = new StudentVO.Search();
+		
+		model.addAttribute("studentSearch", studentSearch);
+		
+		// 검색해요
+		SearchResultVO<StudentVO.Detail> result = studentService.getList(search);
+		model.addAttribute("studentList", result);
+		
+		return ResponseEntity.ok(result);
+	}
 
 	/**
 	 * 생기부 업로드
@@ -39,7 +63,8 @@ public class StudentApiController {
 	 */
 	@PostMapping("/{encryptedStudentNo}/record/upload")
 	public ResponseEntity<String> recordUpload(
-			@PathVariable("encryptedStudentNo") String encryptedStudentNo
+			@AuthenticationPrincipal CustomUserDetails userDetails,
+			@PathVariable String encryptedStudentNo
 			,MultipartFile file, Model model) throws Exception{
 		
 		// 업로드한 파일이 pdf가 맞는지 확장자, MIME검사
@@ -48,12 +73,16 @@ public class StudentApiController {
 			return ResponseEntity.badRequest().build();
 		
 		int studentNo = Integer.valueOf(cryptoComponent.decrypt(encryptedStudentNo));
-		
+		int memberNo = Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo()));
+
 		// 생기부 분석결과 묶음 + 비동기 요청 작업 상태값 생성
 		int groupNo = recordService.createAnalysisGroup(studentNo);
 		
+		// 파일 저장
+		fileComponent.saveFile(file, groupNo, TargetEnum.RECORD_FILE, memberNo);
+		
 		// 비동기 작업
-		apiRecordService.analysisRecord(studentNo, groupNo, file.getBytes());
+		apiRecordService.analysisRecord(file.getBytes(), groupNo, studentNo);
 		
 		return ResponseEntity.ok(cryptoComponent.encrypt(String.valueOf(groupNo)));
 	}
@@ -88,8 +117,9 @@ public class StudentApiController {
 	 */
 	@PostMapping("/{encryptedStudentNo}/mock/upload")
 	public ResponseEntity<String> mockUpload(
-			@PathVariable("encryptedStudentNo") String encryptedStudentNo
-			,MultipartFile file, Model model) throws Exception{
+			@AuthenticationPrincipal CustomUserDetails userDetails,
+			@PathVariable String encryptedStudentNo,
+			MultipartFile file, Model model) throws Exception{
 		
 		// 업로드한 파일이 pdf가 맞는지 확장자, MIME검사
 		if(!file.getOriginalFilename().endsWith(".pdf")
@@ -97,9 +127,13 @@ public class StudentApiController {
 			return ResponseEntity.badRequest().build();
 		
 		int studentNo = Integer.valueOf(encryptedStudentNo);
-		
+		int memberNo = Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo()));
+
 		// 모의고사 묶음 + 비동기 요청 작업 상태값 생성
 		int groupNo = mockService.createMockGroup(studentNo);
+		
+		// 파일 저장
+		fileComponent.saveFile(file, groupNo, TargetEnum.MOCK_FILE, memberNo);
 		
 		// 비동기 작업
 		apiMockService.analysisMock(studentNo, groupNo, file.getBytes());
@@ -137,7 +171,7 @@ public class StudentApiController {
 	 * @throws Exception 
 	 */
 	@PostMapping("/list")
-	public ResponseEntity<SearchResultVO<StudentVO.SearchResult>> list(StudentVO.Search studentSearch) throws Exception{
+	public ResponseEntity<SearchResultVO<StudentVO.Detail>> list(StudentVO.Search studentSearch) throws Exception{
 		return ResponseEntity.ok(studentService.getList(studentSearch));
 	}
 

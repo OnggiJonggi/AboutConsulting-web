@@ -14,15 +14,14 @@
     <result property="analysis" column="analysis"/>
   </resultMap>
 
-  <insert id="insertAnalysisGroup" parameterType="RecordGroupStatus">
-    <selectKey keyProperty="groupNo" resultType="int" order="BEFORE">
-			SELECT SEQ_RECORD_ANALYSIS_GROUP.nextval FROM DUAL
-		</selectKey>
+  <insert id="insertAnalysisGroup" parameterType="RecordGroupStatus"
+    useGeneratedKeys="true"
+    keyProperty="studentNo"
+    keyColumn="STUDENT_NO">
     insert into RECORD_ANALYSIS_GROUP(
-      GROUP_NO, STUDENT_NO, STATUS
+      STUDENT_NO, STATUS
     ) VALUES(
-      #{groupNo}
-      ,#{studentNo}
+      #{studentNo}
       ,#{status}
     )
 	</insert>

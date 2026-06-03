@@ -1,6 +1,5 @@
 package com.ax.global.file;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.core.io.Resource;
@@ -25,17 +24,11 @@ public class FileInfoVO {
 		private int fileNo;
 		
 		private String originalName;
-		
 		private String changedName;
 		private String mime;
 		private long fileSize;
 		private String savePath;
 		private LocalDateTime savedAt; // java서버 기준
-		private LocalDate expireOn;
-		
-		private String companyUuid;
-		
-		private String docType;
 	}
 	
 	
@@ -52,9 +45,18 @@ public class FileInfoVO {
 		private String originalName;
 		private long fileSize;
 		private LocalDateTime savedAt;
-		private LocalDate expireOn;
 		
-		private String docType;
+	}
+	
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Builder
+	@Getter
+	public static class InsertMapping{
+		private TargetEnum target;
+		
+		private int groupNo;
+		private int fileNo;
 	}
 	
 	@NoArgsConstructor
@@ -85,13 +87,10 @@ public class FileInfoVO {
 	@Getter
 	@Builder
 	public static class UpdateStatus {
+		private int GroupNo;
+		private String encryptedGroupNo;
 		
-		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-		private int companyNo; // selectKey로 조회
-		
-		private String companyUuid;
-		
-		private int docNo;
+		private int fileNo;
 		private String status;
 	}
 	
@@ -101,14 +100,11 @@ public class FileInfoVO {
 	@Data
 	@Builder
 	public static class InsertHistory {
-		
-		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private int fileNo;
-		
 		private String originalName;
 		private String savePath;
-		private String action;
-		
+		private FileStatusEnum action;
+		private LocalDateTime actionAt;
 		private int actionBy;
 	}
 	

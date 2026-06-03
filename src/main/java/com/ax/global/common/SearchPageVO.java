@@ -1,12 +1,18 @@
 package com.ax.global.common;
 
+import lombok.ToString;
+
 /**
  * 페이징이 필요한 검색 요청시 사용하는 VO
  * 이거 상속받아서 써라.
  */
+@ToString
 public class SearchPageVO {
     private int page = 1;
-
+    // int startRow;
+    // int endRow;
+    
+    
     public int getPage() {
     	return page;
 	}

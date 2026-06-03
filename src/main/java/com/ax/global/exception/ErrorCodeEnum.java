@@ -27,8 +27,7 @@ public enum ErrorCodeEnum {
 	
 	FILE_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "FILE-101", "파일 메타데이터가 없어요"),
 	FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "FILE-102", "그런 파일 없어요"),
-	DOC_NAME_FORBIDDEN(HttpStatus.BAD_REQUEST, "FILE-103", "서류 이름이 이상해요"),
-	DOC_TYPE_FORBIDDEN(HttpStatus.BAD_REQUEST, "FILE-104", "서류 타입이 이상해요");
+	DOC_NAME_FORBIDDEN(HttpStatus.BAD_REQUEST, "FILE-103", "서류 이름이 이상해요");
 
 	private final HttpStatus httpStatus;
 	private final String code;

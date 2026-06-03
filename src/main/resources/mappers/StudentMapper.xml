@@ -9,7 +9,7 @@
 		id는 '이 컬럼 값이 같으면 같은 객체'를 나타냄
 		pk에만 사용하자
 		 -->
-		<id column="STUDENT_NO"/>
+		<id property="studentNo" column="STUDENT_NO"/>
 		<result property="name"       column="NAME"/>
 		<result property="grade"      column="GRADE"/>
 		<result property="semester"   column="SEMESTER"/>
@@ -23,14 +23,15 @@
 		<result property="univ"    column="UNIV"/>
 	</resultMap>
 	
-	<insert id="insertStudent" parameterType="StudentRegister">
-		<selectKey keyProperty="studentNo" resultType="int" order="BEFORE">
-			SELECT SEQ_STUDENT.nextval FROM DUAL
-		</selectKey>
+
+	<insert id="insertStudent" parameterType="StudentRegister"
+		useGeneratedKeys="true"
+    keyProperty="studentNo"
+    keyColumn="STUDENT_NO">
 		insert into STUDENT(
-			STUDENT_NO, SCHOOL_CODE, NAME, GRADE, SEMESTER, TRACK
+			SCHOOL_CODE, NAME, GRADE, SEMESTER, TRACK
 		) VALUES (
-			#{studentNo}, #{schoolCode}, #{name}, #{grade}, #{semester}, #{track}
+			#{schoolCode}, #{name}, #{grade}, #{semester}, #{track}
 		)
 	</insert>
 
@@ -52,6 +53,7 @@
 		order by T.RANKING ASC
 	</select>
 
+
 	<select id="selectStudentForRecordApi" parameterType="_int" resultMap="StudentDetailMap">
 		select
 			S.STUDENT_NO -- 객체에 안 담는 식별용
@@ -68,6 +70,102 @@
 		left join SCHOOL SCH on (SCH.SCHOOL_CODE = S.SCHOOL_CODE)
 		where S.STUDENT_NO = #{studentNo}
 		order by T.RANKING ASC
+	</select>
+
+
+	<select id="selectStudentList" parameterType="StudentSearch" resultMap="StudentDetailMap">
+		select
+			C.STUDENT_NO
+			,C.NAME
+			,C.GRADE
+			,C.SEMESTER
+			,C.TRACK
+			,C.SCHOOL_NAME
+			,T.MAJOR
+			,T.UNIV
+			,T.RANKING
+		from(
+			select B.*
+			from(
+				select ROWNUM AS RN, A.*
+				from(
+					select
+						S.STUDENT_NO
+						,S.NAME
+						,S.GRADE
+						,S.SEMESTER
+						,S.TRACK
+						,SCH.NAME AS SCHOOL_NAME
+					from STUDENT S
+					left join SCHOOL SCH on (S.SCHOOL_CODE = SCH.SCHOOL_CODE)
+					<where>
+						<if test="name!=null and name!=''">
+							AND S.NAME = #{name}
+						</if>
+						<if test="grade!=0">
+							AND S.GRADE = #{grade}
+						</if>
+						<if test="semester!=0">
+							AND S.SEMESTER = #{semester}
+						</if>
+						<if test="track!=null and track!=''">
+							AND S.TRACK = #{track}
+						</if>
+						<if test="schoolName!=null and schoolName!=''">
+							AND SCH.NAME = #{schoolName}
+						</if>
+					</where>
+					order by S.STUDENT_NO DESC
+				) A
+				where ROWNUM &lt;= #{endRow}
+			) B
+			where B.RN &gt;= #{startRow}
+		) C
+		left join TARGET_INFO T on(T.STUDENT_NO = C.STUDENT_NO)
+		<if test="target!=null">
+			<where>
+				<if test="target.univ!=null and target.univ!=''">
+					AND T.UNIV = #{target.univ}
+				</if>
+				<if test="target.major!=null and target.major!=''">
+					AND T.MAJOR = #{target.major}
+				</if>
+			</where>
+		</if>
+		order by C.RN ASC, T.RANKING ASC
+	</select>
+
+
+	<select id="selectStudentListTotalCount" parameterType="StudentSearch" resultType="_int">
+		select count(distinct S.STUDENT_NO)
+		from STUDENT S
+		left join SCHOOL SCH on (S.SCHOOL_CODE = SCH.SCHOOL_CODE)
+		left join TARGET_INFO T on(T.STUDENT_NO = S.STUDENT_NO)
+		<where>
+			<if test="name!=null and name!=''">
+				AND S.NAME = #{name}
+			</if>
+			<if test="grade!=0">
+				AND S.GRADE = #{grade}
+			</if>
+			<if test="semester!=0">
+				AND S.SEMESTER = #{semester}
+			</if>
+			<if test="track!=null and track!=''">
+				AND S.TRACK = #{track}
+			</if>
+			<if test="schoolName!=null and schoolName!=''">
+				AND SCH.NAME = #{schoolName}
+			</if>
+			<if test="target!=null">
+				<if test="target.univ!=null and target.univ!=''">
+					AND T.UNIV = #{target.univ}
+				</if>
+				<if test="target.major!=null and target.major!=''">
+					AND T.MAJOR = #{target.major}
+				</if>
+			</if>
+		</where>
 	</select>
 	
 </mapper>

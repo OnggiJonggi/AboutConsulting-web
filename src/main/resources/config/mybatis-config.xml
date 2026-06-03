@@ -17,14 +17,13 @@
         <typeAlias type="com.ax.member.MemberVO$Login" alias="MemberLogin"/>
         <typeAlias type="com.ax.member.MemberVO$Detail" alias="MemberDetail"/>
         <typeAlias type="com.ax.member.MemberVO$Join" alias="MemberJoin"/>
-        <typeAlias type="com.ax.member.MemberVO$SearchRequest" alias="MemberSearchRequest"/>
-        <typeAlias type="com.ax.member.MemberVO$SearchResponse" alias="MemberSearchResponse"/>
+        <typeAlias type="com.ax.member.MemberVO$Search" alias="MemberSearch"/>
+        <typeAlias type="com.ax.member.MemberVO$Update" alias="MemberUpdate"/>
         
         <!-- Student -->
         <typeAlias type="com.ax.student.StudentVO$Register" alias="StudentRegister"/>
         <typeAlias type="com.ax.student.StudentVO$Detail" alias="StudentDetail"/>
         <typeAlias type="com.ax.student.StudentVO$Search" alias="StudentSearch"/>
-        <typeAlias type="com.ax.student.StudentVO$SearchResult" alias="StudentSearchResult"/>
 
         <!-- TargetInfo -->
         <typeAlias type="com.ax.student.TargetInfoVO$Register" alias="TargetInfoRegister"/>
@@ -53,6 +52,15 @@
         <typeAlias type="com.ax.consultant.ConsultantVO$Detail" alias="ConsultantDetail"/>
         <typeAlias type="com.ax.consultant.ConsultantVO$Search" alias="ConsultantSearch"/>
         
+        <!-- FileInfo -->
+        <typeAlias type="com.ax.global.file.FileInfoVO$Registor" alias="FileInfoRegistor"/>
+        <typeAlias type="com.ax.global.file.FileInfoVO$Detail" alias="FileInfoDetail"/>
+        <typeAlias type="com.ax.global.file.FileInfoVO$InsertMapping" alias="FileInfoInsertMapping"/>
+        <typeAlias type="com.ax.global.file.FileInfoVO$GetFile" alias="FileInfoGetFile"/>
+        <typeAlias type="com.ax.global.file.FileInfoVO$FileResult" alias="FileInfoFileResult"/>
+        <typeAlias type="com.ax.global.file.FileInfoVO$UpdateStatus" alias="FileInfoUpdateStatus"/>
+        <typeAlias type="com.ax.global.file.FileInfoVO$InsertHistory" alias="FileInfoInsertHistory"/>
+
         <!-- 전역 설정 -->
         <package name="com.ax"/>
     </typeAliases>

@@ -9,7 +9,7 @@ public interface StudentMapper {
 
 	public void insertStudent(StudentVO.Register studentRegister);
 
-	public List<StudentVO.SearchResult> selectStudentList(StudentVO.Search studentSearch);
+	public List<StudentVO.Detail> selectStudentList(StudentVO.Search studentSearch);
 
 	public int selectStudentListTotalCount(StudentVO.Search studentSearch);
 

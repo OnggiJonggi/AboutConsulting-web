@@ -55,6 +55,12 @@ public class StudentVO {
 	@ToString
 	@Builder
 	public static class Detail {
+		
+		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+		private int studentNo;
+		
+		private String encryptedStudentNo;
+		
 		private String name;
 		private int grade;
 		private int semester;
@@ -62,6 +68,18 @@ public class StudentVO {
 		
 		private String schoolName;
 		private List<TargetInfoVO.Pair> target;
+		
+		
+		/**
+		 * 학생 식별번호 암호화용 setter
+		 */
+		public void setStudentNo(int studentNo) {
+			this.studentNo = studentNo;
+		}
+		public void setEncryptedStudentNo(String encryptedStudentNo) {
+			this.encryptedStudentNo = encryptedStudentNo;
+		}
+		
 	}
 	
 	@NoArgsConstructor
@@ -77,18 +95,6 @@ public class StudentVO {
 		
 		private String schoolName;
 		
-		private List<TargetInfoVO.Pair> target;
-	}
-	
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@Data
-	public static class SearchResult {
-		
-		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-		private int studentNo;
-		
-		private String encryptedStudentNo;
-		private Detail detail;
+		private TargetInfoVO.Pair target;
 	}
 }

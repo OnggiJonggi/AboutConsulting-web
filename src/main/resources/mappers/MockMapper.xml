@@ -20,15 +20,14 @@
 		<result property="grade" column="GRADE"/>
 	</resultMap>
 
-	<insert id="insertMockGroup" parameterType="MockGroupStatus">
-		<selectKey keyProperty="groupNo" resultType="int" order="BEFORE">
-			SELECT SEQ_MOCK_ANALYSIS_GROUP.nextval FROM DUAL
-		</selectKey>
+	<insert id="insertMockGroup" parameterType="MockGroupStatus"
+		useGeneratedKeys="true"
+    keyProperty="groupNo"
+    keyColumn="GROUP_NO">
 		insert into MOCK_GROUP(
-			GROUP_NO, STUDENT_NO, YEAR_MONTH, STATUS
+			STUDENT_NO, YEAR_MONTH, STATUS
 		) VALUES(
-			#{groupNo}
-			,#{studentNo}
+			#{studentNo}
 			,#{yearMonth}
 			,#{status}
 		)

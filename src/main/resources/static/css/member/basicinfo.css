@@ -1,0 +1,636 @@
+:root {
+  --primary: #1976D2;
+  --primary-hover: #1565C0;
+  --primary-light: #E3F2FD;
+  --primary-dark: #0D47A1;
+
+  --bg: #F5F7FA;
+  --surface: #FFFFFF;
+  --border: #E0E7EF;
+  --text: #1A2233;
+  --text-muted: #5A6A85;
+  --text-faint: #9AAABB;
+
+  --danger: #D32F2F;
+  --danger-light: #FFEBEE;
+  --danger-hover: #B71C1C;
+
+  --success: #2E7D32;
+  --success-light: #E8F5E9;
+  --warning: #F57F17;
+  --warning-light: #FFFDE7;
+
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  --shadow-sm: 0 1px 3px rgba(25, 118, 210, 0.08);
+  --shadow-md: 0 4px 16px rgba(25, 118, 210, 0.13);
+  --shadow-lg: 0 8px 32px rgba(25, 118, 210, 0.16);
+
+  --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--bg);
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  font-size: 1rem;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ── 래퍼 ── */
+.detail-wrapper {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ── 헤더 ── */
+.detail-header {
+  margin-bottom: 2rem;
+}
+
+.detail-header__top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.4rem;
+}
+
+.btn-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: background var(--transition), color var(--transition);
+  flex-shrink: 0;
+}
+
+.btn-back:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.member-name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.member-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  padding-left: 2.75rem;
+}
+
+/* ── 콘텐츠 ── */
+.detail-content {
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── 섹션 ── */
+.info-section {
+  margin-bottom: 1rem;
+}
+
+/* ── 정보 카드 ── */
+.info-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.info-card--role {
+  justify-content: space-between;
+}
+
+.info-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--primary);
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.info-card__title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.info-card__value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.info-card__value-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  justify-content: space-between;
+}
+
+/* ── 상태 배지 ── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 0.25em 0.75em;
+  border-radius: 999px;
+}
+
+.status--active {
+  background: var(--success-light);
+  color: var(--success);
+}
+
+.status--deleted {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+.status--suspended {
+  background: var(--warning-light);
+  color: var(--warning);
+}
+
+/* ── 인라인 수정 버튼 ── */
+.btn-inline-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--primary-light);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-inline-edit:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.icon-xs {
+  width: 0.875rem;
+  height: 0.875rem;
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+
+/* ── 인라인 편집 박스 ── */
+.inline-edit-box {
+  background: var(--surface);
+  border: 1.5px solid var(--primary-light);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-sm);
+  animation: fadeIn 0.15s ease;
+}
+
+.inline-edit-box__title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.role-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.role-option-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.4rem 0.9rem;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.role-option-label:has(input:checked) {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.role-option-label input[type="radio"] {
+  display: none;
+}
+
+.inline-edit-box__actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.inline-edit-error {
+  font-size: 0.875rem;
+  color: var(--danger);
+  margin-top: 0.5rem;
+}
+
+/* ── 액션 바 ── */
+.action-bar {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+/* ── 버튼 공통 ── */
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.2rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  border: none;
+  transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text-muted);
+  border: 1.5px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.btn-danger {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+.btn-danger:hover {
+  background: var(--danger);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.icon-sm {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+
+/* ── 모달 ── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 34, 51, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  animation: fadeIn 0.15s ease;
+}
+
+.modal-box {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  padding: 2rem 2rem 1.5rem;
+  max-width: 380px;
+  width: 90%;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.modal-box--lg {
+  max-width: 520px;
+  text-align: left;
+  align-items: stretch;
+  gap: 0;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.modal-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.modal-desc {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.modal-icon {
+  color: var(--danger);
+  margin-bottom: 0.25rem;
+}
+
+.modal-icon i {
+  width: 2.25rem;
+  height: 2.25rem;
+  stroke-width: 1.75;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
+.modal-actions .btn-secondary,
+.modal-actions .btn-danger,
+.modal-actions .btn-primary {
+  flex: 1;
+  justify-content: center;
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: background var(--transition), color var(--transition);
+}
+
+.btn-icon:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+/* ── 폼 요소 ── */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.form-label-hint {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--text-faint);
+}
+
+.label-icon {
+  width: 0.9rem;
+  height: 0.9rem;
+  stroke-width: 2;
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.9375rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.form-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.12);
+}
+
+.form-input.input--error {
+  border-color: var(--danger);
+}
+
+.form-input[readonly] {
+  background: var(--bg);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.field-error {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--danger);
+  margin-top: 0.3rem;
+}
+
+.field-hint {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--text-faint);
+  margin-top: 0.3rem;
+}
+
+.field-check-msg {
+  display: block;
+  font-size: 0.8125rem;
+  margin-top: 0.3rem;
+}
+
+.field-check-msg.is-ok {
+  color: var(--success);
+}
+
+.field-check-msg.is-fail {
+  color: var(--danger);
+}
+
+/* ── 전화번호 입력 ── */
+.phone-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.phone-part {
+  flex: 1;
+  text-align: center;
+}
+
+.phone-sep {
+  font-weight: 700;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ── 비밀번호 토글 ── */
+.input-pw-wrap,
+.input-with-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.input-pw-wrap .form-input,
+.input-with-btn .form-input {
+  flex: 1;
+}
+
+.btn-toggle-pw {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: background var(--transition), color var(--transition);
+  flex-shrink: 0;
+}
+
+.btn-toggle-pw:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.btn-check {
+  padding: 0.55rem 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--primary-light);
+  border: 1.5px solid var(--primary-light);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--transition), color var(--transition);
+}
+
+.btn-check:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-check:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── 반응형 ── */
+@media (max-width: 600px) {
+  .detail-wrapper {
+    padding: 1.25rem 1rem 3rem;
+  }
+
+  .member-name {
+    font-size: 1.375rem;
+  }
+
+  .phone-input-wrap {
+    gap: 0.25rem;
+  }
+
+  .modal-box--lg {
+    padding: 1.5rem 1rem 1rem;
+  }
+}

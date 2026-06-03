@@ -15,9 +15,11 @@ import com.ax.global.exception.ErrorCodeEnum;
 import com.ax.global.security.CryptoComponent;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StudentService{
 	private final StudentMapper studentMapper;
 	private final TargetInfoMapper targetInfoMapper;
@@ -61,17 +63,22 @@ public class StudentService{
 	/**
 	 * 학생 목록 조회
 	 */
-	public SearchResultVO<StudentVO.SearchResult> getList(StudentVO.Search studentSearch) throws Exception {
+	public SearchResultVO<StudentVO.Detail> getList(StudentVO.Search studentSearch) throws Exception {
 		
-		SearchResultVO<StudentVO.SearchResult> searchResult = new SearchResultVO<StudentVO.SearchResult>(
-				studentMapper.selectStudentList(studentSearch)
-				,studentMapper.selectStudentListTotalCount(studentSearch)
-				,studentSearch.getPage()
-				);
+		// 검색
+		List<StudentVO.Detail> result = studentMapper.selectStudentList(studentSearch);
 		
-		for(StudentVO.SearchResult result : searchResult.getList()) {
-			result.setEncryptedStudentNo(cryptoComponent.encrypt(String.valueOf(result.getStudentNo())));
-			result.setStudentNo(0);
+		// 검색 결과 수
+		int totalCount = studentMapper.selectStudentListTotalCount(studentSearch);
+		
+		// SearchResultVO로 감싸기
+		SearchResultVO<StudentVO.Detail> searchResult = new SearchResultVO<StudentVO.Detail>(
+				result, totalCount, studentSearch.getPage());
+		
+		// 학생 식별번호 암호화
+		for(StudentVO.Detail student : searchResult.getList()) {
+			student.setEncryptedStudentNo(cryptoComponent.encrypt(String.valueOf(student.getStudentNo())));
+			student.setStudentNo(0);
 		}
 		
 		return searchResult;
@@ -81,8 +88,7 @@ public class StudentService{
 	/**
 	 * 학생 기본 정보 조회
 	 */
-	public StudentVO.Detail getStudentBasicInfo(String encryptedStudentNo) throws Exception {
-		int studentNo = Integer.valueOf(cryptoComponent.decrypt(encryptedStudentNo));
+	public StudentVO.Detail getStudentBasicInfo(int studentNo) throws Exception {
 		return studentMapper.selectStudent(studentNo);
 	}
 

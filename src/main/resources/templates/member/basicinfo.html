@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원 기본정보</title>
+  <th:block th:replace="~{/common/fragment :: common}"></th:block>
+  <link rel="stylesheet" th:href="@{/css/member/basicinfo.css}">
+</head>
+
+<body>
+
+  <div class="detail-wrapper">
+
+    <!-- ── 헤더 영역 ── -->
+    <div class="detail-header">
+      <div class="detail-header__top">
+        <a th:href="|javascript:history.back()|" class="btn-back">
+          <i data-lucide="chevron-left" class="icon-sm"></i>
+        </a>
+        <h1 class="member-name" th:text="${memberDetail.nickname}">홍길동</h1>
+      </div>
+    </div>
+
+    <!-- ── 콘텐츠 영역 ── -->
+    <div class="detail-content">
+
+      <!-- 아이디 -->
+      <div class="info-section">
+        <div class="info-card">
+          <div class="info-card__header">
+            <i data-lucide="at-sign" class="icon-sm"></i>
+            <span class="info-card__title">아이디</span>
+          </div>
+          <p class="info-card__value" th:text="${memberDetail.userId}">userId</p>
+        </div>
+      </div>
+
+      <!-- 이름 -->
+      <div class="info-section">
+        <div class="info-card">
+          <div class="info-card__header">
+            <i data-lucide="user" class="icon-sm"></i>
+            <span class="info-card__title">이름</span>
+          </div>
+          <p class="info-card__value" th:text="${memberDetail.name}">이름</p>
+        </div>
+      </div>
+
+      <!-- 별명 -->
+      <div class="info-section">
+        <div class="info-card">
+          <div class="info-card__header">
+            <i data-lucide="badge-check" class="icon-sm"></i>
+            <span class="info-card__title">별명</span>
+          </div>
+          <p class="info-card__value" th:text="${memberDetail.nickname}">별명</p>
+        </div>
+      </div>
+
+      <!-- 전화번호 -->
+      <div class="info-section">
+        <div class="info-card">
+          <div class="info-card__header">
+            <i data-lucide="phone" class="icon-sm"></i>
+            <span class="info-card__title">전화번호</span>
+          </div>
+          <p class="info-card__value" th:text="${memberDetail.phone}">010-0000-0000</p>
+        </div>
+      </div>
+
+      <!-- 권한 -->
+      <div class="info-section">
+        <div class="info-card info-card--role">
+          <div class="info-card__header">
+            <i data-lucide="shield" class="icon-sm"></i>
+            <span class="info-card__title">권한</span>
+          </div>
+          <div class="info-card__value-wrap">
+            <p class="info-card__value" id="roleDisplayText">
+              <th:block th:each="r, stat : ${memberDetail.role}">
+                <th:block th:switch="${r}">
+                  <span th:case="'ROLE_SUPER_ADMIN'">최고 관리자</span>
+                  <span th:case="'ROLE_ADMIN'">관리자</span>
+                  <span th:case="'ROLE_CONSULTANT'">컨설턴트</span>
+                  <span th:case="'ROLE_STUDENT'">학생</span>
+                  <span th:case="*">일반</span>
+                </th:block>
+                <th:block th:if="${!stat.last}">, </th:block>
+              </th:block>
+            </p>
+            <!-- ADMIN이 보는 권한 수정 버튼 -->
+            <div sec:authorize="hasRole('ADMIN')">
+              <button class="btn-inline-edit" id="btnOpenRoleEdit" title="권한 수정">
+                <i data-lucide="pencil" class="icon-xs"></i>
+                권한 수정
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 권한 수정 인라인 폼 (ADMIN만) -->
+      <div sec:authorize="hasRole('ADMIN')">
+        <div class="inline-edit-box" id="roleEditBox" style="display:none;">
+          <div class="inline-edit-box__title">
+            <i data-lucide="shield-check" class="icon-sm"></i>
+            권한 수정
+          </div>
+          <div class="role-options" id="roleOptions">
+            <!-- SUPER_ADMIN이면 ADMIN 선택 가능 -->
+            <div sec:authorize="hasRole('SUPER_ADMIN')">
+              <label class="role-option-label">
+                <input type="radio" name="roleSelect" value="ADMIN"> 관리자
+              </label>
+            </div>
+            <label class="role-option-label">
+              <input type="radio" name="roleSelect" value="CONSULTANT"> 컨설턴트
+            </label>
+            <label class="role-option-label">
+              <input type="radio" name="roleSelect" value="STUDENT"> 학생
+            </label>
+            <label class="role-option-label">
+              <input type="radio" name="roleSelect" value="VIEWER"> 일반
+            </label>
+          </div>
+          <div class="inline-edit-box__actions">
+            <button class="btn-secondary" id="btnCancelRoleEdit">취소</button>
+            <button class="btn-primary" id="btnConfirmRoleEdit">확인</button>
+          </div>
+          <p class="inline-edit-error" id="roleEditError" style="display:none;"></p>
+        </div>
+      </div>
+
+      <!-- 상태 (ADMIN만) -->
+      <div sec:authorize="hasRole('ADMIN')">
+        <div class="info-section">
+          <div class="info-card info-card--role">
+            <div class="info-card__header">
+              <i data-lucide="activity" class="icon-sm"></i>
+              <span class="info-card__title">상태</span>
+            </div>
+            <div class="info-card__value-wrap">
+              <th:block th:switch="${memberDetail.status?.name()}">
+                <span th:case="'ACTIVE'" class="status-badge status--active">활성</span>
+                <span th:case="'DELETED'" class="status-badge status--deleted">삭제됨</span>
+                <span th:case="'SUSPENDED'" class="status-badge status--suspended">정지</span>
+                <span th:case="*" class="status-badge status--active" th:text="${memberDetail.status}">상태</span>
+              </th:block>
+              <button class="btn-inline-edit" id="btnOpenStatusEdit" title="상태 수정">
+                <i data-lucide="pencil" class="icon-xs"></i>
+                상태 수정
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 상태 수정 인라인 폼 -->
+        <div class="inline-edit-box" id="statusEditBox" style="display:none;">
+          <div class="inline-edit-box__title">
+            <i data-lucide="activity" class="icon-sm"></i>
+            상태 수정
+          </div>
+          <div class="role-options">
+            <label class="role-option-label">
+              <input type="radio" name="statusSelect" value="ACTIVE"> 활성
+            </label>
+            <label class="role-option-label">
+              <input type="radio" name="statusSelect" value="DELETED"> 삭제됨
+            </label>
+            <label class="role-option-label">
+              <input type="radio" name="statusSelect" value="SUSPENDED"> 정지
+            </label>
+          </div>
+          <div class="inline-edit-box__actions">
+            <button class="btn-secondary" id="btnCancelStatusEdit">취소</button>
+            <button class="btn-primary" id="btnConfirmStatusEdit">확인</button>
+          </div>
+          <p class="inline-edit-error" id="statusEditError" style="display:none;"></p>
+        </div>
+      </div>
+
+      <!-- ── 액션 바 ── -->
+      <div class="action-bar">
+        <!-- 정보 수정하기 (모든 로그인 사용자) -->
+        <button class="btn-primary" id="btnOpenUpdateModal">
+          <i data-lucide="pencil-line" class="icon-sm"></i>
+          정보 수정하기
+        </button>
+
+        <!-- 회원 탈퇴하기 (ADMIN이 아닌 사용자) -->
+        <div sec:authorize="!hasRole('ADMIN')">
+          <button class="btn-danger" id="btnWithdraw">
+            <i data-lucide="user-x" class="icon-sm"></i>
+            회원 탈퇴하기
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── 정보 수정 모달 ── -->
+  <div class="modal-backdrop" id="updateModal" style="display:none;">
+    <div class="modal-box modal-box--lg">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i data-lucide="pencil-line" class="icon-sm"></i>
+          정보 수정하기
+        </h3>
+        <button class="btn-icon" id="btnCloseUpdateModal">
+          <i data-lucide="x" class="icon-sm"></i>
+        </button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          <i data-lucide="at-sign" class="label-icon"></i>
+          아이디
+        </label>
+        <input type="text" id="editUserId" class="form-input" th:value="${memberDetail.userId}" readonly>
+        <span class="field-hint">아이디는 변경할 수 없습니다.</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          <i data-lucide="user" class="label-icon"></i>
+          이름
+        </label>
+        <input type="text" id="editName" class="form-input" th:value="${memberDetail.name}"
+          placeholder="한글·영문·숫자 1~10자">
+        <span id="editNameError" class="field-error" style="display:none;"></span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          <i data-lucide="badge-check" class="label-icon"></i>
+          별명
+        </label>
+        <div class="input-with-btn">
+          <input type="text" id="editNickname" class="form-input" th:value="${memberDetail.nickname}"
+            placeholder="한글·영문·숫자 1~10자">
+          <button type="button" id="btnCheckNickname" class="btn-check">중복확인</button>
+        </div>
+        <span id="editNicknameError" class="field-error" style="display:none;"></span>
+        <span id="editNicknameCheckMsg" class="field-check-msg" style="display:none;"></span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          <i data-lucide="phone" class="label-icon"></i>
+          전화번호
+        </label>
+        <div class="phone-input-wrap">
+          <input type="text" id="editPhone1" class="form-input phone-part" maxlength="4" placeholder="010">
+          <span class="phone-sep">-</span>
+          <input type="text" id="editPhone2" class="form-input phone-part" maxlength="4" placeholder="0000">
+          <span class="phone-sep">-</span>
+          <input type="text" id="editPhone3" class="form-input phone-part" maxlength="4" placeholder="0000">
+        </div>
+        <span id="editPhoneError" class="field-error" style="display:none;"></span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          <i data-lucide="lock-keyhole" class="label-icon"></i>
+          새 비밀번호 <span class="form-label-hint">(변경 시에만 입력)</span>
+        </label>
+        <div class="input-pw-wrap">
+          <input type="password" id="editUserPwd" class="form-input" placeholder="영문·숫자·특수문자 4~20자"
+            autocomplete="new-password">
+          <button type="button" class="btn-toggle-pw" data-target="editUserPwd">
+            <i data-lucide="eye" class="icon-sm"></i>
+          </button>
+        </div>
+        <span id="editUserPwdError" class="field-error" style="display:none;"></span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          <i data-lucide="lock-keyhole" class="label-icon"></i>
+          새 비밀번호 확인
+        </label>
+        <div class="input-pw-wrap">
+          <input type="password" id="editUserPwdConfirm" class="form-input" placeholder="비밀번호를 한 번 더 입력하세요"
+            autocomplete="new-password">
+          <button type="button" class="btn-toggle-pw" data-target="editUserPwdConfirm">
+            <i data-lucide="eye" class="icon-sm"></i>
+          </button>
+        </div>
+        <span id="editUserPwdConfirmError" class="field-error" style="display:none;"></span>
+      </div>
+
+      <p class="inline-edit-error" id="updateFormError" style="display:none;"></p>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" id="btnCancelUpdate">취소</button>
+        <button class="btn-primary" id="btnConfirmUpdate">수정하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 회원 탈퇴 확인 모달 ── -->
+  <div class="modal-backdrop" id="withdrawModal" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-icon">
+        <i data-lucide="alert-triangle"></i>
+      </div>
+      <h3 class="modal-title">회원 탈퇴하시겠습니까?</h3>
+      <p class="modal-desc">탈퇴 후에는 계정을 복구할 수 없습니다.</p>
+      <div class="modal-actions">
+        <button class="btn-secondary" id="btnWithdrawCancel">취소</button>
+        <form th:action="@{/member/delete}" method="post">
+          <button class="btn-danger" id="btnWithdrawConfirm" type="submit">탈퇴하기</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script th:inline="javascript">
+    const ENCRYPTED_MEMBER_NO = /*[[${memberDetail.encryptedMemberNo}]]*/ '';
+    const ORIGINAL_NICKNAME = /*[[${memberDetail.nickname}]]*/ '';
+    const ORIGINAL_PHONE = /*[[${memberDetail.phone}]]*/ '';
+  </script>
+  <script th:src="@{/js/member/basicinfo.js}"></script>
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

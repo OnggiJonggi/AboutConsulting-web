@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>어바웃컨설팅</title>
+  <th:block th:replace="~{/common/fragment :: common}"></th:block>
+  <link rel="stylesheet" th:href="@{/css/member/list.css}">
+</head>
+
+<body>
+
+  <div class="list-wrapper">
+
+    <!-- ── 상단 헤더 영역 ── -->
+    <div class="page-header">
+      <a th:href="@{/}" class="logo-link">
+        <img th:src="@{/img/main-logo.png}" alt="어바웃컨설팅 로고" class="header-logo">
+      </a>
+      <h1 class="page-title">
+        <i data-lucide="users" class="title-icon"></i>
+        회원 목록
+      </h1>
+    </div>
+
+    <!-- ── 메인 컨텐츠 영역 (필터 + 결과) ── -->
+    <div class="content-area">
+
+      <!-- ── 왼쪽: 필터 영역 ── -->
+      <aside class="filter-panel">
+        <div class="filter-header">
+          <i data-lucide="sliders-horizontal" class="filter-header__icon"></i>
+          <span>검색 필터</span>
+        </div>
+
+        <form id="searchForm" autocomplete="off">
+
+          <!-- 아이디 -->
+          <div class="filter-group">
+            <label class="filter-label" for="f-userId">
+              <i data-lucide="at-sign" class="label-icon"></i>아이디
+            </label>
+            <input type="text" id="f-userId" name="userId" class="filter-input" placeholder="아이디 입력"
+              th:value="${memberSearch.userId}">
+          </div>
+
+          <!-- 이름 -->
+          <div class="filter-group">
+            <label class="filter-label" for="f-name">
+              <i data-lucide="user" class="label-icon"></i>이름
+            </label>
+            <input type="text" id="f-name" name="name" class="filter-input" placeholder="이름 입력"
+              th:value="${memberSearch.name}">
+          </div>
+
+          <!-- 별명 -->
+          <div class="filter-group">
+            <label class="filter-label" for="f-nickname">
+              <i data-lucide="smile" class="label-icon"></i>별명
+            </label>
+            <input type="text" id="f-nickname" name="nickname" class="filter-input" placeholder="별명 입력"
+              th:value="${memberSearch.nickname}">
+          </div>
+
+          <!-- 연락처 -->
+          <div class="filter-group">
+            <label class="filter-label" for="f-phone">
+              <i data-lucide="phone" class="label-icon"></i>연락처
+            </label>
+            <input type="text" id="f-phone" name="phone" class="filter-input" placeholder="연락처 입력"
+              th:value="${memberSearch.phone}">
+          </div>
+
+          <!-- 권한 -->
+          <div class="filter-group">
+            <label class="filter-label">
+              <i data-lucide="shield" class="label-icon"></i>권한
+            </label>
+            <div class="btn-group-radio" id="roleGroup">
+              <button type="button" class="radio-btn" data-name="role" data-value="">전체</button>
+              <button type="button" class="radio-btn" data-name="role" data-value="SUPER_ADMIN">SUPER_ADMIN</button>
+              <button type="button" class="radio-btn" data-name="role" data-value="ADMIN">ADMIN</button>
+              <button type="button" class="radio-btn" data-name="role" data-value="EVALUATOR">EVALUATOR</button>
+              <button type="button" class="radio-btn" data-name="role" data-value="VIEWER">VIEWER</button>
+            </div>
+            <input type="hidden" id="f-role" name="role"
+              th:value="${memberSearch.role != null ? memberSearch.role.name() : ''}">
+          </div>
+
+          <!-- 상태 -->
+          <div class="filter-group">
+            <label class="filter-label">
+              <i data-lucide="activity" class="label-icon"></i>상태
+            </label>
+            <div class="btn-group-radio" id="statusGroup">
+              <button type="button" class="radio-btn" data-name="status" data-value="">전체</button>
+              <button type="button" class="radio-btn" data-name="status" data-value="ACTIVE">ACTIVE</button>
+              <button type="button" class="radio-btn" data-name="status" data-value="DELETED">DELETED</button>
+              <button type="button" class="radio-btn" data-name="status" data-value="SUSPENDED">SUSPENDED</button>
+            </div>
+            <input type="hidden" id="f-status" name="status"
+              th:value="${memberSearch.status != null ? memberSearch.status.name() : ''}">
+          </div>
+
+          <!-- 검색 버튼 -->
+          <button type="button" id="searchBtn" class="btn-search">
+            <i data-lucide="search" class="btn-icon"></i>
+            검색
+          </button>
+
+        </form>
+      </aside>
+
+      <!-- ── 오른쪽: 결과 영역 ── -->
+      <section class="result-panel">
+
+        <!-- 결과 헤더 (총 검색 수) -->
+        <div class="result-header">
+          <span class="result-title">
+            <i data-lucide="list" class="result-header__icon"></i>
+            검색 결과
+          </span>
+          <span class="result-count">
+            총 <strong id="totalCount" th:text="${memberList.totalCount}">0</strong>명
+          </span>
+        </div>
+
+        <!-- 회원 카드 목록 -->
+        <div id="memberList" class="member-list">
+
+          <!-- 초기 서버 렌더링 (Thymeleaf) -->
+          <th:block th:if="${memberList != null and !memberList.list.isEmpty()}">
+            <div th:each="member : ${memberList.list}" class="member-card"
+              th:attr="data-enc=${member.encryptedMemberNo}" onclick="goMember(this)">
+
+              <div class="member-main">
+                <!-- 아이디 + 이름 -->
+                <div class="member-id-row">
+                  <i data-lucide="user-round" class="member-icon"></i>
+                  <span class="member-userid" th:text="${member.userId}">아이디</span>
+                  <span class="member-name" th:text="${member.name}">이름</span>
+                </div>
+
+                <!-- 메타 정보 -->
+                <div class="member-meta">
+                  <span class="meta-item">
+                    <i data-lucide="smile" class="meta-icon"></i>
+                    <span th:text="${member.nickname}">별명</span>
+                  </span>
+                  <span class="meta-sep">|</span>
+                  <span class="meta-item">
+                    <i data-lucide="phone" class="meta-icon"></i>
+                    <span
+                      th:text="${member.phone != null and !#strings.isEmpty(member.phone)} ? ${member.phone} : '-'">연락처</span>
+                  </span>
+                  <span class="meta-sep">|</span>
+                  <span class="status-badge" th:text="${member.status}"
+                    th:classappend="${member.status == 'ACTIVE'} ? ' status--active' : (${member.status == 'DELETED'} ? ' status--deleted' : ' status--suspended')">
+                  </span>
+                </div>
+              </div>
+
+              <!-- 권한 배지 -->
+              <div class="member-roles">
+                <th:block th:each="r : ${member.role}">
+                  <span class="role-badge" th:text="${#strings.replace(r, 'ROLE_', '')}">ROLE</span>
+                </th:block>
+              </div>
+
+            </div>
+          </th:block>
+
+          <!-- 결과 없음 -->
+          <div th:if="${memberList == null or memberList.list.isEmpty()}" id="emptyMsg" class="empty-msg">
+            <i data-lucide="search-x" class="empty-icon"></i>
+            <p>검색 결과가 없습니다.</p>
+          </div>
+
+        </div>
+
+        <!-- ── 페이징 영역 ── -->
+        <div class="pagination-area" id="paginationArea" th:if="${memberList != null and memberList.totalPage > 0}">
+          <div class="pagination">
+
+            <!-- 이전 블록 버튼 -->
+            <button type="button" class="page-nav" id="prevBlock" th:classappend="${memberList.hasPrev} ? '' : 'hidden'"
+              th:attr="data-page=${memberList.startPage - 1}">
+              <i data-lucide="chevron-left"></i>
+            </button>
+
+            <!-- 페이지 번호 버튼들 -->
+            <div id="pageNumbers" class="page-numbers">
+              <th:block th:each="p : ${#numbers.sequence(memberList.startPage, memberList.endPage)}">
+                <button type="button" class="page-num" th:classappend="${p == memberSearch.page} ? ' active' : ''"
+                  th:text="${p}" th:attr="data-page=${p}">1</button>
+              </th:block>
+            </div>
+
+            <!-- 다음 블록 버튼 -->
+            <button type="button" class="page-nav" id="nextBlock" th:classappend="${memberList.hasNext} ? '' : 'hidden'"
+              th:attr="data-page=${memberList.endPage + 1}">
+              <i data-lucide="chevron-right"></i>
+            </button>
+
+          </div>
+        </div>
+
+      </section>
+    </div>
+  </div>
+
+  <script th:src="@{/js/member/list.js}"></script>
+  <script>lucide.createIcons();</script>
+  <script>
+    function goMember(el) {
+      const enc = el.getAttribute('data-enc');
+      location.href = '/member/' + enc;
+    }
+  </script>
+</body>
+
+</html>

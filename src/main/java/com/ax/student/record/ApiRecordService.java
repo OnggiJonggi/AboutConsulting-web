@@ -47,9 +47,11 @@ public class ApiRecordService {
 	 * 
 	 * @param encryptedStudentNo
 	 * @param filebytes
+	 * @param studentNo 
 	 */
 	@Async
-	public void analysisRecord(int studentNo, int groupNo, byte[] filebytes) throws Exception{
+	public void analysisRecord(byte[] filebytes, int groupNo,
+			int studentNo) throws Exception{
 		/*
 		 * 생기부 원본 저장 로직 필요!
 		 */
@@ -99,6 +101,7 @@ public class ApiRecordService {
 			// 로깅 인터셉터-----
 
 			
+			
 			// 요청
 		    ResponseEntity<String> response = restTemplate.postForEntity(
 		        url,
@@ -116,7 +119,7 @@ public class ApiRecordService {
 		    		|| result.getData().getResults() == null)
 		    	throw new CustomException(ErrorCodeEnum.RECORD_API_NOT_WORKING);
 		    
-			// DB저장
+			// 생기부 DB저장
 		    recordMapper.insertRecord(RecordVO.Insert.builder()
 		    		.groupNo(groupNo)
 		    		.result(result.getData().getResults()).build());

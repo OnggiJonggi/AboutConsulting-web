@@ -4,11 +4,4 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.ax.global.security.RoleMapper">
-	<select id="selectMemberRole" parameterType="_int" resultType="string" >
-		select RI.NAME
-		from ROLE_INFO RI
-		left join MEMBER_ROLE MR on (RI.ROLE_NO = MR.ROLE_NO)
-		left join MEMBER M on (MR.MEMBER_NO = M.MEMBER_NO)
-		where M.MEMBER_NO = #{number}
-	</select>
 </mapper>

@@ -6,10 +6,10 @@
   내정보(get, /member/myinfo)
   로그아웃(post, /member/logout)
 로그인 - 권한 ADMIN
-  컨설턴트 목록(get, /admin/consultant/list)
-  컨설턴트 등록(get, /admin/consultant/register)
-  학생 목록(get, /admin/student/list)
-  학생 등록(get, /admin/student/register)
+  컨설턴트 목록(get, /consultant)
+  회원 목록(get, /member)
+  학생 목록(get, /student)
+  학생 등록(get, /student/register)
 로그인 - 권한 CONSULTANT
   담당 학생 목록(get, /consultant/mystudent)
 
@@ -51,5 +51,21 @@
   점수 수정(put, /api/student/mock/update)
   원본 확인(get, /api/student/mock/original)
 
-컨설턴트 목록(/consultant/list)
-  목록 불러오기(get, /api/consultant/list)
+학생 목록(/student)
+  학생 검색(get, /api/student)
+  학생 세부사항으로(get, /student/{encryptedStudentNo})
+
+회원 목록(/member)
+  회원 목록 불러오기(get, /api/member)
+  회원 세부사항으로(get, /member/{encryptedMemberNo})
+
+회원 세부사항(/member/myinfo, /member/{encryptedMemberNo})
+  정보 수정(put, /api/member/{encryptedMemberNo}/update)
+  닉네임 중복확인-수정용(get, /api/member/check-updatednickname)
+  회원 상태변경(put, /api/member/{encryptedMemberNo}/update/status)
+  회원 권한 변경(put, /api/member/{encryptedMemberNo}/update/role)
+  회원 탈퇴(, /member/delete)
+
+컨설턴트 목록(/consultant)
+  목록 불러오기(get, /api/consultant)
+  컨설턴트 세부사항으로(get, /consultant/{encryptedConsultantNo})

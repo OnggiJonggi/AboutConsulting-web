@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ax.global.file.FileMapper">
+
+  <insert id="insertInfo" parameterType="FileInfoRegistor"
+    useGeneratedKeys="true"
+    keyProperty="fileNo"
+    keyColumn="FILE_NO">
+    insert into FILE_INFO(
+        ORIGINAL_NAME
+        ,CHANGED_NAME
+        ,MIME
+        ,FILE_SIZE
+        ,SAVE_PATH
+        ,SAVED_AT
+        ,STATUS
+      )values(
+        #{originalName}
+        ,#{changedName}
+        ,#{mime}
+        ,#{fileSize}
+        ,#{savePath}
+        ,#{savedAt}
+        ,'ACTIVE'
+      )
+  </insert>
+
+  <insert id="insertMapping" parameterType="FileInfoInsertMapping">
+    insert into ${target}(GROUP_NO, FILE_NO)
+    values(#{groupNo}, #{fileNo})
+  </insert>
+
+  <insert id="insertHistory" parameterType="FileInfoInsertHistory"
+    useGeneratedKeys="true"
+    keyProperty="historyNo"
+    keyColumn="HISTORY_NO">
+    insert into FILE_HISTORY(
+        FILE_NO
+        ,ORIGINAL_NAME
+        ,SAVE_PATH
+        ,ACTION
+        ,ACTION_AT
+        ,ACTION_BY
+      )values(
+        #{fileNo}
+        ,#{originalName}
+        ,#{savePath}
+        ,#{action}
+        ,#{savedAt}
+        ,#{actionBy}
+      )
+  </insert>
+
+</mapper>

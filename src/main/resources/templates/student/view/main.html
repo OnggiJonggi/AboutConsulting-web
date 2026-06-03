@@ -19,9 +19,9 @@
     <!-- ── 헤더 영역 ── -->
     <div class="detail-header">
       <div class="detail-header__top">
-        <button class="btn-back" onclick="history.back()">
+        <a th:href="@{/student}" class="btn-back">
           <i data-lucide="chevron-left" class="icon-sm"></i>
-        </button>
+        </a>
         <h1 class="student-name" th:text="${studentBasicInfo.name}">김학생</h1>
       </div>
       <div class="student-meta">

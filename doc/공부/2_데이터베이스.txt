@@ -146,9 +146,19 @@ DELETE, TRUNCATE, DROP
   : 비동기 특성 - 데이터 일관성 문제
   : 쓰기 성능 확장 어려움
 
-WHERE, HAVING
-  : WHERE - 개별 행 필터링. 그룹화 이전 필터링
-  : HAVING - 그룹 필터링. 그룹화 후 필터링
+WHERE : 개별 행 필터링. 그룹화 이전 필터링
+   : NOT -> AND -> OR
+   : EXISTS - 뒤따라오는 서브쿼리의 행이 하나라도 있으면 true반환
+   : BETWEEN A AND B - 범위
+   : IN () - 여러 값 중 하나와 일치
+   : like - 패턴 검사.
+      % - 여러 개
+      _ - 한 개
+      escape - %와_를 문자열로 사용해야 할 때
+    
+    
+HAVING : 그룹 필터링. 그룹화 후 필터링
+
 
 COUNT
   : 테이블 행 반환
