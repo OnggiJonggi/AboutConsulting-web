@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.core.io.Resource;
 
+import com.ax.global.file.component.FileStatusEnum;
+import com.ax.global.file.component.TargetEnum;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;

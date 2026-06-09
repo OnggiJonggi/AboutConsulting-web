@@ -3,6 +3,7 @@ package com.ax.student;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,11 +15,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.ax.global.common.SearchResultVO;
 import com.ax.global.security.CryptoComponent;
+import com.ax.global.security.CustomUserDetails;
 import com.ax.student.mock.MockService;
 import com.ax.student.mock.MockVO;
 import com.ax.student.record.RecordService;
 import com.ax.student.record.RecordVO;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,25 +71,28 @@ public class StudentController {
 	@PostMapping("/register")
 	public String register(@Valid StudentVO.Register studentRegister
 			,BindingResult bindingResult
+			,HttpSession session
 			,Model model)throws Exception {
 		
+		// 유효성 통과 못함
 		if(bindingResult.hasErrors()) {
 			model.addAttribute("studentRegister", new StudentVO.Register());
 			return "student/register";
 		}
-		
 		return "redirect:/student/"+studentService.register(studentRegister);
 	}
 	
 	
 	/**
 	 * 학생 상세 메인 페이지로
-	 * 관리자/컨설턴트
-	 * @param encryptedStudentNo 암호화된 학생 번호
+	 * 관리자
+	 * 컨설턴트 : 담당 학생
 	 */
 	@GetMapping("/{encryptedStudentNo}")
-	public String goView(@PathVariable String encryptedStudentNo
-			,Model model) throws Exception {
+	public String goView(
+			@PathVariable String encryptedStudentNo,
+			@AuthenticationPrincipal CustomUserDetails userDetails,
+			Model model) throws Exception {
 		
 		int studentNo = Integer.valueOf(cryptoComponent.decrypt(encryptedStudentNo));
 		

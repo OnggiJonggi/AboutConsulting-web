@@ -1,5 +1,6 @@
 package com.ax.school;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,15 +13,15 @@ import lombok.ToString;
 
 public class ApiSchoolVO {
 	/**
-	 * api요청 첫 번째 wrapper
+	 * nies api요청 첫 번째 wrapper
 	 */
 	@AllArgsConstructor
 	@NoArgsConstructor
 	@Data
-	public static class ApiResponseWrapper {
-		private List<ApiSchoolInfoBlock> schoolInfo;
+	public static class NiesWrapper1 {
+		private List<NiesWrapper2> schoolInfo;
 		
-		public List<ApiRowBlock> getData() {
+		public List<NiesBlock> getData() {
 			if (schoolInfo == null || schoolInfo.size() < 2)
 				return List.of();
 			return schoolInfo.get(1).getRow(); // 1번째 블록이 실제 데이터
@@ -28,16 +29,16 @@ public class ApiSchoolVO {
 	}
 
 	/**
-	 * api요청 두 번째 wrapper
+	 * nies api요청 두 번째 wrapper
 	 */
 	@AllArgsConstructor
 	@NoArgsConstructor
 	@Data
-	public static class ApiSchoolInfoBlock {
+	public static class NiesWrapper2 {
 		private List<Object> head;
-		private List<ApiRowBlock> row;
+		private List<NiesBlock> row;
 
-		public List<ApiRowBlock> getRow() {
+		public List<NiesBlock> getRow() {
 			return row != null ? row : List.of();
 		}
 	}
@@ -46,7 +47,7 @@ public class ApiSchoolVO {
 	@NoArgsConstructor
 	@Getter
 	@ToString
-	public static class ApiRowBlock {
+	public static class NiesBlock {
 		@JsonProperty("SD_SCHUL_CODE")
 		private String sdSchulCode;         // 학교행정코드
 		
@@ -68,109 +69,32 @@ public class ApiSchoolVO {
 		@JsonProperty("SPCLY_PURPS_HS_ORD_NM")
 		private String spclyPurpsHsOrdNm;   // 특수고등학교계열명
 	}
-	/*
-	 * api 응답 json : 
-{
-  "schoolInfo": [
-    {
-      "head": [
-        {
-          "list_total_count": 3
-        },
-        {
-          "RESULT": {
-            "CODE": "INFO-000",
-            "MESSAGE": "정상 처리되었습니다."
-          }
-        }
-      ]
-    },
-    {
-      "row": [
-        {
-          "ATPT_OFCDC_SC_CODE": "F10",
-          "ATPT_OFCDC_SC_NM": "광주광역시교육청",
-          "SD_SCHUL_CODE": "7380148",
-          "SCHUL_NM": "보문고등학교",
-          "ENG_SCHUL_NM": "Bomun High School",
-          "SCHUL_KND_SC_NM": "고등학교",
-          "LCTN_SC_NM": "광주광역시",
-          "JU_ORG_NM": "광주광역시교육청",
-          "FOND_SC_NM": "사립",
-          "ORG_RDNZC": "62397 ",
-          "ORG_RDNMA": "광주광역시 광산구 어등대로529번길 37",
-          "ORG_RDNDA": "(운수동)",
-          "ORG_TELNO": "062-940-8800",
-          "HMPG_ADRES": "bomun.gen.hs.kr",
-          "COEDU_SC_NM": "남여공학",
-          "ORG_FAXNO": "062-940-8899",
-          "HS_SC_NM": "일반고",
-          "INDST_SPECL_CCCCL_EXST_YN": "N",
-          "HS_GNRL_BUSNS_SC_NM": "일반계",
-          "SPCLY_PURPS_HS_ORD_NM": null,
-          "ENE_BFE_SEHF_SC_NM": "전기",
-          "DGHT_SC_NM": "주간",
-          "FOND_YMD": "19741227",
-          "FOAS_MEMRD": "19750301",
-          "LOAD_DTM": "20260423"
-        },
-        {
-          "ATPT_OFCDC_SC_CODE": "G10",
-          "ATPT_OFCDC_SC_NM": "대전광역시교육청",
-          "SD_SCHUL_CODE": "7430057",
-          "SCHUL_NM": "보문고등학교",
-          "ENG_SCHUL_NM": "Bomoon High School",
-          "SCHUL_KND_SC_NM": "고등학교",
-          "LCTN_SC_NM": "대전광역시",
-          "JU_ORG_NM": "대전광역시교육청",
-          "FOND_SC_NM": "사립",
-          "ORG_RDNZC": "34619 ",
-          "ORG_RDNMA": "대전광역시 동구 우암로 57",
-          "ORG_RDNDA": ", 보문고등학교 (삼성동, 보문고등학교,보문중학교)",
-          "ORG_TELNO": "042-620-6600",
-          "HMPG_ADRES": "http://bomoonhs.djsch.kr",
-          "COEDU_SC_NM": "남",
-          "ORG_FAXNO": "042-672-9571",
-          "HS_SC_NM": "일반고",
-          "INDST_SPECL_CCCCL_EXST_YN": "N",
-          "HS_GNRL_BUSNS_SC_NM": "일반계",
-          "SPCLY_PURPS_HS_ORD_NM": null,
-          "ENE_BFE_SEHF_SC_NM": "전기",
-          "DGHT_SC_NM": "주간",
-          "FOND_YMD": "19530221",
-          "FOAS_MEMRD": "19530926",
-          "LOAD_DTM": "20260423"
-        },
-        {
-          "ATPT_OFCDC_SC_CODE": "G10",
-          "ATPT_OFCDC_SC_NM": "대전광역시교육청",
-          "SD_SCHUL_CODE": "7441034",
-          "SCHUL_NM": "보문중학교",
-          "ENG_SCHUL_NM": "Bomoon Middle School",
-          "SCHUL_KND_SC_NM": "중학교",
-          "LCTN_SC_NM": "대전광역시",
-          "JU_ORG_NM": "대전광역시동부교육지원청",
-          "FOND_SC_NM": "사립",
-          "ORG_RDNZC": "34619 ",
-          "ORG_RDNMA": "대전광역시 동구 우암로 57",
-          "ORG_RDNDA": "(삼성동, 보문중학교)",
-          "ORG_TELNO": "042-620-6705",
-          "HMPG_ADRES": "http://bomoonms.djsch.kr",
-          "COEDU_SC_NM": "남",
-          "ORG_FAXNO": "042-672-9365",
-          "HS_SC_NM": null,
-          "INDST_SPECL_CCCCL_EXST_YN": "N",
-          "HS_GNRL_BUSNS_SC_NM": "일반계",
-          "SPCLY_PURPS_HS_ORD_NM": null,
-          "ENE_BFE_SEHF_SC_NM": "전기",
-          "DGHT_SC_NM": "주간",
-          "FOND_YMD": "19451220",
-          "FOAS_MEMRD": "19451220",
-          "LOAD_DTM": "20260423"
-        }
-      ]
-    }
-  ]
-}
+	
+	
+	/**
+	 * 공공데이터 전국대학별학과정보표준데이터 전용
 	 */
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Getter
+	@ToString
+	public static class OpenDataWrapper{
+		private Body body;
+		
+		public static class Body{
+			@JsonProperty("body")
+			Inner inner;
+		}
+		
+		public static class Inner{
+            @JsonProperty("items")
+            List<SchoolVO.UnivDetail> items;
+		}
+		
+        public List<SchoolVO.UnivDetail> getItems() {
+            if (body == null || body.inner == null || body.inner.items == null)
+                return Collections.emptyList();
+            return body.inner.items;
+        }
+	}
 }

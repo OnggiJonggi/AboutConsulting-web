@@ -1,4 +1,4 @@
-package com.ax.global.file;
+package com.ax.global.file.component;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

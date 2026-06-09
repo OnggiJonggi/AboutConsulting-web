@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpSession;
@@ -26,22 +27,22 @@ public class SchoolApiController {
 	 * @param schoolName
 	 * @return List<schoolDetail>
 	 */
-	@GetMapping("/search")
-	public ResponseEntity<List<SchoolVO.Detail>> search(String schoolName) {
-		return ResponseEntity.ok(schoolService.search(schoolName));
+	@GetMapping("")
+	public ResponseEntity<List<SchoolVO.Detail>> getSchoolListFromDB(
+			@RequestParam String schoolName) {
+		return ResponseEntity.ok(schoolService.getList(schoolName));
 	}
 
 	/**
-	 * 학교 데이터 공공데이터 조회
+	 * 고등학교 데이터 공공데이터 조회
 	 * 관리자/컨설턴트
-	 * 
-	 * @param schoolName
-	 * @return List<schoolDetail>
 	 */
-	@GetMapping("/search/open")
-	public ResponseEntity<List<SchoolVO.Detail>> search(String schoolName, HttpSession session) throws Exception {
+	@GetMapping("/high")
+	public ResponseEntity<List<SchoolVO.Detail>> getHighSchoolList(
+			@RequestParam String schoolName,
+			HttpSession session) throws Exception {
 
-		List<SchoolVO.Detail> result = apiService.search(schoolName);
+		List<SchoolVO.Detail> result = apiService.getSchool(schoolName);
 
 		// 세션에 캐싱해두고 db에 없는 학교 등록할 때 재사용
 		session.setAttribute("schoolSearchResult", result);
@@ -49,21 +50,37 @@ public class SchoolApiController {
 
 		return ResponseEntity.ok(result);
 	}
+	
+	/**
+	 * 대학교 데이터 공공데이터 조회
+	 * 관리자/컨설턴트
+	 */
+	@GetMapping("/univ")
+	public ResponseEntity<List<SchoolVO.UnivDetail>> getUnivList(
+			@RequestParam String univ,
+			@RequestParam String major,
+			HttpSession session) throws Exception {
+		
+		List<SchoolVO.UnivDetail> result = apiService.getUniv(univ, major);
+		
+		return ResponseEntity.ok(result);
+	}
 
 	/**
 	 * 학교 등록
 	 * 관리자/컨설턴트
-	 * 
-	 * @param schoolCode
-	 * @param session
 	 */
 	@PostMapping("/register")
-	public ResponseEntity<Void> registor(String schoolCode, HttpSession session) {
-		List<SchoolVO.Detail> cachedList = (List<SchoolVO.Detail>) session.getAttribute("schoolSearchResult");
+	public ResponseEntity<Void> registor(
+			@RequestParam String schoolCode,
+			HttpSession session) {
+		
+		// 세션에 저장된 학교 목록 불러오기
+		@SuppressWarnings("unchecked") List<SchoolVO.Detail> cachedList
+			= (List<SchoolVO.Detail>) session.getAttribute("schoolSearchResult");
 
-		// 세션 만료
-		if (cachedList == null)
-			return ResponseEntity.badRequest().build();
+		// 세션 만료면 가세요라
+		if (cachedList == null) return ResponseEntity.badRequest().build();
 		
 		// schoolCode로 대상 schoolDetail찾기
 		SchoolVO.Detail target = cachedList

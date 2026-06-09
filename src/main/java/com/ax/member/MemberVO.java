@@ -114,7 +114,6 @@ public class MemberVO {
 		@Pattern(regexp = MemberRegexp.NAME_REGEXP, message="제대로 된 별명 주세요.")
 		private String nickname;
 		
-		@NotBlank(message="번호가 뭐에요")
 		@Pattern(regexp = MemberRegexp.PHONE_REGEXP, message="전화번호 이게 맞아요?")
 		private String phone;
 	}

@@ -1,4 +1,4 @@
-package com.ax.global.file;
+package com.ax.global.file.component;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ax.global.exception.CustomException;
 import com.ax.global.exception.ErrorCodeEnum;
+import com.ax.global.file.FileInfoVO;
+import com.ax.global.file.FileMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ax.global.common.SearchResultVO;
-import com.ax.global.file.FileComponent;
-import com.ax.global.file.TargetEnum;
+import com.ax.global.file.component.FileComponent;
+import com.ax.global.file.component.TargetEnum;
 import com.ax.global.security.CryptoComponent;
 import com.ax.global.security.CustomUserDetails;
 import com.ax.student.mock.ApiMockService;

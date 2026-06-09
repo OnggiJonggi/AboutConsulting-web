@@ -86,7 +86,7 @@ function renderSchoolResults(data, mode) {
 }
 
 /* ═══════════════════════════════════════════
-   학교 검색 (GET /api/school/search)
+   학교 검색 (GET /api/school)
 ═══════════════════════════════════════════ */
 function searchSchool() {
   const schoolName = document.getElementById('schoolNameInput').value.trim();
@@ -95,7 +95,7 @@ function searchSchool() {
     return;
   }
   $.ajax({
-    url: '/api/school/search',
+    url: '/api/school',
     method: 'GET',
     data: { schoolName: schoolName },
     success: function (data) {
@@ -108,7 +108,7 @@ function searchSchool() {
 }
 
 /* ═══════════════════════════════════════════
-   학교 추가 검색 (GET /api/school/search/open)
+   학교 추가 검색 (GET /api/school/high)
 ═══════════════════════════════════════════ */
 function openAddSchool() {
   const schoolName = document.getElementById('schoolNameInput').value.trim();
@@ -117,7 +117,7 @@ function openAddSchool() {
     return;
   }
   $.ajax({
-    url: '/api/school/search/open',
+    url: '/api/school/high',
     method: 'GET',
     data: { schoolName: schoolName },
     success: function (data) {

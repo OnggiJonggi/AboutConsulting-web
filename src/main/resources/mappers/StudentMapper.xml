@@ -114,6 +114,20 @@
 						<if test="schoolName!=null and schoolName!=''">
 							AND SCH.NAME = #{schoolName}
 						</if>
+						<if test="target!=null">
+							and exist(
+								select 1
+								from TARGET_INFO T2
+								inner join STUDENT S2 on(T2.STUDENT_NO = S2.STUDENT_NO)
+								where S2.STUDENT_NO = S.STUDENT_NO
+								<if test="target.univ!=null and target.univ!=''">
+									AND T2.UNIV = #{target.univ}
+								</if>
+								<if test="target.major!=null and target.major!=''">
+									AND T2.MAJOR = #{target.major}
+								</if>
+							)
+						</if>
 					</where>
 					order by S.STUDENT_NO DESC
 				) A
@@ -122,16 +136,6 @@
 			where B.RN &gt;= #{startRow}
 		) C
 		left join TARGET_INFO T on(T.STUDENT_NO = C.STUDENT_NO)
-		<if test="target!=null">
-			<where>
-				<if test="target.univ!=null and target.univ!=''">
-					AND T.UNIV = #{target.univ}
-				</if>
-				<if test="target.major!=null and target.major!=''">
-					AND T.MAJOR = #{target.major}
-				</if>
-			</where>
-		</if>
 		order by C.RN ASC, T.RANKING ASC
 	</select>
 

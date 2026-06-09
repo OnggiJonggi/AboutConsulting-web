@@ -1,4 +1,4 @@
-package com.ax.global.file;
+package com.ax.global.file.component;
 
 public enum FileNameEscapeEnum {
     AMP("&",  "&amp;"),

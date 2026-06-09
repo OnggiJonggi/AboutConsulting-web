@@ -15,16 +15,12 @@
         ,MIME
         ,FILE_SIZE
         ,SAVE_PATH
-        ,SAVED_AT
-        ,STATUS
       )values(
         #{originalName}
         ,#{changedName}
         ,#{mime}
         ,#{fileSize}
         ,#{savePath}
-        ,#{savedAt}
-        ,'ACTIVE'
       )
   </insert>
 

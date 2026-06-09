@@ -7,5 +7,12 @@
 인터셉터의 반환값 : preHandle의 반환값이 true이면
   나머지 진행 체인이 그대로 작동. false이면 즉시 멈춤
   postHandle(메소드 후 뷰 랜더링 이전)와 afterCompletion는 반환값이 없다.
-  
-getter, setter
+
+@Configuration
+  : 외부 라이브러리 객체를 사용할 때. 메서드에 @Bean붙여 씀.
+  : 싱글톤
+
+@Component
+  : 내가 작성한 코드
+  : 싱글톤 보장 X (new키워드, @Scope("prototype") 등등)
+  : service, repository, util등. 이름만 다르고 역할은 같음.

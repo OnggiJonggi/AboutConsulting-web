@@ -22,8 +22,9 @@
   폼 제출(post, /member/login)
 
 학생 등록 (/student/register)
-  학교 DB검색(get, /api/school/search)
-  학교 공공데이터 검색(get, /api/school/search/open)
+  학교 DB검색(get, /api/school)
+  고등학교 공공데이터 검색(get, /api/school/high)
+  대학교 공공데이터 검색(get, /api/school/univ)
   학교 추가(post, /api/shool/register)
   폼 제출(post, /student/register)
   
@@ -64,7 +65,7 @@
   닉네임 중복확인-수정용(get, /api/member/check-updatednickname)
   회원 상태변경(put, /api/member/{encryptedMemberNo}/update/status)
   회원 권한 변경(put, /api/member/{encryptedMemberNo}/update/role)
-  회원 탈퇴(, /member/delete)
+  회원 탈퇴(post, /member/delete)
 
 컨설턴트 목록(/consultant)
   목록 불러오기(get, /api/consultant)

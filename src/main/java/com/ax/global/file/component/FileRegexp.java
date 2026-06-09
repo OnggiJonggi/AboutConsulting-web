@@ -1,4 +1,4 @@
-package com.ax.global.file;
+package com.ax.global.file.component;
 
 public class FileRegexp {
 	private FileRegexp() {};

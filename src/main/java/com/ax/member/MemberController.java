@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.ax.global.common.SearchResultVO;
@@ -58,9 +59,10 @@ public class MemberController {
 	 * @return 실패하면 기존 페이지, 성공하면 메인화면
 	 */
 	@PostMapping("/join")
-	public String join(@Valid MemberVO.Join member
-			,BindingResult bindingResult
-			,Model model){
+	public String join(
+			@Valid @RequestParam MemberVO.Join member,
+			BindingResult bindingResult,
+			Model model){
 		
 		// 유효성 검사 실패하면 가세요라
 		if(bindingResult.hasErrors()) {
@@ -96,7 +98,8 @@ public class MemberController {
 	 * 모든 회원
 	 */
 	@GetMapping({"/myinfo","/{encryptedMemberNo}"})
-	public String myInfo(@PathVariable(required = false) String encryptedMemberNo,
+	public String myInfo(
+			@PathVariable(required = false) String encryptedMemberNo,
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			Model model) throws Exception {
 		
@@ -125,8 +128,10 @@ public class MemberController {
 	 * 관리자를 제외한 모든 권한
 	 */
 	@PostMapping("/delete")
-	public String deleteMember(@AuthenticationPrincipal CustomUserDetails userDetails,
-			HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public String deleteMember(
+			@AuthenticationPrincipal CustomUserDetails userDetails,
+			HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
 
 		// 누구세요
 		int memberNo = Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo()));

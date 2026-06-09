@@ -1,4 +1,4 @@
-package com.ax.global.file;
+package com.ax.global.file.component;
 
 /**
  * 맵핑 테이블 분류

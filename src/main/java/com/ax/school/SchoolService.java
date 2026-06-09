@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 public class SchoolService{
 	private final SchoolMapper schoolMapper;
 	
-	public List<SchoolVO.Detail> search(String schoolName) {
+	public List<SchoolVO.Detail> getList(String schoolName) {
 		return schoolMapper.selectSchoolList(schoolName);
 	}
 

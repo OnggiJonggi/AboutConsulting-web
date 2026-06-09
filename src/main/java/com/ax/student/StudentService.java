@@ -6,13 +6,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.ax.global.common.SearchResultVO;
 import com.ax.global.exception.CustomException;
 import com.ax.global.exception.ErrorCodeEnum;
 import com.ax.global.security.CryptoComponent;
+import com.ax.global.security.HmacComponent;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,7 @@ public class StudentService{
 	private final StudentMapper studentMapper;
 	private final TargetInfoMapper targetInfoMapper;
 	private final CryptoComponent cryptoComponent;
+	private final HmacComponent hmacComponent;
 	
 	
 	/**
@@ -31,6 +35,19 @@ public class StudentService{
 	 */
 	@Transactional
 	public String register(StudentVO.Register studentRegister) throws Exception {
+		
+		// 목표 대학/학과 HMAC 검증
+		if(studentRegister.getTarget()!=null && !studentRegister.getTarget().isEmpty()) {
+			
+			for(TargetInfoVO.Register target : studentRegister.getTarget()) {
+				String plainText = target.getUniv()+target.getMajor();
+				String hmacText = hmacComponent.hashing(plainText);
+				
+				// 헉학교학과해싱값과hmac필드값이다르다니대체그게무슨소리니
+				if(!hmacText.equals(target.getHmac()))
+					throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+			}
+		}
 		
 		// 학생 등록
 		studentMapper.insertStudent(studentRegister);

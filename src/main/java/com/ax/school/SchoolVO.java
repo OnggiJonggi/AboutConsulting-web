@@ -1,5 +1,7 @@
 package com.ax.school;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -63,7 +65,7 @@ public class SchoolVO {
 		 * @param ApiSchoolVO.apiResponse
 		 * @Return SchoolVO.Detail
 		 */
-		public static SchoolVO.Detail from(ApiSchoolVO.ApiRowBlock response) {
+		public static SchoolVO.Detail from(ApiSchoolVO.NiesBlock response) {
 			String coeducation;
 			String sigungu = "";
 			String specialized = "";
@@ -115,6 +117,33 @@ public class SchoolVO {
 					.specialized(specialized)
 					.specializedType(specializedType)
 					.build();
+		}
+	}
+	
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Getter
+	@ToString
+	public static class UnivDetail{
+		
+		@JsonProperty("SCHL_NM")
+		private String univ;
+		
+		@JsonProperty("SCSBJT_NM")
+		private String major;
+		
+		@JsonProperty("SCSBJT_STTS_NM")
+		private String majorStatus; // 학과 상태명
+		
+		@JsonProperty("UNIV_ONESLF_AFIL_NM")
+		private String department; // 학과 계열명
+		
+		private String hmac; // 유효성 검사용 hmac
+
+		
+		
+		public void setHmac(String hmac) {
+			this.hmac = hmac;
 		}
 	}
 }

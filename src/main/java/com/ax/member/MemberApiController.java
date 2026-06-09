@@ -128,9 +128,6 @@ public class MemberApiController {
 	 * 상태값 수정
 	 * 최고 관리자 상태값 수정 불가
 	 * 관리자 : 본인 계정 수정 불가
-	 * 
-	 * 회원 탈퇴
-	 * 관리자, 본인 계정
 	 * @return : 200 정상, 403 권한 없음
 	 */
 	@PutMapping("/{encryptedMemberNo}/update/status")
@@ -152,15 +149,6 @@ public class MemberApiController {
 				log.warn("관리자가 자신의 계정을 수정하려 시도중입니다. memberNo : "+myMemberNo);
 				throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 			}
-		}
-		
-		// 계정 삭제 아닌 그냥 수정이면 관리자 권한 필수
-		if(status!=MemberStatusEnum.DELETED
-				&& !userDetails.getAuthorities().stream()
-		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.ADMIN.getPrefix()))) {
-			
-			log.warn("권한이 없는 사용자가 상태값을 수정하려 합니다. memberNo : "+myMemberNo);
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 		}
 		
 		// 실시!

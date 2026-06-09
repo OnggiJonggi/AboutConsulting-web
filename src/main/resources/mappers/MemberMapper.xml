@@ -13,7 +13,7 @@
 	    <result property="nickname" column="NICKNAME"/>
 	    <result property="phone" column="PHONE"/>
 	    <result property="status" column="status"/>
-			<collection property="role" ofType="string">
+		<collection property="role" ofType="string">
 				<result column="ROLE"/>
     	</collection>
 	</resultMap>
@@ -84,7 +84,7 @@
 						,NICKNAME
 						,PHONE
 						,STATUS
-					from MEMBER
+					from MEMBER M
 					<where>
 						<if test="userId!=null and userId!='' ">
 							and ID like  '%' || #{userId} || '%'
@@ -98,8 +98,17 @@
 						<if test="phone!=null and phone!='' ">
 							and PHONE like '%' || #{phone} || '%'
 						</if>
-						<if test="status!=null and status.name()!='' ">
+						<if test="status!=null and status.name()!=''">
 							and STATUS = #{status}
+						</if>
+						<if test="role!=null and role.name()!=''">
+							and exists (
+								select 1
+								from ROLE_INFO RI2
+								inner join MEMBER_ROLE MR2 on (RI2.ROLE_NO = MR2.ROLE_NO)
+								where MR2.MEMBER_NO = MEMBER.MEMBER_NO
+								and RI2.NAME = #{role}
+							)
 						</if>
 					</where>
 					order by MEMBER_NO desc
@@ -110,9 +119,6 @@
 		) C
 		left join MEMBER_ROLE MR on (MR.MEMBER_NO = C.MEMBER_NO)
 		left join ROLE_INFO RI on (RI.ROLE_NO = MR.ROLE_NO)
-		<if test="role!=null and role.name()!='' ">
-			where RI.NAME = 'ROLE_' || #{role} 
-		</if>
 	</select>
 
 

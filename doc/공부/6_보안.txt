@@ -138,3 +138,7 @@ IDOR(Insecure Direct Object Reference)
 입력값 검사 책임 레이어
 	컨트롤러 : 입력값만 보면 알 수 있는 검사
 	서비스 : DB조회해야 알 수 있는 검사
+
+HMAC(Hash-based Message Authentication Code)
+    : 이 데이터는 서버가 만들었고, 변조되지 않았다는 서명
+    : 비밀키+데이터 후 해싱
