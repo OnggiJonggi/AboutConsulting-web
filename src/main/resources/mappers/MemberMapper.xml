@@ -6,16 +6,16 @@
 <mapper namespace="com.ax.member.MemberMapper">
 
 	<resultMap id="MemberDetailMap" type="MemberDetail">
-	    <id property="memberNo" column="MEMBER_NO"/>
-	    <result property="userId" column="ID"/>
-	    <result property="userPwd" column="PWD"/>
-	    <result property="name" column="NAME"/>
-	    <result property="nickname" column="NICKNAME"/>
-	    <result property="phone" column="PHONE"/>
-	    <result property="status" column="status"/>
+		<id property="memberNo" column="MEMBER_NO"/>
+		<result property="userId" column="ID"/>
+		<result property="userPwd" column="PWD"/>
+		<result property="name" column="NAME"/>
+		<result property="nickname" column="NICKNAME"/>
+		<result property="phone" column="PHONE"/>
+		<result property="status" column="status"/>
 		<collection property="role" ofType="string">
-				<result column="ROLE"/>
-    	</collection>
+			<result column="ROLE"/>
+		</collection>
 	</resultMap>
 
 	<select id="selectMemberById" parameterType="string" resultMap="MemberDetailMap" >

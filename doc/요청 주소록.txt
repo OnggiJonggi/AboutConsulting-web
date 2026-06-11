@@ -70,3 +70,10 @@
 컨설턴트 목록(/consultant)
   목록 불러오기(get, /api/consultant)
   컨설턴트 세부사항으로(get, /consultant/{encryptedConsultantNo})
+
+컨설턴트 세부사항(/consultant/{encryptedConsultantNo}, /consultant/myinfo)
+  담당 학생 세부사항으로(get, /student/{encryptedStudentNo})
+권한 - ADMIN
+  회원 세부사항으로(get, /member/{encryptedMemberNo})
+  담당 학생 추가(post, /api/consultant/charged)
+  담당 학생 삭제(delete, /api/consultant/charged)

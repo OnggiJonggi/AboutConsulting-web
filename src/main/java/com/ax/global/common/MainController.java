@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class MainController {
 	
 	/**
-	 * 메인 화면으로 끄져라 하는 메쏘드에요!
-	 * @return 메인 화면 경로
+	 * 메인 화면으로 끄져라.
 	 */
 	@GetMapping("/")
 	public String main() {

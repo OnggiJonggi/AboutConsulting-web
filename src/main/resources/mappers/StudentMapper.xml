@@ -171,5 +171,24 @@
 			</if>
 		</where>
 	</select>
-	
+
+	<!-- 컨설턴트-학생 -->
+	<select id="selectResponsibility" parameterType="_int" resultMap="StudentDetailMap">
+		select
+			STU.STUDENT_NO
+			,STU.NAME
+			,STU.GRADE
+			,STU.SEMESTER
+			,STU.TRACK
+			,SCH.SCHOOL_NAME
+			,TI.RANKING
+			,TI.UNIV
+			,TI.MAJOR
+		from STUDENT STU
+		inner join CONSULTANT_STUDENT CS on (CS.STUDENT_NO = STU.STUDENT_NO)
+		inner join SCHOOL SCH on (SCH.SCHOOL_CODE = STU.SCHOOL_CODE)
+		inner join TARGET_INFO TI (TI.STUDENT_NO = STU.STUDENT_NO)
+		where CS.CONSULTANT_NO = #{consultantNo}
+		order by STU.STUDENT_NO desc, TI.RANKING asc
+	</select>
 </mapper>

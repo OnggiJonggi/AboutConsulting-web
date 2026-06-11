@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SchoolApiController {
 	private final SchoolService schoolService;
-	private final ApiSchoolService apiService;
+	private final SchoolApiService apiService;
 
 	/**
 	 * 학교 데이터 db조회

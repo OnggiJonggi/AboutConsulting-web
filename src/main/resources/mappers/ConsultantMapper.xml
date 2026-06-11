@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ax.consultant.ConsultantMapper">
+
+  <select id="selectList" parameterType="ConsultantSearch" resultType="ConsultantDetail">
+    select * from B
+    from(
+      select rownum RN, A.*
+      from(
+        select
+          MEM.ID as USER_ID
+          ,MEM.NAME
+          ,MEM.NICKNAME
+          ,MEM.STATUS
+          ,CON.CONSULTANT_NO
+          ,ORG.NAME as ORG_NAME
+          ,count(*) as STUDENT_COUNT
+        from CONSULTANT CON
+        left join MEMBER MEM on (MEM.MEMBER_NO = CON.CONSULTANT_NO)
+        left join ORGANIZATION ORG on (ORG.ORG_NO = CON.ORG_NO)
+        left join CONSULTANT_STUDENT CS on (CON.CONSULTANT_NO = CS.CONSULTANT_NO)
+        <where>
+          <if test="name!=null and name!=''">
+            and MEM.NAME = #{name}
+          </if>
+          <if test="nickname!=null and nickname!=''">
+            and MEM.NICKNAME = #{nickname}
+          </if>
+          <if test="status!=null">
+            and MEM.STATUS = #{status}
+          </if>
+          <if test="orgName!=null and orgName!=''">
+            and ORG.NAME = #{orgName}
+          </if>
+          <if test="studentName!=null and studentName!=''">
+            and exists (
+              select 1
+              from CONSULTANT CON2
+              left join CONSULTANT_STUDENT CS2 on (CON2.CONSULTANT_NO = CS2.CONSULTANT_NO)
+              left join STUDENT STU2 on (STU2.STUDENT_NO = CS2.STUDENT_NO)
+              where CON2.CONSULTANT_NO = CON.CONSULTANT_NO
+              and STU2.NAME = #{studentName}
+            )
+          </if>
+        </where>
+        group by
+          MEM.ID
+          ,MEM.NAME
+          ,MEM.NICKNAME
+          ,MEM.STATUS
+          ,CON.CONSULTANT_NO
+          ,ORG.NAME
+        order by CONSULTANT_NO desc
+      ) A
+      where rownum &lt;= #{endRow}
+    ) B
+    where RN &gt;= #{startRow}
+  </select>
+
+  <select id="selectListTotalCount" parameterType="ConsultantSearch" resultType="_int">
+    select count(*)
+    from CONSULTANT CON
+    left join MEMBER MEM on (MEM.MEMBER_NO = CON.CONSULTANT_NO)
+    left join ORGANIZATION ORG on (ORG.ORG_NO = CON.ORG_NO)
+    <where>
+      <if test="name!=null and name!=''">
+        and MEM.NAME = #{name}
+      </if>
+      <if test="nickname!=null and nickname!=''">
+        and MEM.NICKNAME = #{nickname}
+      </if>
+      <if test="status!=null">
+        and MEM.STATUS = #{status}
+      </if>
+      <if test="orgName!=null and orgName!=''">
+        and ORG.NAME = #{orgName}
+      </if>
+      <if test="studentName!=null and studentName!=''">
+        and exists (
+          select 1
+          from CONSULTANT CON2
+          left join CONSULTANT_STUDENT CS2 on (CON2.CONSULTANT_NO = CS2.CONSULTANT_NO)
+          left join STUDENT STU2 on (STU2.STUDENT_NO = CS2.STUDENT_NO)
+          where CON2.CONSULTANT_NO = CON.CONSULTANT_NO
+          and STU2.NAME = #{studentName}
+        )
+      </if>
+    </where>
+  </select>
+
+
+	<select id="selectOne" parameterType="_int" resultType="consultantDetail">
+		select
+			MEM.ID as USER_ID
+			,MEM.NAME
+			,MEM.NICKNAME
+			,MEM.STATUS
+			,CON.CONSULTANT_NO
+			,ORG.NAME as ORG_NAME
+			,count(*) as STUDENT_COUNT
+		from CONSULTANT CON
+		left join MEMBER MEM on (MEM.MEMBER_NO = CON.CONSULTANT_NO)
+		left join ORGANIZATION ORG on (ORG.ORG_NO = CON.ORG_NO)
+		left join CONSULTANT_STUDENT CS on (CS.CONSULTANT_NO = CON.CONSULTANT_NO)
+		where CON.CONSULTANT_NO = #{consultantNo}
+		group by
+			MEM.ID
+			,MEM.NAME
+			,MEM.NICKNAME
+			,MEM.STATUS
+			,CON.CONSULTANT_NO
+			,ORG.NAME
+	</select>
+</mapper>

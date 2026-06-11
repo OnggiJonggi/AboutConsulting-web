@@ -1,37 +1,36 @@
-어바웃컨설팅 웹 API
+# 어바웃컨설팅 웹 API
 
+## 🛠 기술 스택
 
-----------------------------------------------------
-프론트 : thymeleaf(+ extras spring security6), bootstrap 5.3.3
+| 영역 | 기술 |
+|------|------|
+| 프론트 | Thymeleaf (+ Extras Spring Security 6), Bootstrap 5.3.3 |
+| 백엔드 | Java 17, Spring Boot 4.0.6, Maven |
+| DB | Oracle 26, MyBatis 4.0.1 (Spring Boot Starter) |
 
-웹 : java 17, spring boot 4.0.6, maven
+## 📄 API 문서
 
-db : oracle 26, mybatis 4.0.1(spring boot starter)
+Swagger UI : http://localhost:8080/swagger-ui.html
 
-스윀어 http://localhost:8080/swagger-ui.html
+---
 
-----------------------------------------------------
-src/main/resources/config/key.properties
+## ⚙️ 환경 설정
 
+### `src/main/resources/config/key.properties`
 
-ABS-128 평문 키
+```properties
+# AES-128 평문 키 (16자리 암호화 키)
+crypto.key=
 
-crypto.key= #16글자 암호화 키
+# HMAC 키
+# src/test/java/com/ax/tool/CreateHmacKey.java 실행 후 결과값 입력
+hmac.key=
 
-HMAC 키
+# 나이스 교육개방포털 API 키
+# https://open.neis.go.kr/portal/data/service/selectServicePage.do
+neis-data.key=
 
-hmac.key= # src\test\java\com\ax\tool\CreateHmacKey.java 실행 결과
-
-
-나이스 교육개방포털 API 키
-
-https://open.neis.go.kr/portal/data/service/selectServicePage.do
-
-nies-data.key= (인증키)
-
-
-공공데이터 API키
-
-https://www.data.go.kr/data/15107737/standard.do
-
-public-data.key= (Encoding 인증키)
+# 공공데이터포털 API 키 (Encoding 인증키)
+# https://www.data.go.kr/data/15107737/standard.do
+public-data.key=
+```

@@ -65,7 +65,7 @@ public class SchoolVO {
 		 * @param ApiSchoolVO.apiResponse
 		 * @Return SchoolVO.Detail
 		 */
-		public static SchoolVO.Detail from(ApiSchoolVO.NiesBlock response) {
+		public static SchoolVO.Detail from(SchoolApiVO.NiesBlock response) {
 			String coeducation;
 			String sigungu = "";
 			String specialized = "";

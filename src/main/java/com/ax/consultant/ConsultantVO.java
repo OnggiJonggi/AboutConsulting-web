@@ -1,7 +1,10 @@
 package com.ax.consultant;
 
+import java.util.List;
+
 import com.ax.global.common.SearchPageVO;
 import com.ax.member.MemberStatusEnum;
+import com.ax.student.StudentVO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -26,12 +29,17 @@ public class ConsultantVO {
 		private MemberStatusEnum status;
 		
 		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-		private int consultantNo;
+		private int consultantNo; // 컨설턴트 식별번호(회원 식별번호)
 		private String encryptedConsultantNo;
 		
+		// ORGANIZATION 테이블
 		private String orgName; // 소속 이름
 		
+		// CONSULTANT_STUDENT 테이블
 		private int studentCount; // 담당 학생 수
+		
+		// STUDENT 테이블
+		private List<StudentVO.Detail> responsibility; // 담당 학생
 
 		
 		
@@ -42,6 +50,10 @@ public class ConsultantVO {
 		public void setEncryptedConsultantNo(String encryptedConsultantNo) {
 			this.encryptedConsultantNo = encryptedConsultantNo;
 		}
+		// 담당 학생 setter
+		public void setResponsibility(List<StudentVO.Detail> responsibility) {
+			this.responsibility = responsibility;
+		}
 	}
 	
 	@NoArgsConstructor
@@ -51,11 +63,15 @@ public class ConsultantVO {
 	@EqualsAndHashCode(callSuper = true)
 	public static class Search extends SearchPageVO{
 		
+		// MEMBER 테이블
 		private String name; // 컨설턴트 이름
 		private String nickname; // 컨설턴트 별명
+		private MemberStatusEnum status; // 회원 상태
 		
+		// STUDENT 테이블
 		private String studentName; // 담당 학생 이름
 		
+		// ORGANIZATION 테이블
 		private String orgName; // 소속 이름
 	}
 }

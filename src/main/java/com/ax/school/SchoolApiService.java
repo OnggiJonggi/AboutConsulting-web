@@ -26,11 +26,11 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ApiSchoolService {
+public class SchoolApiService {
 	private final RestTemplate restTemplate;
 	private final HmacComponent hmacComponent;
 
-	@Value("${nies-data.key}")
+	@Value("${neis-data.key}")
 	private String niesKeyStr;
 	
 	@Value("${public-data.key}")
@@ -54,16 +54,16 @@ public class ApiSchoolService {
 		HttpEntity<Void> httpEntity = new HttpEntity<>(headers);
 
 		// 요청
-		ResponseEntity<ApiSchoolVO.NiesWrapper1> response = 
+		ResponseEntity<SchoolApiVO.NiesWrapper1> response = 
 				restTemplate.exchange(uri, HttpMethod.GET, httpEntity,
-				ApiSchoolVO.NiesWrapper1.class);
+				SchoolApiVO.NiesWrapper1.class);
 		
-		ApiSchoolVO.NiesWrapper1 body = response.getBody();
+		SchoolApiVO.NiesWrapper1 body = response.getBody();
 		
 		// 파싱, Detail로 옮기기
 		List<SchoolVO.Detail> result = new ArrayList<>();
 		if (body != null && body.getData() != null) {
-			for (ApiSchoolVO.NiesBlock school : body.getData()) {
+			for (SchoolApiVO.NiesBlock school : body.getData()) {
 				result.add(SchoolVO.Detail.from(school));
 			}
 		}
@@ -105,8 +105,8 @@ public class ApiSchoolService {
 	    ObjectMapper mapper = new ObjectMapper();
 	    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-	    ApiSchoolVO.OpenDataWrapper apiResponse = mapper.readValue(
-	            response.getBody(), ApiSchoolVO.OpenDataWrapper.class);
+	    SchoolApiVO.OpenDataWrapper apiResponse = mapper.readValue(
+	            response.getBody(), SchoolApiVO.OpenDataWrapper.class);
 
 	    // 폐과 제외
 	    List<SchoolVO.UnivDetail> result = apiResponse.getItems().stream()

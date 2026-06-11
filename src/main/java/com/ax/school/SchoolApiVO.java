@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-public class ApiSchoolVO {
+public class SchoolApiVO {
 	/**
 	 * nies api요청 첫 번째 wrapper
 	 */
