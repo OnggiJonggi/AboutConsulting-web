@@ -24,7 +24,7 @@
 학생 등록 (/student/register)
   학교 DB검색(get, /api/school)
   고등학교 공공데이터 검색(get, /api/school/high)
-  대학교 공공데이터 검색(get, /api/school/univ)
+  (미사용) 대학교 공공데이터 검색(get, /api/school/univ)
   학교 추가(post, /api/shool/register)
   폼 제출(post, /student/register)
   

@@ -23,9 +23,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SchoolApiService {
 	private final RestTemplate restTemplate;
 	private final HmacComponent hmacComponent;
@@ -46,7 +48,10 @@ public class SchoolApiService {
 				+ "?KEY=" + niesKeyStr
 				+ "&Type=json&pIndex=1&pSize=5"
 				+ "&SCHUL_NM=" + URLEncoder.encode(schoolName, StandardCharsets.UTF_8);
-		URI uri = new URI(urlStr);
+		
+		// 인코딩된 문자열로 uri만들기
+		// 인코딩 안 된 문자열을 인코딩해 만드려면 new URI()사용
+		URI uri = URI.create(urlStr);
 		
 		// 헤더 생성
 		HttpHeaders headers = new HttpHeaders();
@@ -83,13 +88,15 @@ public class SchoolApiService {
 		
 		// 학교명 UTF-8로 인코딩하고 url에 삽입
 		String urlStr = "https://api.data.go.kr/openapi/tn_pubr_public_univ_major_api"
-				+ "?KEY=" + publicKeyStr
+				+ "?serviceKey=" + publicKeyStr
 				+ "&Type=json&pageNo=1&numOfRows=5"
 				+ "&SCHL_NM=" + URLEncoder.encode(univ, StandardCharsets.UTF_8)
 				+ "&SCHL_SE_NM=" + URLEncoder.encode("대학교", StandardCharsets.UTF_8)
 				+ "&SCSBJT_NM=" + URLEncoder.encode(major, StandardCharsets.UTF_8);
 		
-		URI uri = new URI(urlStr);
+		// 인코딩된 문자열로 uri만들기
+		// 인코딩 안 된 문자열을 인코딩해 만드려면 new URI()사용
+		URI uri = URI.create(urlStr);
 		
 		// 헤더 생성
 		HttpHeaders headers = new HttpHeaders();
@@ -101,6 +108,18 @@ public class SchoolApiService {
 	    ResponseEntity<String> response = restTemplate.exchange(
 	            uri, HttpMethod.GET, httpEntity, String.class);
 
+	    if (response.getHeaders().getContentType().isCompatibleWith(MediaType.APPLICATION_XML)) {
+	    	/* 
+	    	 * 오류가 발생하면 json이 아닌 xml방식으로 와요.
+	    	 * 그러니 xml을 파싱하도록 바꿔야 하는데
+	    	 * 귀찮으니까 mime가 XML이다 = 404로 둘게요
+	    	 */
+	        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+	    }
+	    
+	    
+	    
+	    
 	    // 파싱
 	    ObjectMapper mapper = new ObjectMapper();
 	    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

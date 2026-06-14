@@ -52,6 +52,7 @@ public class SchoolApiController {
 	}
 	
 	/**
+	 * (미사용)
 	 * 대학교 데이터 공공데이터 조회
 	 * 관리자/컨설턴트
 	 */

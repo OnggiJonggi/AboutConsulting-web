@@ -12,6 +12,12 @@
 
 Swagger UI : http://localhost:8080/swagger-ui.html
 
+전체 요청 경로 : doc\요청 주소록.txt
+
+## 🗃️ DB
+
+doc/sql 경로 파일들 순서대로 실행
+
 ---
 
 ## ⚙️ 환경 설정
@@ -30,7 +36,7 @@ hmac.key=
 # https://open.neis.go.kr/portal/data/service/selectServicePage.do
 neis-data.key=
 
-# 공공데이터포털 API 키 (Encoding 인증키)
+# (미사용) 공공데이터포털 API 키 (Encoding 인증키)
 # https://www.data.go.kr/data/15107737/standard.do
 public-data.key=
 ```

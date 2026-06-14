@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 @ControllerAdvice(annotations = Controller.class)
+@Slf4j
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(CustomException.class)
@@ -33,9 +35,10 @@ public class GlobalExceptionHandler {
 
 	    model.addAttribute("error", e.getReason());
 	    model.addAttribute("status", status);
-
+	    
 	    // 상태코드별 뷰 페이지 분기
 	    switch(status) {
+	    case 400:
 	    case 401:
 	    case 403:
 	    case 404:
@@ -43,6 +46,8 @@ public class GlobalExceptionHandler {
 	    default : return "error/500";
 	    }
 	}
+	
+	
 
 	// 일반 예외는 500
 	@ExceptionHandler(Exception.class)

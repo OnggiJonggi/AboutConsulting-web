@@ -14,7 +14,7 @@ import com.ax.global.security.CryptoComponent;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/consultant")
+@RequestMapping("/api/consultant")
 @RequiredArgsConstructor
 public class ConsultantApiController {
 	private final ConsultantService consultantService;
