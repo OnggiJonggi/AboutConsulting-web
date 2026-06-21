@@ -3,6 +3,7 @@ package com.ax.global.security;
 public enum RoleEnum {
 	SUPER_ADMIN,
 	ADMIN,
+	CONSULTANT_LEADER,
 	CONSULTANT,
 	STUDENT,
 	VIEWER

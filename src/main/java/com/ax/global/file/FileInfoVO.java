@@ -13,74 +13,75 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 public class FileInfoVO {
-	
+
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Data
 	@Builder
-	public static class Registor{
-		
-		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@ToString
+	public static class Registor {
 		private int fileNo;
-		
 		private String originalName;
 		private String changedName;
 		private String mime;
 		private long fileSize;
 		private String savePath;
-		private LocalDateTime savedAt; // java서버 기준
 	}
-	
-	
+
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Data
 	@Builder
-	public static class Detail{
-		
+	@ToString
+	public static class Detail {
+
 		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private int fileNo;
-		
+
 		private String encryptedFileNo;
 		private String originalName;
 		private long fileSize;
 		private LocalDateTime savedAt;
-		
+
 	}
-	
+
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Builder
 	@Getter
-	public static class InsertMapping{
+	@ToString
+	public static class InsertMapping {
 		private TargetEnum target;
-		
+
 		private int groupNo;
 		private int fileNo;
 	}
-	
+
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Getter
-	public static class GetFile{
+	@ToString
+	public static class GetFile {
 		private String originalName;
 		private String mime;
 		private String savePath;
 	}
-	
+
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Getter
 	@Builder
+	@ToString
 	public static class FileResult {
-	    private Resource resource;
-	    private String originalName;
-	    private String mimeType;
-	    private boolean inline; // true = 새 탭 렌더링, false = 다운로드
+		private Resource resource;
+		private String originalName;
+		private String mimeType;
+		private boolean inline; // true = 새 탭 렌더링, false = 다운로드
 	}
-	
+
 	/**
 	 * 파일 상태값 업테이트 전용
 	 */
@@ -88,28 +89,30 @@ public class FileInfoVO {
 	@AllArgsConstructor
 	@Getter
 	@Builder
+	@ToString
 	public static class UpdateStatus {
 		private int GroupNo;
 		private String encryptedGroupNo;
-		
+
 		private int fileNo;
 		private String status;
 	}
-	
+
 	// FILE_HISTORY 삽입
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Data
 	@Builder
+	@ToString
 	public static class InsertHistory {
 		private int fileNo;
+		private int historyNo;
 		private String originalName;
+		private String changedName;
 		private String savePath;
 		private FileStatusEnum action;
 		private LocalDateTime actionAt;
 		private int actionBy;
 	}
-	
-	
-	
+
 }

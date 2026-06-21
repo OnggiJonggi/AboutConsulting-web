@@ -37,23 +37,33 @@ document.addEventListener('DOMContentLoaded', function () {
     const params = { page: page || 1 };
     const form = document.getElementById('searchForm');
 
-    ['name', 'schoolName'].forEach(function (key) {
+    // 텍스트 입력 필드
+    ['name', 'schoolName', 'consultantNickname', 'consultantOrgName'].forEach(function (key) {
       const el = form.querySelector('[name="' + key + '"]');
       if (el && el.value.trim()) params[key] = el.value.trim();
     });
 
+    // 숫자형 hidden 필드 (grade, semester)
     ['grade', 'semester'].forEach(function (key) {
       const el = form.querySelector('#f-' + key);
       if (el && el.value) params[key] = el.value;
     });
 
+    // 계열
     const trackEl = form.querySelector('#f-track');
     if (trackEl && trackEl.value) params['track'] = trackEl.value;
 
-    const targetUniv = form.querySelector('[name="target.univ"]');
-    const targetMajor = form.querySelector('[name="target.major"]');
-    if (targetUniv && targetUniv.value.trim()) params['target.univ'] = targetUniv.value.trim();
-    if (targetMajor && targetMajor.value.trim()) params['target.major'] = targetMajor.value.trim();
+    // 목표 대학/학과 (수정된 파라미터명)
+    const targetUniv = form.querySelector('[name="targetUniv"]');
+    const targetMajor = form.querySelector('[name="targetMajor"]');
+    if (targetUniv && targetUniv.value.trim()) params['targetUniv'] = targetUniv.value.trim();
+    if (targetMajor && targetMajor.value.trim()) params['targetMajor'] = targetMajor.value.trim();
+
+    // 담당 컨설턴트 여부: 전체('')면 파라미터 미포함, true/false면 포함
+    const isChargedEl = form.querySelector('#f-isCharged');
+    if (isChargedEl && isChargedEl.value !== '') {
+      params['isCharged'] = isChargedEl.value; // "true" 또는 "false" 문자열
+    }
 
     return params;
   }
@@ -79,6 +89,20 @@ document.addEventListener('DOMContentLoaded', function () {
       '</div>'
       : '';
 
+    // 담당 컨설턴트 행
+    const hasConsultant = student.consultantNickname || student.consultantOrgName;
+    const consultantHtml = '<div class="student-consultant">' +
+      '<i data-lucide="user-check" class="meta-icon"></i>' +
+      '<span class="consultant-label">담당 컨설턴트</span>' +
+      (hasConsultant
+        ? '<span class="consultant-nickname">' + escapeHtml(student.consultantNickname || '-') + '</span>' +
+        '<span class="meta-sep">|</span>' +
+        '<i data-lucide="building-2" class="meta-icon"></i>' +
+        '<span class="consultant-org">' + escapeHtml(student.consultantOrgName || '-') + '</span>'
+        : '<span class="consultant-none">미배정</span>'
+      ) +
+      '</div>';
+
     return '<div class="student-card" onclick="location.href=\'/student/' + escapeHtml(student.encryptedStudentNo) + '\'">' +
       '<div class="student-main">' +
       '<div class="student-name-row">' +
@@ -96,6 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
       '</div>' +
       '</div>' +
       targetsHtml +
+      consultantHtml +
       '</div>';
   }
 

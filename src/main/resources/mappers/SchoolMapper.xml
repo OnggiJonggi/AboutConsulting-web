@@ -4,17 +4,8 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.ax.school.SchoolMapper">
-	<resultMap id="SchoolDetailMap" type="SchoolDetail">
-		<result property="schoolCode"     column="SCHOOL_CODE"/>
-		<result property="name"           column="NAME"/>
-		<result property="sido"           column="SIDO"/>
-		<result property="sigungu"        column="SIGUNGU"/>
-		<result property="coeducation"    column="COEDUCATION"/>
-		<result property="specialized"    column="SPECIALIZED"/>
-		<result property="specializedType" column="SPECIALIZED_TYPE"/>
-	</resultMap>
 
-	<select id="selectSchoolList" parameterType="string" resultMap="SchoolDetailMap">
+	<select id="selectSchoolList" parameterType="string" resultType="SchoolDetail">
 		select
 			SCHOOL_CODE
 			,NAME

@@ -17,6 +17,6 @@ public interface StudentMapper {
 
 	public StudentVO.Detail selectStudentForRecordApi(int studentNo);
 
-	public List<StudentVO.Detail> selectResponsibility(int consultantNo);
+	public List<StudentVO.Detail> selectCharged(int consultantNo);
 
 }

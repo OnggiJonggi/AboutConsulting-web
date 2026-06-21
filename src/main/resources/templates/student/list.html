@@ -102,8 +102,8 @@
             <label class="filter-label" for="f-targetUniv">
               <i data-lucide="landmark" class="label-icon"></i>목표 대학
             </label>
-            <input type="text" id="f-targetUniv" name="target.univ" class="filter-input" placeholder="대학명 입력"
-              th:value="${studentSearch.target != null ? studentSearch.target.univ : ''}">
+            <input type="text" id="f-targetUniv" name="targetUniv" class="filter-input" placeholder="대학명 입력"
+              th:value="${studentSearch.targetUniv != null ? studentSearch.targetUniv : ''}">
           </div>
 
           <!-- 목표 학과 -->
@@ -111,8 +111,42 @@
             <label class="filter-label" for="f-targetMajor">
               <i data-lucide="flask-conical" class="label-icon"></i>목표 학과
             </label>
-            <input type="text" id="f-targetMajor" name="target.major" class="filter-input" placeholder="학과명 입력"
-              th:value="${studentSearch.target != null ? studentSearch.target.major : ''}">
+            <input type="text" id="f-targetMajor" name="targetMajor" class="filter-input" placeholder="학과명 입력"
+              th:value="${studentSearch.targetMajor != null ? studentSearch.targetMajor : ''}">
+          </div>
+
+          <!-- 담당 컨설턴트 여부 -->
+          <div class="filter-group">
+            <label class="filter-label">
+              <i data-lucide="user-check" class="label-icon"></i>담당 컨설턴트 여부
+            </label>
+            <div class="btn-group-radio" id="isChargedGroup">
+              <button type="button" class="radio-btn" data-name="isCharged" data-value="">전체</button>
+              <button type="button" class="radio-btn" data-name="isCharged" data-value="true">있음</button>
+              <button type="button" class="radio-btn" data-name="isCharged" data-value="false">없음</button>
+            </div>
+            <input type="hidden" id="f-isCharged" name="isCharged"
+              th:value="${studentSearch.isCharged != null ? studentSearch.isCharged : ''}">
+          </div>
+
+          <!-- 담당 컨설턴트 닉네임 -->
+          <div class="filter-group">
+            <label class="filter-label" for="f-consultantNickname">
+              <i data-lucide="contact" class="label-icon"></i>담당 컨설턴트 닉네임
+            </label>
+            <input type="text" id="f-consultantNickname" name="consultantNickname" class="filter-input"
+              placeholder="닉네임 입력"
+              th:value="${studentSearch.consultantNickname != null ? studentSearch.consultantNickname : ''}">
+          </div>
+
+          <!-- 담당 컨설턴트 소속 이름 -->
+          <div class="filter-group">
+            <label class="filter-label" for="f-consultantOrgName">
+              <i data-lucide="building-2" class="label-icon"></i>담당 컨설턴트 소속명
+            </label>
+            <input type="text" id="f-consultantOrgName" name="consultantOrgName" class="filter-input"
+              placeholder="소속명 입력"
+              th:value="${studentSearch.consultantOrgName != null ? studentSearch.consultantOrgName : ''}">
           </div>
 
           <!-- 검색 버튼 -->
@@ -185,6 +219,21 @@
                   <i data-lucide="flask-conical" class="meta-icon"></i>
                   <span class="target-major" th:text="${t.major}">학과명</span>
                 </div>
+              </div>
+
+              <!-- 담당 컨설턴트 행 -->
+              <div class="student-consultant">
+                <i data-lucide="user-check" class="meta-icon"></i>
+                <span class="consultant-label">담당 컨설턴트</span>
+                <th:block th:if="${student.consultantNickname != null or student.consultantOrgName != null}">
+                  <span class="consultant-nickname" th:text="${student.consultantNickname ?: '-'}">닉네임</span>
+                  <span class="meta-sep">|</span>
+                  <i data-lucide="building-2" class="meta-icon"></i>
+                  <span class="consultant-org" th:text="${student.consultantOrgName ?: '-'}">조직명</span>
+                </th:block>
+                <th:block th:unless="${student.consultantNickname != null or student.consultantOrgName != null}">
+                  <span class="consultant-none">미배정</span>
+                </th:block>
               </div>
 
             </div>

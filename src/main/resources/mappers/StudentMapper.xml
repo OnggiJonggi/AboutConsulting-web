@@ -15,6 +15,8 @@
 		<result property="semester"   column="SEMESTER"/>
 		<result property="track"      column="TRACK"/>
 		<result property="schoolName" column="SCHOOL_NAME"/>
+		<result property="consultantNickname" column="CONSULTANT_NICKNAME"/>
+		<result property="consultantOrgName" column="CONSULTANT_ORG_NAME"/>
 		<collection property="target" ofType="TargetInfoPair" resultMap="pairMap"/>
 	</resultMap>
 	<resultMap id="pairMap" type="TargetInfoPair">
@@ -37,7 +39,7 @@
 
 	<select id="selectStudent" parameterType="_int" resultMap="StudentDetailMap">
 		select
-			S.STUDENT_NO -- 객체에 안 담는 식별용
+			S.STUDENT_NO
 			,S.NAME
 			,S.GRADE
 			,S.SEMESTER
@@ -56,7 +58,7 @@
 
 	<select id="selectStudentForRecordApi" parameterType="_int" resultMap="StudentDetailMap">
 		select
-			S.STUDENT_NO -- 객체에 안 담는 식별용
+			S.STUDENT_NO
 			,S.NAME
 			,S.GRADE
 			,S.SEMESTER
@@ -81,6 +83,8 @@
 			,C.SEMESTER
 			,C.TRACK
 			,C.SCHOOL_NAME
+			,C.CONSULTANT_NICKNAME
+			,C.CONSULTANT_ORG_NAME
 			,T.MAJOR
 			,T.UNIV
 			,T.RANKING
@@ -95,38 +99,65 @@
 						,S.GRADE
 						,S.SEMESTER
 						,S.TRACK
-						,SCH.NAME AS SCHOOL_NAME
+						,SCH.NAME as SCHOOL_NAME
+						,M.NICKNAME as CONSULTANT_NICKNAME
+						,CON_ORG.NAME as CONSULTANT_ORG_NAME
 					from STUDENT S
 					left join SCHOOL SCH on (S.SCHOOL_CODE = SCH.SCHOOL_CODE)
+					left join CONSULTANT_STUDENT CS on (CS.STUDENT_NO = S.STUDENT_NO)
+					left join CONSULTANT CON on (CON.CONSULTANT_NO = CS.CONSULTANT_NO)
+					left join CONSULTANT_ORG CON_ORG on (CON_ORG.ORG_NO = CON.ORG_NO)
+					left join MEMBER M on (M.MEMBER_NO = CON.CONSULTANT_NO)
 					<where>
 						<if test="name!=null and name!=''">
-							AND S.NAME = #{name}
+							and S.NAME like '%' || #{name} || '%'
 						</if>
 						<if test="grade!=0">
-							AND S.GRADE = #{grade}
+							and S.GRADE = #{grade}
 						</if>
 						<if test="semester!=0">
-							AND S.SEMESTER = #{semester}
+							and S.SEMESTER = #{semester}
 						</if>
 						<if test="track!=null and track!=''">
-							AND S.TRACK = #{track}
+							and S.TRACK like '%' || #{track} || '%'
 						</if>
 						<if test="schoolName!=null and schoolName!=''">
-							AND SCH.NAME = #{schoolName}
+							and SCH.NAME like '%' || #{schoolName} || '%'
 						</if>
-						<if test="target!=null">
-							and exist(
+						<if test="(targetUniv!=null and targetUniv!='')
+							or (targetMajor!=null and targetMajor!='')">
+
+							and exists(
 								select 1
 								from TARGET_INFO T2
 								inner join STUDENT S2 on(T2.STUDENT_NO = S2.STUDENT_NO)
 								where S2.STUDENT_NO = S.STUDENT_NO
-								<if test="target.univ!=null and target.univ!=''">
-									AND T2.UNIV = #{target.univ}
+								<if test="targetUniv!=null and targetUniv!=''">
+									and T2.UNIV like '%' || #{targetUniv} || '%'
 								</if>
-								<if test="target.major!=null and target.major!=''">
-									AND T2.MAJOR = #{target.major}
+								<if test="targetMajor!=null and targetMajor!=''">
+									and T2.MAJOR like '%' || #{targetMajor} || '%'
 								</if>
 							)
+						</if>
+						<if test="isCharged!=null">
+							<if test="isCharged==true">
+								and exists
+							</if>
+							<if test="isCharged==false">
+								and not exists
+							</if>
+							(
+								select 1
+								from CONSULTANT_STUDENT CS3
+								where CS3.STUDENT_NO = S.STUDENT_NO
+							)
+						</if>
+						<if test="consultantNickname!=null and consultantNickname!=''">
+							and M.NICKNAME like '%' || #{consultantNickname} || '%'
+						</if>
+						<if test="consultantOrgName!=null and consultantOrgName!=''">
+							and CON_ORG.NAME like '%' || #{consultantOrgName} || '%'
 						</if>
 					</where>
 					order by S.STUDENT_NO DESC
@@ -144,50 +175,77 @@
 		select count(distinct S.STUDENT_NO)
 		from STUDENT S
 		left join SCHOOL SCH on (S.SCHOOL_CODE = SCH.SCHOOL_CODE)
-		left join TARGET_INFO T on(T.STUDENT_NO = S.STUDENT_NO)
+		<if test="(targetUniv!=null and targetUniv!='')
+			or (targetMajor!=null and targetMajor!='')">
+			left join TARGET_INFO T on(T.STUDENT_NO = S.STUDENT_NO)
+		</if>
+		<if test="consultantNickname!=null and consultantNickname!=''
+							or consultantOrgName!=null and consultantOrgName!=''">
+			left join CONSULTANT_STUDENT CS on (CS.STUDENT_NO = S.STUDENT_NO)
+			left join CONSULTANT CON on (CON.CONSULTANT_NO = CS.CONSULTANT_NO)
+			left join CONSULTANT_ORG CON_ORG on (CON_ORG.ORG_NO = CON.ORG_NO)
+			left join MEMBER M on (M.MEMBER_NO = CON.CONSULTANT_NO)
+		</if>
 		<where>
 			<if test="name!=null and name!=''">
-				AND S.NAME = #{name}
+				and S.NAME = like '%' || #{name} || '%'
 			</if>
 			<if test="grade!=0">
-				AND S.GRADE = #{grade}
+				and S.GRADE = #{grade}
 			</if>
 			<if test="semester!=0">
-				AND S.SEMESTER = #{semester}
+				and S.SEMESTER = #{semester}
 			</if>
 			<if test="track!=null and track!=''">
-				AND S.TRACK = #{track}
+				and S.TRACK like '%' || #{track} || '%'
 			</if>
 			<if test="schoolName!=null and schoolName!=''">
-				AND SCH.NAME = #{schoolName}
+				and SCH.NAME like '%' || #{schoolName} || '%'
 			</if>
-			<if test="target!=null">
-				<if test="target.univ!=null and target.univ!=''">
-					AND T.UNIV = #{target.univ}
+			<if test="targetUniv!=null and targetUniv!=''">
+				and T.UNIV like '%' || #{targetUniv} || '%'
+			</if>
+			<if test="targetMajor!=null and targetMajor!=''">
+				and T.MAJOR like '%' || #{targetMajor} || '%'
+			</if>
+			<if test="isCharged!=null">
+				<if test="isCharged==true">
+					and exists
 				</if>
-				<if test="target.major!=null and target.major!=''">
-					AND T.MAJOR = #{target.major}
+				<if test="isCharged==false">
+					and not exists
 				</if>
+				(
+					select 1
+					from CONSULTANT_STUDENT CS3
+					where CS3.STUDENT_NO = S.STUDENT_NO
+				)
+			</if>
+			<if test="consultantNickname!=null and consultantNickname!=''">
+				and M.NICKNAME like '%' || #{consultantNickname} || '%'
+			</if>
+			<if test="consultantOrgName!=null and consultantOrgName!=''">
+				and CON_ORG.NAME like '%' || #{consultantOrgName} || '%'
 			</if>
 		</where>
 	</select>
 
-	<!-- 컨설턴트-학생 -->
-	<select id="selectResponsibility" parameterType="_int" resultMap="StudentDetailMap">
+	<!-- 컨설턴트 - 학생 -->
+	<select id="selectCharged" parameterType="_int" resultMap="StudentDetailMap">
 		select
 			STU.STUDENT_NO
 			,STU.NAME
 			,STU.GRADE
 			,STU.SEMESTER
 			,STU.TRACK
-			,SCH.SCHOOL_NAME
+			,SCH.NAME as SCHOOL_NAME
 			,TI.RANKING
 			,TI.UNIV
 			,TI.MAJOR
 		from STUDENT STU
 		inner join CONSULTANT_STUDENT CS on (CS.STUDENT_NO = STU.STUDENT_NO)
 		inner join SCHOOL SCH on (SCH.SCHOOL_CODE = STU.SCHOOL_CODE)
-		inner join TARGET_INFO TI (TI.STUDENT_NO = STU.STUDENT_NO)
+		inner join TARGET_INFO TI on (TI.STUDENT_NO = STU.STUDENT_NO)
 		where CS.CONSULTANT_NO = #{consultantNo}
 		order by STU.STUDENT_NO desc, TI.RANKING asc
 	</select>

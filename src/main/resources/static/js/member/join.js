@@ -109,7 +109,7 @@
           showCheckMsg('userIdCheckMsg', '✓ 사용 가능한 아이디입니다.', true);
           showError('userIdError', '');
         },
-        500: function () {
+        400: function () {
           idChecked = false;
           showCheckMsg('userIdCheckMsg', '✗ 이미 사용 중인 아이디입니다.', false);
         }

@@ -66,9 +66,17 @@ public class StudentVO {
 		private int semester;
 		private String track;
 		
+		// SCHOOL 테이블
 		private String schoolName;
+		
+		// TARGET 테이블
 		private List<TargetInfoVO.Pair> target;
 		
+		// CONSULTANT 테이블
+		private String consultantNickname;
+		
+		// CONSULTANT_ORG 테이블
+		private String consultantOrgName;
 		
 		/**
 		 * 학생 식별번호 암호화용 setter
@@ -93,8 +101,18 @@ public class StudentVO {
 		private int semester;
 		private String track;
 		
+		// SCHOOL 테이블
 		private String schoolName;
 		
-		private TargetInfoVO.Pair target;
+		// TARGET 테이블
+		private String targetUniv;
+		private String targetMajor;
+		
+		// CONSULTANT 테이블
+		private Boolean isCharged; // 컨설턴트 배정 여부
+		private String consultantNickname;
+		
+		// CONSULTANT_ORG 테이블
+		private String consultantOrgName;
 	}
 }

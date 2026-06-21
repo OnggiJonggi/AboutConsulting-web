@@ -32,10 +32,24 @@
                         <span sec:authentication="principal.nickname">닉네임</span>
                     </a>
 
-                    <!-- 권한에 따라 badge 스타일과 텍스트를 동적으로 표시 -->
-                    <span th:with="role=${#authentication.principal.authorities[0].authority}"
-                        th:text="${role.replace('ROLE_', '')}" th:classappend="${role == 'ROLE_ADMIN'} ? 'badge--admin' :
-                                  (${role == 'ROLE_CONSULTANT'} ? 'badge--consultant' : 'badge--user')" class="badge">
+                    <!-- 권한 -->
+                    <span th:with="
+                        role=${#authentication.principal.authorities[0].authority},
+                        roleLabel=(
+                            ${role == 'ROLE_SUPER_ADMIN'}   ? '최고 관리자' :
+                            (${role == 'ROLE_ADMIN'}         ? '관리자' :
+                            (${role == 'ROLE_CONSULTANT_LEADER'} ? '대표 컨설턴트' :
+                            (${role == 'ROLE_CONSULTANT'}    ? '컨설턴트' :
+                            (${role == 'ROLE_STUDENT'}       ? '학생' :
+                            (${role == 'ROLE_VIEWER'}        ? '일반 회원' : ${role.replace('ROLE_', '')})))))),
+                        roleClass=(
+                            ${role == 'ROLE_SUPER_ADMIN'}   ? 'badge--super-admin' :
+                            (${role == 'ROLE_ADMIN'}         ? 'badge--admin' :
+                            (${role == 'ROLE_CONSULTANT_LEADER'} ? 'badge--consultant-leader' :
+                            (${role == 'ROLE_CONSULTANT'}    ? 'badge--consultant' :
+                            (${role == 'ROLE_STUDENT'}       ? 'badge--student' :
+                            (${role == 'ROLE_VIEWER'}        ? 'badge--viewer' : ''))))))
+                        " th:text="${roleLabel}" th:classappend="${roleClass}" class="badge">
                     </span>
                 </div>
 
@@ -63,15 +77,11 @@
             </a>
         </div>
 
-        <!-- ADMIN: 4개 메뉴 -->
+        <!-- ADMIN: 1행 -->
         <div sec:authorize="hasRole('ADMIN')" class="card-grid card-grid--4">
             <a th:href="@{/member}" class="menu-card">
                 <i data-lucide="book-user" class="menu-card__icon"></i>
                 <span class="menu-card__label">회원 목록</span>
-            </a>
-            <a th:href="@{/consultant}" class="menu-card">
-                <i data-lucide="users" class="menu-card__icon"></i>
-                <span class="menu-card__label">컨설턴트 목록</span>
             </a>
             <a th:href="@{/student}" class="menu-card">
                 <i data-lucide="graduation-cap" class="menu-card__icon"></i>
@@ -81,13 +91,41 @@
                 <i data-lucide="user-round-plus" class="menu-card__icon"></i>
                 <span class="menu-card__label">학생 등록</span>
             </a>
+            <a th:href="@{/admin}" class="menu-card">
+                <i data-lucide="shield-check" class="menu-card__icon"></i>
+                <span class="menu-card__label">관리자 페이지</span>
+            </a>
         </div>
 
-        <!-- CONSULTANT: 1개 메뉴 -->
+        <!-- ADMIN: 2행 -->
+        <div sec:authorize="hasRole('ADMIN')" class="card-grid card-grid--4" style="margin-top: 1rem;">
+            <a th:href="@{/consultant/charged}" class="menu-card">
+                <i data-lucide="link" class="menu-card__icon"></i>
+                <span class="menu-card__label">컨설턴트 - 학생 배정</span>
+            </a>
+            <a th:href="@{/consultant}" class="menu-card">
+                <i data-lucide="users" class="menu-card__icon"></i>
+                <span class="menu-card__label">컨설턴트 목록</span>
+            </a>
+            <a th:href="@{/org}" class="menu-card">
+                <i data-lucide="building-2" class="menu-card__icon"></i>
+                <span class="menu-card__label">컨설턴트 소속 목록</span>
+            </a>
+            <a th:href="@{/org/charged}" class="menu-card">
+                <i data-lucide="git-merge" class="menu-card__icon"></i>
+                <span class="menu-card__label">컨설턴트 - 소속 배정</span>
+            </a>
+        </div>
+
+        <!-- CONSULTANT -->
         <div sec:authorize="hasRole('CONSULTANT')" class="card-grid">
-            <a th:href="@{/consultant/mystudent}" class="menu-card">
+            <a th:href="@{/consultant/myinfo}" class="menu-card">
                 <i data-lucide="book-open-check" class="menu-card__icon"></i>
                 <span class="menu-card__label">담당 학생 목록</span>
+            </a>
+            <a th:href="@{/org/myinfo}" class="menu-card">
+                <i data-lucide="building-2" class="menu-card__icon"></i>
+                <span class="menu-card__label">내 소속</span>
             </a>
         </div>
 

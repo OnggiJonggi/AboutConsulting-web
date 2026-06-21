@@ -32,14 +32,14 @@ public class ConsultantVO {
 		private int consultantNo; // 컨설턴트 식별번호(회원 식별번호)
 		private String encryptedConsultantNo;
 		
-		// ORGANIZATION 테이블
+		// CONSULTANT_ORG 테이블
 		private String orgName; // 소속 이름
 		
 		// CONSULTANT_STUDENT 테이블
 		private int studentCount; // 담당 학생 수
 		
 		// STUDENT 테이블
-		private List<StudentVO.Detail> responsibility; // 담당 학생
+		private List<StudentVO.Detail> charged; // 담당 학생
 
 		
 		
@@ -51,8 +51,8 @@ public class ConsultantVO {
 			this.encryptedConsultantNo = encryptedConsultantNo;
 		}
 		// 담당 학생 setter
-		public void setResponsibility(List<StudentVO.Detail> responsibility) {
-			this.responsibility = responsibility;
+		public void setCharged(List<StudentVO.Detail> charged) {
+			this.charged = charged;
 		}
 	}
 	
@@ -71,7 +71,12 @@ public class ConsultantVO {
 		// STUDENT 테이블
 		private String studentName; // 담당 학생 이름
 		
-		// ORGANIZATION 테이블
+		// CONSULTANT_ORG 테이블
 		private String orgName; // 소속 이름
+		
+		// CONSULTANT_STUDENT 테이블
+		private Boolean inCharged; // 담당 학생 있나요
+		private int chargedCountStart; // 담당 학생 수 시작 번호
+		private int chargedCountEnd; // 담당 학생 수 끝 번호
 	}
 }

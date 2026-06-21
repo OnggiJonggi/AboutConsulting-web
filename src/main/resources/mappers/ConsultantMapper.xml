@@ -6,7 +6,7 @@
 <mapper namespace="com.ax.consultant.ConsultantMapper">
 
   <select id="selectList" parameterType="ConsultantSearch" resultType="ConsultantDetail">
-    select * from B
+    select *
     from(
       select rownum RN, A.*
       from(
@@ -17,23 +17,23 @@
           ,MEM.STATUS
           ,CON.CONSULTANT_NO
           ,ORG.NAME as ORG_NAME
-          ,count(*) as STUDENT_COUNT
+          ,count(CS.STUDENT_NO) as STUDENT_COUNT
         from CONSULTANT CON
         left join MEMBER MEM on (MEM.MEMBER_NO = CON.CONSULTANT_NO)
-        left join ORGANIZATION ORG on (ORG.ORG_NO = CON.ORG_NO)
+        left join CONSULTANT_ORG ORG on (ORG.ORG_NO = CON.ORG_NO)
         left join CONSULTANT_STUDENT CS on (CON.CONSULTANT_NO = CS.CONSULTANT_NO)
         <where>
           <if test="name!=null and name!=''">
-            and MEM.NAME = #{name}
+            and MEM.NAME like '%' || #{name} || '%'
           </if>
           <if test="nickname!=null and nickname!=''">
-            and MEM.NICKNAME = #{nickname}
+            and MEM.NICKNAME like '%' || #{nickname} || '%'
           </if>
           <if test="status!=null">
             and MEM.STATUS = #{status}
           </if>
           <if test="orgName!=null and orgName!=''">
-            and ORG.NAME = #{orgName}
+            and ORG.NAME like '%' || #{orgName} || '%'
           </if>
           <if test="studentName!=null and studentName!=''">
             and exists (
@@ -42,7 +42,7 @@
               left join CONSULTANT_STUDENT CS2 on (CON2.CONSULTANT_NO = CS2.CONSULTANT_NO)
               left join STUDENT STU2 on (STU2.STUDENT_NO = CS2.STUDENT_NO)
               where CON2.CONSULTANT_NO = CON.CONSULTANT_NO
-              and STU2.NAME = #{studentName}
+              and STU2.NAME like '%' || #{studentName} || '%'
             )
           </if>
         </where>
@@ -53,6 +53,18 @@
           ,MEM.STATUS
           ,CON.CONSULTANT_NO
           ,ORG.NAME
+        <choose>
+          <when test="inCharged!=null and inCharged==false">
+            having count(CS.STUDENT_NO) = 0
+          </when>
+          <when test="chargedCountStart>0 and chargedCountEnd==0">
+            having count(CS.STUDENT_NO) &gt;= #{chargedCountStart}
+          </when>
+          <when test="chargedCountStart>0 or chargedCountEnd>0">
+            having count(CS.STUDENT_NO) between least(#{chargedCountStart}, #{chargedCountEnd})
+              and greatest(#{chargedCountStart}, #{chargedCountEnd})
+          </when>
+        </choose>
         order by CONSULTANT_NO desc
       ) A
       where rownum &lt;= #{endRow}
@@ -64,19 +76,19 @@
     select count(*)
     from CONSULTANT CON
     left join MEMBER MEM on (MEM.MEMBER_NO = CON.CONSULTANT_NO)
-    left join ORGANIZATION ORG on (ORG.ORG_NO = CON.ORG_NO)
+    left join CONSULTANT_ORG ORG on (ORG.ORG_NO = CON.ORG_NO)
     <where>
       <if test="name!=null and name!=''">
-        and MEM.NAME = #{name}
+        and MEM.NAME like '%' || #{name} || '%'
       </if>
       <if test="nickname!=null and nickname!=''">
-        and MEM.NICKNAME = #{nickname}
+        and MEM.NICKNAME like '%' || #{nickname} || '%'
       </if>
       <if test="status!=null">
         and MEM.STATUS = #{status}
       </if>
       <if test="orgName!=null and orgName!=''">
-        and ORG.NAME = #{orgName}
+        and ORG.NAME like '%' || #{orgName} || '%'
       </if>
       <if test="studentName!=null and studentName!=''">
         and exists (
@@ -85,7 +97,28 @@
           left join CONSULTANT_STUDENT CS2 on (CON2.CONSULTANT_NO = CS2.CONSULTANT_NO)
           left join STUDENT STU2 on (STU2.STUDENT_NO = CS2.STUDENT_NO)
           where CON2.CONSULTANT_NO = CON.CONSULTANT_NO
-          and STU2.NAME = #{studentName}
+          and STU2.NAME like '%' || #{studentName} || '%'
+        )
+      </if>
+      <if test="inCharged!=null">
+        and exists(
+          select 1
+          from CONSULTANT CON3
+          left join CONSULTANT_STUDENT CS3 on (CON3.CONSULTANT_NO = CS3.CONSULTANT_NO)
+          where CON3.CONSULTANT_NO = CON.CONSULTANT_NO
+          group by CON3.CONSULTANT_NO
+          <choose>
+            <when test="inCharged==false">
+              having count(CS3.STUDENT_NO) = 0
+            </when>
+            <when test="chargedCountStart>0 and chargedCountEnd==0">
+              having count(CS3.STUDENT_NO) &gt;= #{chargedCountStart}
+            </when>
+            <when test="chargedCountStart>0 or chargedCountEnd>0">
+              having count(CS3.STUDENT_NO) between least(#{chargedCountStart}, #{chargedCountEnd})
+                and greatest(#{chargedCountStart}, #{chargedCountEnd})
+            </when>
+          </choose>
         )
       </if>
     </where>
@@ -100,10 +133,10 @@
 			,MEM.STATUS
 			,CON.CONSULTANT_NO
 			,ORG.NAME as ORG_NAME
-			,count(*) as STUDENT_COUNT
+			,count(CS.STUDENT_NO) as STUDENT_COUNT
 		from CONSULTANT CON
 		left join MEMBER MEM on (MEM.MEMBER_NO = CON.CONSULTANT_NO)
-		left join ORGANIZATION ORG on (ORG.ORG_NO = CON.ORG_NO)
+		left join CONSULTANT_ORG ORG on (ORG.ORG_NO = CON.ORG_NO)
 		left join CONSULTANT_STUDENT CS on (CS.CONSULTANT_NO = CON.CONSULTANT_NO)
 		where CON.CONSULTANT_NO = #{consultantNo}
 		group by
@@ -114,4 +147,30 @@
 			,CON.CONSULTANT_NO
 			,ORG.NAME
 	</select>
+
+  <select id="selectIsCharged" resultType="_int">
+    select COUNT(*)
+    from CONSULTANT_STUDENT
+    where CONSULTANT_NO = #{consultantNo}
+    and STUDENT_NO in (
+      <foreach collection="studentNos" item="item" separator=",">
+        #{item}
+      </foreach>
+    )
+  </select>
+
+  <insert id="insertCharged">
+    insert all
+    <foreach collection="studentNos" item="item">
+      into CONSULTANT_STUDENT(CONSULTANT_NO, STUDENT_NO)
+      values(#{consultantNo}, #{item})
+    </foreach>
+    select 1 from dual
+  </insert>
+
+  <delete id="deleteCharged">
+    delete from CONSULTANT_STUDENT
+    where CONSULTANT_NO = #{consultantNo}
+    and STUDENT_NO = #{studentNo}
+  </delete>
 </mapper>

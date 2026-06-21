@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -29,10 +29,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.ObjectMapper;
 
-@Service
+@Component
 @RequiredArgsConstructor
 @Slf4j
-public class ApiRecordService {
+public class apiRecordComponent {
 	private final StudentMapper studentMapper;
 	private final RecordMapper recordMapper;
 	private final RestTemplate restTemplate;
@@ -53,7 +53,7 @@ public class ApiRecordService {
 	public void analysisRecord(byte[] filebytes, int groupNo,
 			int studentNo) throws Exception{
 		/*
-		 * 생기부 원본 저장 로직 필요!
+		 * FileComponent에 생기부 원본 저장 로직 필요!
 		 */
 		
 		try {
@@ -120,23 +120,26 @@ public class ApiRecordService {
 		    	throw new CustomException(ErrorCodeEnum.RECORD_API_NOT_WORKING);
 		    
 			// 생기부 DB저장
-		    recordMapper.insertRecord(RecordVO.Insert.builder()
+		    int result2 = recordMapper.insertRecord(RecordVO.Insert.builder()
 		    		.groupNo(groupNo)
 		    		.result(result.getData().getResults()).build());
+		    if(result2==0) throw new Exception();
 		    
 		    // 비동기 요청 작업 상태값 수정
-		    recordMapper.updateRecordStatus(RecordVO.GroupStatus.builder()
+		    int result3 = recordMapper.updateRecordStatus(RecordVO.GroupStatus.builder()
 		    		.groupNo(groupNo)
 		    		.status(RecordStatusEnum.ACTIVE.name()).build());
+		    if(result3==0) throw new Exception();
 		    
 		} catch (Exception e) {
 			
 			e.printStackTrace();
 			
 			// 비동기 요청 작업 상태값 실패로 수정
-			recordMapper.updateRecordStatus(RecordVO.GroupStatus.builder()
+			int result4 = recordMapper.updateRecordStatus(RecordVO.GroupStatus.builder()
 					.groupNo(groupNo)
 					.status(RecordStatusEnum.FAILED.name()).build());
+			if(result4==0) throw new Exception();
 		}
 	}
 

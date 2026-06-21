@@ -7,7 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -18,9 +18,9 @@ import com.ax.global.exception.ErrorCodeEnum;
 import lombok.RequiredArgsConstructor;
 import tools.jackson.databind.ObjectMapper;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class ApiMockService {
+public class ApiMockComponent {
 	private final MockMapper mockMapper;
 	private final RestTemplate restTemplate;
 	private final ObjectMapper objectMapper;
@@ -28,6 +28,13 @@ public class ApiMockService {
 	@Value("${mock-ocr}")
 	private String url;
 	
+	/**
+	 * 모의고사 분석 api요청
+	 * 
+	 * @param studentNo
+	 * @param groupNo
+	 * @param filebytes
+	 */
 	@Async
 	public void analysisMock(int studentNo, int groupNo, byte[] filebytes) {
 		try {

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>컨설턴트 상세</title>
+  <th:block th:replace="~{/common/fragment :: common}"></th:block>
+  <link rel="stylesheet" th:href="@{/css/consultant/view.css}">
+</head>
+
+<body>
+
+  <div class="detail-wrapper">
+
+    <!-- ── 헤더 영역 ── -->
+    <div class="detail-header">
+      <div class="detail-header__top">
+        <a th:href="|javascript:history.back()|" class="btn-back">
+          <i data-lucide="chevron-left" class="icon-sm"></i>
+        </a>
+        <div class="header-name-block">
+          <h1 class="consultant-name" th:text="${consultantDetail.nickname}">닉네임</h1>
+          <span class="consultant-org" th:text="${consultantDetail.orgName}">소속</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 콘텐츠 영역 ── -->
+    <div class="detail-content">
+
+      <!-- 이름 -->
+      <div class="info-section">
+        <div class="info-card">
+          <div class="info-card__header">
+            <i data-lucide="user" class="icon-sm"></i>
+            <span class="info-card__title">이름</span>
+          </div>
+          <p class="info-card__value" th:text="${consultantDetail.name}">이름</p>
+        </div>
+      </div>
+
+      <!-- 아이디 -->
+      <div class="info-section">
+        <div class="info-card">
+          <div class="info-card__header">
+            <i data-lucide="at-sign" class="icon-sm"></i>
+            <span class="info-card__title">아이디</span>
+          </div>
+          <p class="info-card__value" th:text="${consultantDetail.userId}">userId</p>
+        </div>
+      </div>
+
+      <!-- 상태 (ADMIN만) -->
+      <div sec:authorize="hasRole('ADMIN')">
+        <div class="info-section">
+          <div class="info-card">
+            <div class="info-card__header">
+              <i data-lucide="activity" class="icon-sm"></i>
+              <span class="info-card__title">상태</span>
+            </div>
+            <th:block th:switch="${consultantDetail.status?.name()}">
+              <span th:case="'ACTIVE'" class="status-badge status--active">정상</span>
+              <span th:case="'SUSPENDED'" class="status-badge status--suspended">정지</span>
+              <span th:case="'DELETED'" class="status-badge status--deleted">삭제</span>
+              <span th:case="*" class="status-badge status--active" th:text="${consultantDetail.status}">상태</span>
+            </th:block>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 액션 바 (ADMIN만) ── -->
+      <div sec:authorize="hasRole('ADMIN')">
+        <div class="action-bar">
+          <!-- 회원 세부사항 -->
+          <a th:href="@{/member/{enc}(enc=${consultantDetail.encryptedConsultantNo})}" class="btn-primary">
+            <i data-lucide="id-card" class="icon-sm"></i>
+            회원 세부사항
+          </a>
+          <!-- 컨설턴트 - 학생 배정 -->
+          <a th:href="@{/consultant/charged(encConNo=${consultantDetail.encryptedConsultantNo})}" class="btn-secondary">
+            <i data-lucide="user-plus" class="icon-sm"></i>
+            컨설턴트 - 학생 배정
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── 담당 학생 목록 ── -->
+    <div class="charged-section">
+
+      <div class="charged-header">
+        <div class="charged-header__left">
+          <i data-lucide="users" class="icon-sm"></i>
+          <span class="charged-title">담당 학생 목록</span>
+          <span class="charged-count">
+            총 <strong th:text="${consultantDetail.studentCount}">0</strong>명
+          </span>
+        </div>
+      </div>
+
+      <!-- 학생 카드 그리드 (2열) -->
+      <div class="student-grid">
+
+        <th:block th:if="${consultantDetail.charged != null and !consultantDetail.charged.isEmpty()}">
+          <div th:each="student : ${consultantDetail.charged}" class="student-card"
+            th:attr="data-enc=${student.encryptedStudentNo},data-enc-con=${consultantDetail.encryptedConsultantNo}"
+            onclick="goStudent(this)">
+
+            <!-- ADMIN 호버 삭제 버튼 -->
+            <div sec:authorize="hasRole('ADMIN')" class="card-delete-btn" onclick="deleteCharged(event, this)"
+              title="담당 학생 삭제">
+              <i data-lucide="user-minus" class="icon-sm"></i>
+            </div>
+
+            <!-- 학생 기본 정보 -->
+            <div class="student-main">
+              <div class="student-name-row">
+                <i data-lucide="user-round" class="student-icon"></i>
+                <span class="student-name" th:text="${student.name}">이름</span>
+              </div>
+              <div class="student-meta">
+                <span class="meta-item">
+                  <i data-lucide="school" class="meta-icon"></i>
+                  <span th:text="${student.schoolName}">학교명</span>
+                </span>
+                <span class="meta-sep">|</span>
+                <span class="meta-item">
+                  <i data-lucide="layers" class="meta-icon"></i>
+                  <span th:text="${student.grade} + '학년'">1학년</span>
+                </span>
+                <span class="meta-sep">|</span>
+                <span class="meta-item">
+                  <i data-lucide="calendar" class="meta-icon"></i>
+                  <span th:text="${student.semester} + '학기'">1학기</span>
+                </span>
+                <span class="meta-sep">|</span>
+                <span class="meta-item">
+                  <i data-lucide="book-open" class="meta-icon"></i>
+                  <span th:text="${student.track}">계열</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- 지망 대학 정보 -->
+            <div class="student-targets" th:if="${student.target != null and !student.target.isEmpty()}">
+              <div th:each="t : ${student.target}" class="target-item">
+                <span class="target-rank" th:text="${t.ranking} + '지망'">1지망</span>
+                <i data-lucide="landmark" class="meta-icon"></i>
+                <span class="target-univ" th:text="${t.univ}">대학명</span>
+                <span class="meta-sep">|</span>
+                <i data-lucide="flask-conical" class="meta-icon"></i>
+                <span class="target-major" th:text="${t.major}">학과명</span>
+              </div>
+            </div>
+
+          </div>
+        </th:block>
+
+        <!-- 담당 학생 없음 -->
+        <div th:if="${consultantDetail.charged == null or consultantDetail.charged.isEmpty()}" class="empty-msg">
+          <i data-lucide="user-x" class="empty-icon"></i>
+          <p>담당 학생이 없습니다.</p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script th:inline="javascript">
+    const ENCRYPTED_CONSULTANT_NO = /*[[${consultantDetail.encryptedConsultantNo}]]*/ '';
+  </script>
+  <script th:src="@{/js/consultant/view.js}"></script>
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

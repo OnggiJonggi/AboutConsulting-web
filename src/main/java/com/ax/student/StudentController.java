@@ -8,15 +8,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.ax.global.common.SearchResultVO;
 import com.ax.global.security.CryptoComponent;
 import com.ax.global.security.CustomUserDetails;
+import com.ax.global.security.RoleEnum;
 import com.ax.student.mock.MockService;
 import com.ax.student.mock.MockVO;
 import com.ax.student.record.RecordService;
@@ -45,11 +46,17 @@ public class StudentController {
 	public String getList(Model model) throws Exception {
 		
 		StudentVO.Search studentSearch = new StudentVO.Search();
-		
 		model.addAttribute("studentSearch", studentSearch);
 		
 		// 검색해요
 		SearchResultVO<StudentVO.Detail> result = studentService.getList(studentSearch);
+		
+		// 학생 식별번호 암호화
+		for(StudentVO.Detail student : result.getList()) {
+			student.setEncryptedStudentNo(cryptoComponent.encrypt(String.valueOf(student.getStudentNo())));
+			student.setStudentNo(0);
+		}
+		
 		model.addAttribute("studentList", result);
 		
 		return "student/list";
@@ -59,7 +66,7 @@ public class StudentController {
 	 * 학생 등록 페이지로
 	 * 관리자
 	 */
-	@GetMapping("/register")
+	@GetMapping("register")
 	public String goRegister(Model model) {
 		model.addAttribute("studentRegister", new StudentVO.Register());
 		return "student/register";
@@ -69,9 +76,9 @@ public class StudentController {
 	 * 학생 등록
 	 * 관리자
 	 */
-	@PostMapping("/register")
+	@PostMapping("register")
 	public String register(
-			@RequestParam @Valid StudentVO.Register studentRegister
+			@ModelAttribute @Valid StudentVO.Register studentRegister
 			,BindingResult bindingResult
 			,HttpSession session
 			,Model model)throws Exception {
@@ -90,7 +97,7 @@ public class StudentController {
 	 * 관리자
 	 * 컨설턴트 : 담당 학생
 	 */
-	@GetMapping("/{encryptedStudentNo}")
+	@GetMapping("{encryptedStudentNo}")
 	public String goView(
 			@PathVariable String encryptedStudentNo,
 			@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -119,15 +126,25 @@ public class StudentController {
 	 * 관리자/담당 컨설턴트/학생 자신
 	 * @param encryptedStudentNo
 	 */
-	@GetMapping("/{encryptedStudentNo}/record")
-	public String getRecordFragment(@PathVariable String encryptedStudentNo
-			,Model model) throws Exception {
+	@GetMapping("{encryptedStudentNo}/record")
+	public String getRecordFragment(
+			@PathVariable String encryptedStudentNo,
+			@AuthenticationPrincipal CustomUserDetails userDetails,
+			Model model) throws Exception {
+		
 		model.addAttribute("studentMenu", "record");
 		model.addAttribute("encryptedStudentNo", encryptedStudentNo);
 		
 		// 생기부 조회
 		RecordVO.Detail result = recordService.getRecord(Integer.valueOf(cryptoComponent.decrypt(encryptedStudentNo)));
 		model.addAttribute("studentRecord", result);
+		
+		// 관리자라면 수정용 StudentVO.Registor객체 보내주기
+		if(userDetails.getAuthorities().stream()
+		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.ADMIN.getPrefix()))) {
+			
+			model.addAttribute("studentRegistor", new StudentVO.Register());
+		}
 		
 		return "student/view/record :: content";
 	}
@@ -137,9 +154,11 @@ public class StudentController {
 	 * 관리자/담당 컨설턴트/학생 자신
 	 * @param encryptedStudentNo
 	 */
-	@GetMapping("/{encryptedStudentNo}/mock")
-	public String getMockFragment(@PathVariable String encryptedStudentNo
+	@GetMapping("{encryptedStudentNo}/mock")
+	public String getMockFragment(
+			@PathVariable String encryptedStudentNo
 			,Model model) throws Exception {
+		
 		model.addAttribute("studentMenu", "mock");
 		model.addAttribute("encryptedStudentNo", encryptedStudentNo);
 		

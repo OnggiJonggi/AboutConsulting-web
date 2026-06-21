@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>컨설턴트 목록</title>
+  <th:block th:replace="~{/common/fragment :: common}"></th:block>
+  <link rel="stylesheet" th:href="@{/css/consultant/list.css}">
+</head>
+
+<body>
+
+  <div class="list-wrapper">
+
+    <!-- ── 상단 헤더 영역 ── -->
+    <div class="page-header">
+      <a th:href="@{/}" class="logo-link">
+        <img th:src="@{/img/main-logo.png}" alt="어바웃컨설팅 로고" class="header-logo">
+      </a>
+      <h1 class="page-title">
+        <i data-lucide="users" class="title-icon"></i>
+        컨설턴트 목록
+      </h1>
+    </div>
+
+    <!-- ── 메인 컨텐츠 영역 (필터 + 결과) ── -->
+    <div class="content-area">
+
+      <!-- ── 왼쪽: 필터 영역 ── -->
+      <aside class="filter-panel">
+        <div class="filter-header">
+          <i data-lucide="sliders-horizontal" class="filter-header__icon"></i>
+          <span>검색 필터</span>
+        </div>
+
+        <form id="searchForm" autocomplete="off">
+
+          <!-- 이름 -->
+          <div class="filter-group">
+            <label class="filter-label" for="f-name">
+              <i data-lucide="user" class="label-icon"></i>이름
+            </label>
+            <input type="text" id="f-name" name="name" class="filter-input" placeholder="이름 입력"
+              th:value="${consultantSearch.name}">
+          </div>
+
+          <!-- 별명 -->
+          <div class="filter-group">
+            <label class="filter-label" for="f-nickname">
+              <i data-lucide="at-sign" class="label-icon"></i>별명
+            </label>
+            <input type="text" id="f-nickname" name="nickname" class="filter-input" placeholder="별명 입력"
+              th:value="${consultantSearch.nickname}">
+          </div>
+
+          <!-- 회원 상태 -->
+          <div class="filter-group">
+            <label class="filter-label">
+              <i data-lucide="shield-check" class="label-icon"></i>회원 상태
+            </label>
+            <div class="btn-group-radio" id="statusGroup">
+              <button type="button" class="radio-btn" data-name="status" data-value="">전체</button>
+              <button type="button" class="radio-btn status-active" data-name="status" data-value="ACTIVE">정상</button>
+              <button type="button" class="radio-btn status-suspended" data-name="status"
+                data-value="SUSPENDED">정지</button>
+              <button type="button" class="radio-btn status-deleted" data-name="status" data-value="DELETED">삭제</button>
+            </div>
+            <input type="hidden" id="f-status" name="status"
+              th:value="${consultantSearch.status != null ? consultantSearch.status : ''}">
+          </div>
+
+          <!-- 담당 학생 이름 -->
+          <div class="filter-group">
+            <label class="filter-label" for="f-studentName">
+              <i data-lucide="graduation-cap" class="label-icon"></i>담당 학생 이름
+            </label>
+            <input type="text" id="f-studentName" name="studentName" class="filter-input" placeholder="학생 이름 입력"
+              th:value="${consultantSearch.studentName}">
+          </div>
+
+          <!-- 소속 이름 -->
+          <div class="filter-group">
+            <label class="filter-label" for="f-orgName">
+              <i data-lucide="building-2" class="label-icon"></i>소속 이름
+            </label>
+            <input type="text" id="f-orgName" name="orgName" class="filter-input" placeholder="소속명 입력"
+              th:value="${consultantSearch.orgName}">
+          </div>
+
+          <!-- 담당 학생 수 -->
+          <div class="filter-group">
+            <label class="filter-label">
+              <i data-lucide="users-round" class="label-icon"></i>담당 학생 수
+            </label>
+            <!-- 담당 학생 없음 체크박스 -->
+            <div class="no-student-check">
+              <input type="checkbox" id="f-noStudent" class="check-input">
+              <label for="f-noStudent" class="check-label">담당 학생 없음</label>
+            </div>
+            <!-- 범위 입력 -->
+            <div class="count-range-row">
+              <span class="count-range-label">학생 수 :</span>
+              <input type="number" id="f-chargedCountStart" name="chargedCountStart" class="filter-input count-input"
+                placeholder="0" min="0"
+                th:value="${consultantSearch.chargedCountStart > 0 ? consultantSearch.chargedCountStart : ''}">
+              <span class="count-range-sep">~</span>
+              <input type="number" id="f-chargedCountEnd" name="chargedCountEnd" class="filter-input count-input"
+                placeholder="999" min="0"
+                th:value="${consultantSearch.chargedCountEnd > 0 ? consultantSearch.chargedCountEnd : ''}">
+            </div>
+            <input type="hidden" id="f-inCharged" name="inCharged">
+          </div>
+
+          <!-- 검색 버튼 -->
+          <button type="button" id="searchBtn" class="btn-search">
+            <i data-lucide="search" class="btn-icon"></i>
+            검색
+          </button>
+
+        </form>
+      </aside>
+
+      <!-- ── 오른쪽: 결과 영역 ── -->
+      <section class="result-panel">
+
+        <!-- 결과 헤더 -->
+        <div class="result-header">
+          <span class="result-title">
+            <i data-lucide="list" class="result-header__icon"></i>
+            검색 결과
+          </span>
+          <span class="result-count">
+            총 <strong id="totalCount" th:text="${consultantList.totalCount}">0</strong>명
+          </span>
+        </div>
+
+        <!-- 컨설턴트 카드 목록 -->
+        <div id="consultantList" class="consultant-list">
+
+          <!-- 초기 서버 렌더링 (Thymeleaf) -->
+          <th:block th:if="${consultantList != null and !consultantList.list.isEmpty()}">
+            <div th:each="consultant : ${consultantList.list}" class="consultant-card"
+              th:attr="data-enc=${consultant.encryptedConsultantNo}">
+
+              <!-- 1행: 별명, 소속, 담당 학생 수 -->
+              <div class="card-row card-row--primary">
+                <span class="card-nickname">
+                  <i data-lucide="contact" class="card-icon"></i>
+                  <span th:text="${consultant.nickname}">별명</span>
+                </span>
+                <span class="card-org">
+                  <i data-lucide="building-2" class="card-icon-sm"></i>
+                  <span th:text="${consultant.orgName != null ? consultant.orgName : '-'}">소속</span>
+                </span>
+                <span class="card-student-count">
+                  <i data-lucide="users-round" class="card-icon-sm"></i>
+                  <span th:text="${consultant.studentCount} + '명'">0명</span>
+                </span>
+              </div>
+
+              <!-- 2행: 아이디, 이름, 상태 -->
+              <div class="card-row card-row--secondary">
+                <span class="card-userid">
+                  <i data-lucide="id-card" class="meta-icon"></i>
+                  <span th:text="${consultant.userId}">아이디</span>
+                </span>
+                <span class="card-name">
+                  <i data-lucide="user-round" class="meta-icon"></i>
+                  <span th:text="${consultant.name}">이름</span>
+                </span>
+                <!-- 상태 배지 -->
+                <span class="status-badge"
+                  th:classappend="${consultant.status.name() == 'ACTIVE'} ? ' status-badge--active' :
+                                  (${consultant.status.name() == 'SUSPENDED'} ? ' status-badge--suspended' : ' status-badge--deleted')" th:text="${consultant.status.name() == 'ACTIVE'} ? '정상' :
+                           (${consultant.status.name() == 'SUSPENDED'} ? '정지' : '삭제')">상태</span>
+              </div>
+
+            </div>
+          </th:block>
+
+          <!-- 결과 없음 -->
+          <div th:if="${consultantList == null or consultantList.list.isEmpty()}" id="emptyMsg" class="empty-msg">
+            <i data-lucide="search-x" class="empty-icon"></i>
+            <p>검색 결과가 없습니다.</p>
+          </div>
+
+        </div>
+
+        <!-- ── 페이징 영역 ── -->
+        <div class="pagination-area" id="paginationArea"
+          th:if="${consultantList != null and consultantList.totalPage > 0}">
+          <div class="pagination">
+
+            <!-- 이전 블록 버튼 -->
+            <button type="button" class="page-nav" id="prevBlock"
+              th:classappend="${consultantList.hasPrev} ? '' : 'hidden'"
+              th:attr="data-page=${consultantList.startPage - 1}">
+              <i data-lucide="chevron-left"></i>
+            </button>
+
+            <!-- 페이지 번호 버튼들 -->
+            <div id="pageNumbers" class="page-numbers">
+              <th:block th:each="p : ${#numbers.sequence(consultantList.startPage, consultantList.endPage)}">
+                <button type="button" class="page-num" th:classappend="${p == consultantSearch.page} ? ' active' : ''"
+                  th:text="${p}" th:attr="data-page=${p}">1</button>
+              </th:block>
+            </div>
+
+            <!-- 다음 블록 버튼 -->
+            <button type="button" class="page-nav" id="nextBlock"
+              th:classappend="${consultantList.hasNext} ? '' : 'hidden'"
+              th:attr="data-page=${consultantList.endPage + 1}">
+              <i data-lucide="chevron-right"></i>
+            </button>
+
+          </div>
+        </div>
+
+      </section>
+    </div>
+  </div>
+
+  <script th:src="@{/js/consultant/list.js}"></script>
+  <script>
+    lucide.createIcons();
+
+    document.querySelectorAll('.consultant-card').forEach(function (card) {
+      card.addEventListener('click', function () {
+        var enc = card.getAttribute('data-enc');
+        if (enc) location.href = '/consultant/' + enc;
+      });
+    });
+  </script>
+</body>
+
+</html>

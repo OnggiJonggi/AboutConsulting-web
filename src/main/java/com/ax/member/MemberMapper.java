@@ -26,11 +26,16 @@ public interface MemberMapper {
 
 	public int updateMember(MemberVO.Update member);
 	
-	public int updateRole(@Param("memberNo") int memberNo,
+	public int deleteRole(int memberNo);
+	
+	public int insertRole(
+			@Param("memberNo") int memberNo,
 			@Param("role") RoleEnum role);
 	
-	public int updateStatus(@Param("memberNo") int memberNo,
+	public int updateStatus(
+			@Param("memberNo") int memberNo,
 			@Param("status") MemberStatusEnum status);
 
 	public int selectUpdatedNickname(int memberNo, String nickname);
+
 }

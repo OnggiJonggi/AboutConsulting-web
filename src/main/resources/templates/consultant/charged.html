@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>컨설턴트 - 학생 배정</title>
+  <th:block th:replace="~{/common/fragment :: common}"></th:block>
+  <link rel="stylesheet" th:href="@{/css/consultant/charged.css}">
+</head>
+
+<body>
+
+  <!-- 페이지에서 사용할 서버 데이터를 JS로 전달 -->
+  <script th:inline="javascript">
+    const PAGE_DATA = {
+      encryptedConsultantNo: /*[[${encryptedConsultantNo}]]*/ null,
+      encryptedStudentNo: /*[[${encryptedStudentNo}]]*/ null
+    };
+  </script>
+
+  <div class="charged-wrapper">
+
+    <!-- ── 상단 헤더 ── -->
+    <div class="page-header">
+      <a th:href="@{/}" class="logo-link">
+        <img th:src="@{/img/main-logo.png}" alt="어바웃컨설팅 로고" class="header-logo">
+      </a>
+      <h1 class="page-title">
+        <i data-lucide="link" class="title-icon"></i>
+        컨설턴트 - 학생 배정
+      </h1>
+    </div>
+
+    <!-- ── 메인 영역: 컨설턴트 + 학생 ── -->
+    <div class="dual-area">
+
+      <!-- ════════ 왼쪽: 컨설턴트 영역 ════════ -->
+      <div class="side-panel" id="consultantPanel">
+
+        <div class="side-panel__title">
+          <i data-lucide="contact" class="title-icon-sm"></i>
+          컨설턴트
+        </div>
+
+        <!-- encryptedConsultantNo가 있으면 필터 영역 대신 선택 완료 표시 -->
+        <div th:if="${encryptedConsultantNo != null}" class="preset-notice">
+          <i data-lucide="check-circle-2" class="preset-icon"></i>
+          <span>컨설턴트가 이미 선택되었습니다.</span>
+        </div>
+
+        <!-- 컨설턴트 검색 필터 (encryptedConsultantNo 없을 때만 활성) -->
+        <div th:if="${encryptedConsultantNo == null}" class="filter-panel">
+          <div class="filter-header">
+            <i data-lucide="sliders-horizontal" class="filter-header__icon"></i>
+            <span>검색 필터</span>
+          </div>
+
+          <form id="consultantSearchForm" autocomplete="off">
+
+            <!-- 이름 -->
+            <div class="filter-group">
+              <label class="filter-label" for="cf-name">
+                <i data-lucide="user" class="label-icon"></i>이름
+              </label>
+              <input type="text" id="cf-name" name="name" class="filter-input" placeholder="이름 입력"
+                th:value="${consultantSearch.name}">
+            </div>
+
+            <!-- 별명 -->
+            <div class="filter-group">
+              <label class="filter-label" for="cf-nickname">
+                <i data-lucide="at-sign" class="label-icon"></i>별명
+              </label>
+              <input type="text" id="cf-nickname" name="nickname" class="filter-input" placeholder="별명 입력"
+                th:value="${consultantSearch.nickname}">
+            </div>
+
+            <!-- 회원 상태 -->
+            <div class="filter-group">
+              <label class="filter-label">
+                <i data-lucide="shield-check" class="label-icon"></i>회원 상태
+              </label>
+              <div class="btn-group-radio" id="cStatusGroup">
+                <button type="button" class="radio-btn" data-name="status" data-value="">전체</button>
+                <button type="button" class="radio-btn status-active" data-name="status" data-value="ACTIVE">정상</button>
+                <button type="button" class="radio-btn status-suspended" data-name="status"
+                  data-value="SUSPENDED">정지</button>
+                <button type="button" class="radio-btn status-deleted" data-name="status"
+                  data-value="DELETED">삭제</button>
+              </div>
+              <input type="hidden" id="cf-status" name="status"
+                th:value="${consultantSearch.status != null ? consultantSearch.status : ''}">
+            </div>
+
+            <!-- 담당 학생 이름 -->
+            <div class="filter-group">
+              <label class="filter-label" for="cf-studentName">
+                <i data-lucide="graduation-cap" class="label-icon"></i>담당 학생 이름
+              </label>
+              <input type="text" id="cf-studentName" name="studentName" class="filter-input" placeholder="학생 이름 입력"
+                th:value="${consultantSearch.studentName}">
+            </div>
+
+            <!-- 소속 이름 -->
+            <div class="filter-group">
+              <label class="filter-label" for="cf-orgName">
+                <i data-lucide="building-2" class="label-icon"></i>소속 이름
+              </label>
+              <input type="text" id="cf-orgName" name="orgName" class="filter-input" placeholder="소속명 입력"
+                th:value="${consultantSearch.orgName}">
+            </div>
+
+            <!-- 담당 학생 수 -->
+            <div class="filter-group">
+              <label class="filter-label">
+                <i data-lucide="users-round" class="label-icon"></i>담당 학생 수
+              </label>
+              <div class="no-student-check">
+                <input type="checkbox" id="cf-noStudent" class="check-input">
+                <label for="cf-noStudent" class="check-label">담당 학생 없음</label>
+              </div>
+              <div class="count-range-row">
+                <span class="count-range-label">학생 수 :</span>
+                <input type="number" id="cf-chargedCountStart" name="chargedCountStart" class="filter-input count-input"
+                  placeholder="0" min="0"
+                  th:value="${consultantSearch.chargedCountStart > 0 ? consultantSearch.chargedCountStart : ''}">
+                <span class="count-range-sep">~</span>
+                <input type="number" id="cf-chargedCountEnd" name="chargedCountEnd" class="filter-input count-input"
+                  placeholder="999" min="0"
+                  th:value="${consultantSearch.chargedCountEnd > 0 ? consultantSearch.chargedCountEnd : ''}">
+              </div>
+              <input type="hidden" id="cf-inCharged" name="inCharged">
+            </div>
+
+            <button type="button" id="consultantSearchBtn" class="btn-search">
+              <i data-lucide="search" class="btn-icon"></i>
+              검색
+            </button>
+          </form>
+        </div>
+
+        <!-- 컨설턴트 검색 결과 -->
+        <div class="result-panel" th:if="${encryptedConsultantNo == null}">
+          <div class="result-header">
+            <span class="result-title">
+              <i data-lucide="list" class="result-header__icon"></i>
+              검색 결과
+            </span>
+            <span class="result-count">
+              총 <strong id="cTotalCount" th:text="${consultantList != null ? consultantList.totalCount : 0}">0</strong>명
+            </span>
+          </div>
+
+          <div id="consultantList" class="consultant-list">
+            <th:block th:if="${consultantList != null and !consultantList.list.isEmpty()}">
+              <div th:each="consultant : ${consultantList.list}" class="consultant-card" th:attr="data-enc=${consultant.encryptedConsultantNo},
+                         data-nickname=${consultant.nickname},
+                         data-org=${consultant.orgName != null ? consultant.orgName : '-'}">
+
+                <div class="card-row card-row--primary">
+                  <span class="card-nickname">
+                    <i data-lucide="contact" class="card-icon"></i>
+                    <span th:text="${consultant.nickname}">별명</span>
+                  </span>
+                  <span class="card-org">
+                    <i data-lucide="building-2" class="card-icon-sm"></i>
+                    <span th:text="${consultant.orgName != null ? consultant.orgName : '-'}">소속</span>
+                  </span>
+                  <span class="card-student-count">
+                    <i data-lucide="users-round" class="card-icon-sm"></i>
+                    <span th:text="${consultant.studentCount} + '명'">0명</span>
+                  </span>
+                </div>
+
+                <div class="card-row card-row--secondary">
+                  <span class="card-userid">
+                    <i data-lucide="id-card" class="meta-icon"></i>
+                    <span th:text="${consultant.userId}">아이디</span>
+                  </span>
+                  <span class="card-name">
+                    <i data-lucide="user-round" class="meta-icon"></i>
+                    <span th:text="${consultant.name}">이름</span>
+                  </span>
+                  <span class="status-badge"
+                    th:classappend="${consultant.status.name() == 'ACTIVE'} ? ' status-badge--active' :
+                                    (${consultant.status.name() == 'SUSPENDED'} ? ' status-badge--suspended' : ' status-badge--deleted')"
+                    th:text="${consultant.status.name() == 'ACTIVE'} ? '정상' :
+                             (${consultant.status.name() == 'SUSPENDED'} ? '정지' : '삭제')">상태</span>
+                </div>
+
+              </div>
+            </th:block>
+
+            <div th:if="${consultantList == null or consultantList.list.isEmpty()}" class="empty-msg">
+              <i data-lucide="search-x" class="empty-icon"></i>
+              <p>검색 결과가 없습니다.</p>
+            </div>
+          </div>
+
+          <div class="pagination-area" id="cPaginationArea"
+            th:if="${consultantList != null and consultantList.totalPage > 0}">
+            <div class="pagination">
+              <button type="button" class="page-nav" id="cPrevBlock"
+                th:classappend="${consultantList.hasPrev} ? '' : 'hidden'"
+                th:attr="data-page=${consultantList.startPage - 1}">
+                <i data-lucide="chevron-left"></i>
+              </button>
+              <div id="cPageNumbers" class="page-numbers">
+                <th:block th:each="p : ${#numbers.sequence(consultantList.startPage, consultantList.endPage)}">
+                  <button type="button" class="page-num" th:classappend="${p == consultantSearch.page} ? ' active' : ''"
+                    th:text="${p}" th:attr="data-page=${p}">1</button>
+                </th:block>
+              </div>
+              <button type="button" class="page-nav" id="cNextBlock"
+                th:classappend="${consultantList.hasNext} ? '' : 'hidden'"
+                th:attr="data-page=${consultantList.endPage + 1}">
+                <i data-lucide="chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ════════ / 컨설턴트 영역 ════════ -->
+
+
+      <!-- ════════ 오른쪽: 학생 영역 ════════ -->
+      <div class="side-panel" id="studentPanel">
+
+        <div class="side-panel__title">
+          <i data-lucide="graduation-cap" class="title-icon-sm"></i>
+          학생
+        </div>
+
+        <!-- encryptedStudentNo가 있으면 필터 영역 대신 선택 완료 표시 -->
+        <div th:if="${encryptedStudentNo != null}" class="preset-notice">
+          <i data-lucide="check-circle-2" class="preset-icon"></i>
+          <span>학생이 이미 선택되었습니다.</span>
+        </div>
+
+        <!-- 학생 검색 필터 (encryptedStudentNo 없을 때만 활성) -->
+        <div th:if="${encryptedStudentNo == null}" class="filter-panel">
+          <div class="filter-header">
+            <i data-lucide="sliders-horizontal" class="filter-header__icon"></i>
+            <span>검색 필터</span>
+          </div>
+
+          <form id="studentSearchForm" autocomplete="off">
+
+            <!-- isCharged 항상 false로 hidden 전송 -->
+            <input type="hidden" name="isCharged" value="false">
+
+            <!-- 학생 이름 -->
+            <div class="filter-group">
+              <label class="filter-label" for="sf-name">
+                <i data-lucide="user" class="label-icon"></i>학생 이름
+              </label>
+              <input type="text" id="sf-name" name="name" class="filter-input" placeholder="이름 입력"
+                th:value="${studentSearch.name}">
+            </div>
+
+            <!-- 학년 -->
+            <div class="filter-group">
+              <label class="filter-label">
+                <i data-lucide="layers" class="label-icon"></i>학년
+              </label>
+              <div class="btn-group-radio" id="sGradeGroup">
+                <button type="button" class="radio-btn" data-name="grade" data-value="">전체</button>
+                <button type="button" class="radio-btn" data-name="grade" data-value="1">1학년</button>
+                <button type="button" class="radio-btn" data-name="grade" data-value="2">2학년</button>
+                <button type="button" class="radio-btn" data-name="grade" data-value="3">3학년</button>
+              </div>
+              <input type="hidden" id="sf-grade" name="grade"
+                th:value="${studentSearch.grade != 0 ? studentSearch.grade : ''}">
+            </div>
+
+            <!-- 학기 -->
+            <div class="filter-group">
+              <label class="filter-label">
+                <i data-lucide="calendar" class="label-icon"></i>학기
+              </label>
+              <div class="btn-group-radio" id="sSemesterGroup">
+                <button type="button" class="radio-btn" data-name="semester" data-value="">전체</button>
+                <button type="button" class="radio-btn" data-name="semester" data-value="1">1학기</button>
+                <button type="button" class="radio-btn" data-name="semester" data-value="2">2학기</button>
+              </div>
+              <input type="hidden" id="sf-semester" name="semester"
+                th:value="${studentSearch.semester != 0 ? studentSearch.semester : ''}">
+            </div>
+
+            <!-- 계열 -->
+            <div class="filter-group">
+              <label class="filter-label">
+                <i data-lucide="book-open" class="label-icon"></i>계열
+              </label>
+              <div class="btn-group-radio" id="sTrackGroup">
+                <button type="button" class="radio-btn" data-name="track" data-value="">전체</button>
+                <button type="button" class="radio-btn" data-name="track" data-value="이과">이과</button>
+                <button type="button" class="radio-btn" data-name="track" data-value="문과">문과</button>
+                <button type="button" class="radio-btn" data-name="track" data-value="예체능">예체능</button>
+              </div>
+              <input type="hidden" id="sf-track" name="track" th:value="${studentSearch.track}">
+            </div>
+
+            <!-- 학교 이름 -->
+            <div class="filter-group">
+              <label class="filter-label" for="sf-schoolName">
+                <i data-lucide="school" class="label-icon"></i>학교 이름
+              </label>
+              <input type="text" id="sf-schoolName" name="schoolName" class="filter-input" placeholder="학교명 입력"
+                th:value="${studentSearch.schoolName}">
+            </div>
+
+            <!-- 목표 대학 -->
+            <div class="filter-group">
+              <label class="filter-label" for="sf-targetUniv">
+                <i data-lucide="landmark" class="label-icon"></i>목표 대학
+              </label>
+              <input type="text" id="sf-targetUniv" name="targetUniv" class="filter-input" placeholder="대학명 입력"
+                th:value="${studentSearch.targetUniv != null ? studentSearch.targetUniv : ''}">
+            </div>
+
+            <!-- 목표 학과 -->
+            <div class="filter-group">
+              <label class="filter-label" for="sf-targetMajor">
+                <i data-lucide="flask-conical" class="label-icon"></i>목표 학과
+              </label>
+              <input type="text" id="sf-targetMajor" name="targetMajor" class="filter-input" placeholder="학과명 입력"
+                th:value="${studentSearch.targetMajor != null ? studentSearch.targetMajor : ''}">
+            </div>
+
+            <button type="button" id="studentSearchBtn" class="btn-search">
+              <i data-lucide="search" class="btn-icon"></i>
+              검색
+            </button>
+          </form>
+        </div>
+
+        <!-- 학생 검색 결과 -->
+        <div class="result-panel" th:if="${encryptedStudentNo == null}">
+          <div class="result-header">
+            <span class="result-title">
+              <i data-lucide="list" class="result-header__icon"></i>
+              검색 결과
+            </span>
+            <span class="result-count">
+              총 <strong id="sTotalCount" th:text="${studentResult != null ? studentResult.totalCount : 0}">0</strong>명
+            </span>
+          </div>
+
+          <div id="studentList" class="student-list">
+            <th:block th:if="${studentResult != null and !studentResult.list.isEmpty()}">
+              <div th:each="student : ${studentResult.list}" class="student-card" th:attr="data-enc=${student.encryptedStudentNo},
+                         data-name=${student.name}">
+
+                <div class="student-main">
+                  <div class="student-name-row">
+                    <i data-lucide="user-round" class="student-icon"></i>
+                    <span class="student-name" th:text="${student.name}">이름</span>
+                  </div>
+                  <div class="student-meta">
+                    <span class="meta-item">
+                      <i data-lucide="school" class="meta-icon"></i>
+                      <span th:text="${student.schoolName}">학교명</span>
+                    </span>
+                    <span class="meta-sep">|</span>
+                    <span class="meta-item">
+                      <i data-lucide="layers" class="meta-icon"></i>
+                      <span th:text="${student.grade} + '학년'">1학년</span>
+                    </span>
+                    <span class="meta-sep">|</span>
+                    <span class="meta-item">
+                      <i data-lucide="calendar" class="meta-icon"></i>
+                      <span th:text="${student.semester} + '학기'">1학기</span>
+                    </span>
+                    <span class="meta-sep">|</span>
+                    <span class="meta-item">
+                      <i data-lucide="book-open" class="meta-icon"></i>
+                      <span th:text="${student.track}">계열</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="student-targets" th:if="${student.target != null and !student.target.isEmpty()}">
+                  <div th:each="t : ${student.target}" class="target-item">
+                    <span class="target-rank" th:text="${t.ranking} + '지망'">1지망</span>
+                    <i data-lucide="landmark" class="meta-icon"></i>
+                    <span class="target-univ" th:text="${t.univ}">대학명</span>
+                    <span class="meta-sep">|</span>
+                    <i data-lucide="flask-conical" class="meta-icon"></i>
+                    <span class="target-major" th:text="${t.major}">학과명</span>
+                  </div>
+                </div>
+
+              </div>
+            </th:block>
+
+            <div th:if="${studentResult == null or studentResult.list.isEmpty()}" class="empty-msg">
+              <i data-lucide="search-x" class="empty-icon"></i>
+              <p>검색 결과가 없습니다.</p>
+            </div>
+          </div>
+
+          <div class="pagination-area" id="sPaginationArea"
+            th:if="${studentResult != null and studentResult.totalPage > 0}">
+            <div class="pagination">
+              <button type="button" class="page-nav" id="sPrevBlock"
+                th:classappend="${studentResult.hasPrev} ? '' : 'hidden'"
+                th:attr="data-page=${studentResult.startPage - 1}">
+                <i data-lucide="chevron-left"></i>
+              </button>
+              <div id="sPageNumbers" class="page-numbers">
+                <th:block th:each="p : ${#numbers.sequence(studentResult.startPage, studentResult.endPage)}">
+                  <button type="button" class="page-num" th:classappend="${p == studentSearch.page} ? ' active' : ''"
+                    th:text="${p}" th:attr="data-page=${p}">1</button>
+                </th:block>
+              </div>
+              <button type="button" class="page-nav" id="sNextBlock"
+                th:classappend="${studentResult.hasNext} ? '' : 'hidden'"
+                th:attr="data-page=${studentResult.endPage + 1}">
+                <i data-lucide="chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ════════ / 학생 영역 ════════ -->
+
+    </div>
+    <!-- ── / dual-area ── -->
+
+
+    <!-- ════════ 배정 영역 ════════ -->
+    <div class="assign-area">
+      <div class="assign-header">
+        <i data-lucide="link-2" class="assign-header__icon"></i>
+        <span>배정</span>
+      </div>
+
+      <div class="assign-body">
+
+        <!-- 배정 - 컨설턴트 -->
+        <div class="assign-slot assign-slot--consultant">
+          <div class="assign-slot__label">
+            <i data-lucide="contact" class="slot-label-icon"></i>
+            컨설턴트
+          </div>
+          <div id="assignConsultant" class="assign-slot__content">
+            <!-- encryptedConsultantNo가 있으면 이미 선택 표시 -->
+            <th:block th:if="${encryptedConsultantNo != null}">
+              <div class="assign-tag assign-tag--preset">
+                <i data-lucide="check-circle-2" class="assign-tag__icon"></i>
+                <span>선택된 컨설턴트</span>
+              </div>
+            </th:block>
+            <th:block th:if="${encryptedConsultantNo == null}">
+              <div class="assign-empty" id="assignConsultantEmpty">
+                <i data-lucide="user-x" class="assign-empty__icon"></i>
+                <span>컨설턴트를 선택해 주세요</span>
+              </div>
+            </th:block>
+          </div>
+        </div>
+
+        <div class="assign-arrow">
+          <i data-lucide="arrow-right-left" class="assign-arrow__icon"></i>
+        </div>
+
+        <!-- 배정 - 학생 -->
+        <div class="assign-slot assign-slot--student">
+          <div class="assign-slot__label">
+            <i data-lucide="graduation-cap" class="slot-label-icon"></i>
+            학생
+          </div>
+          <div id="assignStudents" class="assign-slot__content assign-slot__content--students">
+            <!-- encryptedStudentNo가 있으면 이미 선택 표시 -->
+            <th:block th:if="${encryptedStudentNo != null}">
+              <div class="assign-tag assign-tag--preset">
+                <i data-lucide="check-circle-2" class="assign-tag__icon"></i>
+                <span>선택된 학생</span>
+              </div>
+            </th:block>
+            <th:block th:if="${encryptedStudentNo == null}">
+              <div class="assign-empty" id="assignStudentsEmpty">
+                <i data-lucide="users-x" class="assign-empty__icon"></i>
+                <span>학생을 선택해 주세요</span>
+              </div>
+            </th:block>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 배정하기 버튼 -->
+      <div class="assign-footer">
+        <button type="button" id="assignBtn" class="btn-assign">
+          <i data-lucide="link-2" class="btn-icon"></i>
+          배정하기
+        </button>
+      </div>
+
+    </div>
+    <!-- ════════ / 배정 영역 ════════ -->
+
+  </div>
+
+  <script th:src="@{/js/consultant/charged.js}"></script>
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

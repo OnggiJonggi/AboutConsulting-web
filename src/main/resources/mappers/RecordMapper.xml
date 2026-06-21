@@ -16,8 +16,8 @@
 
   <insert id="insertAnalysisGroup" parameterType="RecordGroupStatus"
     useGeneratedKeys="true"
-    keyProperty="studentNo"
-    keyColumn="STUDENT_NO">
+    keyProperty="groupNo"
+    keyColumn="GROUP_NO">
     insert into RECORD_ANALYSIS_GROUP(
       STUDENT_NO, STATUS
     ) VALUES(

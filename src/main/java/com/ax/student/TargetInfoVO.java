@@ -27,7 +27,7 @@ public class TargetInfoVO {
 		@Max(value = 3, message = "순번은 1에서 3까지")
 		private int ranking;
 		
-		private String hmac; // 유효성 검사용 hmac
+		private String hmac; // 유효성 검사용 hmac(미사용)
 	}
 	
 	@AllArgsConstructor

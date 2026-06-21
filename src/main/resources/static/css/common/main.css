@@ -111,6 +111,26 @@ a {
   border-radius: 999px;
 }
 
+.badge--super-admin {
+  background: #EDE7F6;
+  color: #4527A0;
+}
+
+.badge--consultant-leader {
+  background: #E8F5E9;
+  color: #1B5E20;
+}
+
+.badge--student {
+  background: #FFF8E1;
+  color: #F57F17;
+}
+
+.badge--viewer {
+  background: #F5F5F5;
+  color: #616161;
+}
+
 .badge--admin {
   background: var(--primary-light);
   color: var(--primary-dark);

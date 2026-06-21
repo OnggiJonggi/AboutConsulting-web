@@ -1,6 +1,12 @@
 package com.ax.student.record;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.ax.global.file.FileDataVO;
+import com.ax.global.file.component.FileComponent;
+import com.ax.global.file.component.TargetEnum;
 
 import lombok.RequiredArgsConstructor;
 
@@ -8,21 +14,38 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RecordService{
 	private final RecordMapper recordMapper;
-
+	private final FileComponent fileComponent;
+	private final apiRecordComponent apiRecordComponent;
+	
 	/**
-	 * RECORD_ANALYSIS_GROUP 테이블 행 생성 및 식별번호 반납 
+	 * 생기부 저장 및 분석
+	 * 
+	 * @param file
 	 * @param studentNo
-	 * @return groupNo
+	 * @param memberNo
 	 */
-	public int createAnalysisGroup(int studentNo) {
-		// 생기부 분석결과 묶음 + 비동기 요청 작업 상태값 생성
+	public int insertRecord(FileDataVO file, int studentNo, int memberNo) throws Exception {
+		
 		RecordVO.GroupStatus recordGroup = RecordVO.GroupStatus.builder()
 				.studentNo(studentNo)
 				.status(RecordStatusEnum.READY.name())
 				.build();
-		recordMapper.insertAnalysisGroup(recordGroup);
-
-		return recordGroup.getGroupNo();
+		
+		// 생기부 분석결과 묶음 + 비동기 요청 작업 상태값 생성
+		int result = recordMapper.insertAnalysisGroup(recordGroup);
+		if(result==0) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+		
+		// 묶음 식별번호 없으면 가세요
+		int groupNo = recordGroup.getGroupNo();
+		if(groupNo==0) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+		
+		// 파일 저장
+		fileComponent.saveFile(file, groupNo, TargetEnum.RECORD_FILE, memberNo);
+		
+		// 비동기 작업
+		apiRecordComponent.analysisRecord(file.getBytes(), groupNo, studentNo);
+		
+		return groupNo;
 	}
 
 	/**
@@ -55,4 +78,5 @@ public class RecordService{
 	public String getStatus(int groupNo) throws Exception {
 		return recordMapper.selectRecordStatus(groupNo);
 	}
+
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.ax.global.common.SearchResultVO;
@@ -110,10 +111,17 @@ public class MemberService{
 	}
 
 	/**
-	 * 회원 권한 수정 
+	 * 회원 권한 수정
 	 */
+	@Transactional
 	public void updateMemberRole(int memberNo, RoleEnum role) {
-		int result = memberMapper.updateRole(memberNo, role);
+		
+		// 권한 지워버려
+		int deleteResult = memberMapper.deleteRole(memberNo);
+		if(deleteResult==0) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+		
+		// 권한 생성하기
+		int result = memberMapper.insertRole(memberNo, role);
 		if(result==0) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 

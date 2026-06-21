@@ -21,13 +21,8 @@ public class RecordVO {
 	@Builder
 	@ToString
 	public static class GroupStatus{
-		
-		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private int groupNo;
-		
-		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private int studentNo;
-		
 		private String status;
 	}
 	

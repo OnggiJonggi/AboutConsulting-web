@@ -56,8 +56,6 @@ public class MemberVO {
 	@AllArgsConstructor
 	@Data
 	public static class Join{
-		
-		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private int memberNo;
 		
 		@NotBlank(message="아이디를 입력해라.")

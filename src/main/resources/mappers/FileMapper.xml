@@ -10,18 +10,18 @@
     keyProperty="fileNo"
     keyColumn="FILE_NO">
     insert into FILE_INFO(
-        ORIGINAL_NAME
-        ,CHANGED_NAME
-        ,MIME
-        ,FILE_SIZE
-        ,SAVE_PATH
-      )values(
-        #{originalName}
-        ,#{changedName}
-        ,#{mime}
-        ,#{fileSize}
-        ,#{savePath}
-      )
+      ORIGINAL_NAME
+      ,CHANGED_NAME
+      ,MIME
+      ,FILE_SIZE
+      ,SAVE_PATH
+    )values(
+      #{originalName}
+      ,#{changedName}
+      ,#{mime}
+      ,#{fileSize}
+      ,#{savePath}
+    )
   </insert>
 
   <insert id="insertMapping" parameterType="FileInfoInsertMapping">
@@ -36,16 +36,22 @@
     insert into FILE_HISTORY(
         FILE_NO
         ,ORIGINAL_NAME
+        ,CHANGED_NAME
         ,SAVE_PATH
         ,ACTION
-        ,ACTION_AT
+        <if test="actionAt!=null">
+          ,ACTION_AT
+        </if>
         ,ACTION_BY
       )values(
-        #{fileNo}
+        #{fileNo, jdbcType=NUMERIC}
         ,#{originalName}
+        ,#{changedName}
         ,#{savePath}
         ,#{action}
-        ,#{savedAt}
+        <if test="actionAt!=null">
+          ,#{actionAt}
+        </if>
         ,#{actionBy}
       )
   </insert>
