@@ -454,3 +454,636 @@ a {
     font-size: 0.875rem;
   }
 }
+
+/* ── 상태 배지 ── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25em 0.75em;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.status-badge--active {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.status-badge--suspended {
+  background: #FFF8E1;
+  color: #F57F17;
+}
+
+.status-badge--deleted {
+  background: #FFEBEE;
+  color: #C62828;
+}
+
+.status-badge--graduate {
+  background: #F5F5F5;
+  color: #616161;
+}
+
+/* ── 상태 수정 버튼 ── */
+.btn-status-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: 0.75rem;
+  padding: 0.3em 0.8em;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition), background var(--transition);
+}
+
+.btn-status-edit:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+/* ── 모달 공통 추가 ── */
+.modal-box--lg {
+  max-width: 640px;
+  max-height: 90dvh;
+  overflow-y: auto;
+  text-align: left;
+  gap: 0;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1.5px solid var(--border);
+  width: 100%;
+}
+
+.modal-header .modal-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.modal-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: background var(--transition), color var(--transition);
+}
+
+.modal-close-btn:hover {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+/* 수정 모달 폼 그룹 */
+.modal-box--lg .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  width: 100%;
+}
+
+.modal-box--lg .form-label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.modal-box--lg .label-icon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--primary);
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+
+.modal-box--lg .required {
+  color: var(--danger);
+  font-size: 0.9em;
+}
+
+.modal-box--lg .form-control {
+  width: 100%;
+  padding: 0.6rem 0.875rem;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+}
+
+.modal-box--lg .form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.12);
+  background: var(--surface);
+}
+
+.modal-box--lg .form-control.is-invalid {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+}
+
+.modal-box--lg .invalid-feedback {
+  font-size: 0.8125rem;
+  color: var(--danger);
+  min-height: 1.1em;
+  display: none;
+}
+
+.modal-box--lg .invalid-feedback.show {
+  display: block;
+}
+
+.modal-box--lg .track-group {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.modal-box--lg .track-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.modal-box--lg .track-option input[type="radio"] {
+  display: none;
+}
+
+.modal-box--lg .track-label {
+  padding: 0.5rem 1.1rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--bg);
+  transition: all var(--transition);
+  cursor: pointer;
+}
+
+.modal-box--lg .track-option input[type="radio"]:checked+.track-label {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.modal-box--lg .track-label:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* 학교 선택 디스플레이 */
+.modal-box--lg .school-selected-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.875rem;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+  min-height: 2.75rem;
+}
+
+.modal-box--lg .school-selected-display:hover {
+  border-color: var(--primary);
+  background: var(--surface);
+}
+
+.modal-box--lg .school-selected-display.has-value {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.modal-box--lg .school-display-placeholder {
+  color: var(--text-faint);
+  font-size: 0.9375rem;
+}
+
+.modal-box--lg .school-display-name {
+  color: var(--text);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.modal-box--lg .ml-auto {
+  margin-left: auto;
+}
+
+.modal-box--lg .school-panel {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  margin-top: 0.25rem;
+}
+
+.modal-box--lg .school-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: var(--primary-light);
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-box--lg .school-panel__title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.modal-box--lg .school-panel__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 0.25rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  transition: color var(--transition), background var(--transition);
+}
+
+.modal-box--lg .school-panel__close:hover {
+  color: var(--danger);
+  background: var(--danger-light);
+}
+
+.modal-box--lg .school-panel__search-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.modal-box--lg .school-panel__search-row .form-control {
+  flex: 1;
+  min-width: 0;
+}
+
+.modal-box--lg .school-result-area {
+  padding: 0.5rem 1rem 0.875rem;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.modal-box--lg .school-empty-msg {
+  text-align: center;
+  padding: 1.5rem 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.modal-box--lg .school-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.modal-box--lg .school-table th {
+  text-align: left;
+  padding: 0.5rem 0.625rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+
+.modal-box--lg .school-table td {
+  padding: 0.5rem 0.625rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.modal-box--lg .school-table-row {
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.modal-box--lg .school-table-row:hover {
+  background: var(--primary-light);
+}
+
+.modal-box--lg .school-table-row:hover td {
+  color: var(--primary-dark);
+}
+
+/* 지망 대학 인풋 (모달 내) */
+.modal-box--lg .target-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.modal-box--lg .target-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.modal-box--lg .target-rank-badge {
+  flex-shrink: 0;
+  padding: 0.35rem 0.7rem;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  white-space: nowrap;
+  margin-top: 0.5rem;
+}
+
+.modal-box--lg .target-inputs {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.625rem;
+}
+
+.modal-box--lg .target-input-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* 버튼 (모달 내 학교 검색) */
+.modal-box--lg .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-family: inherit;
+  border-radius: var(--radius-md);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.modal-box--lg .btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.modal-box--lg .btn-primary:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.modal-box--lg .btn-outline {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text-muted);
+}
+
+.modal-box--lg .btn-outline:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+.modal-box--lg .btn-sm {
+  padding: 0.45rem 0.875rem;
+  font-size: 0.875rem;
+}
+
+/* ── 상태 선택 옵션 ── */
+.status-options {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: center;
+}
+
+.status-option {
+  cursor: pointer;
+}
+
+.status-option input[type="radio"] {
+  display: none;
+}
+
+.status-option__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  opacity: 0.7;
+}
+
+.status-option input[type="radio"]:checked+.status-option__label {
+  opacity: 1;
+  transform: scale(1.04);
+  box-shadow: var(--shadow-md);
+}
+
+.status-option__label--active {
+  background: #E8F5E9;
+  color: #2E7D32;
+  border-color: #A5D6A7;
+}
+
+.status-option__label--suspended {
+  background: #FFF8E1;
+  color: #F57F17;
+  border-color: #FFE082;
+}
+
+.status-option__label--deleted {
+  background: #FFEBEE;
+  color: #C62828;
+  border-color: #EF9A9A;
+}
+
+.status-option__label--graduate {
+  background: #F5F5F5;
+  color: #616161;
+  border-color: #BDBDBD;
+}
+
+.status-option input[type="radio"]:checked+.status-option__label--active {
+  border-color: #2E7D32;
+}
+
+.status-option input[type="radio"]:checked+.status-option__label--suspended {
+  border-color: #F57F17;
+}
+
+.status-option input[type="radio"]:checked+.status-option__label--deleted {
+  border-color: #C62828;
+}
+
+.status-option input[type="radio"]:checked+.status-option__label--graduate {
+  border-color: #616161;
+}
+
+#basic-status-error {
+  font-size: 0.8125rem;
+  color: var(--danger);
+  display: none;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+#basic-status-error.show {
+  display: block;
+}
+
+/* ── 반응형 (모달 내) ── */
+@media (max-width: 600px) {
+  .modal-box--lg {
+    padding: 1.25rem 1rem;
+  }
+
+  .modal-box--lg .target-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-box--lg .school-panel__search-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .modal-box--lg .school-panel__search-row .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .status-options {
+    gap: 0.5rem;
+  }
+}
+
+/* ── 담당 컨설턴트 카드 ── */
+#basic-consultant-section {
+  margin-top: 1.5rem;
+}
+
+.consultant-card {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  color: inherit;
+}
+
+.consultant-card--link {
+  cursor: pointer;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.consultant-card--link:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md);
+}
+
+.consultant-card--link:hover .consultant-card__value {
+  color: var(--primary);
+}
+
+.consultant-card__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.consultant-card__label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.consultant-card__value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  transition: color var(--transition);
+}
+
+.consultant-card__divider {
+  width: 1px;
+  height: 2.25rem;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.consultant-card__arrow {
+  margin-left: auto;
+  color: var(--text-faint);
+  flex-shrink: 0;
+  transition: color var(--transition);
+}
+
+.consultant-card--link:hover .consultant-card__arrow {
+  color: var(--primary);
+}
+
+/* 컨설턴트 미배정 상태 */
+.consultant-card--empty {
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  border-style: dashed;
+}
+
+.consultant-card--empty>span {
+  flex: 1;
+  min-width: 0;
+}

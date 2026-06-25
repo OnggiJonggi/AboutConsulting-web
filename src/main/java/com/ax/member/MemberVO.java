@@ -55,7 +55,7 @@ public class MemberVO {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Data
-	public static class Join{
+	public static class Insert{
 		private int memberNo;
 		
 		@NotBlank(message="아이디를 입력해라.")

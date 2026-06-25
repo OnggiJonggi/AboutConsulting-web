@@ -10,11 +10,16 @@
 		pk에만 사용하자
 		 -->
 		<id property="studentNo" column="STUDENT_NO"/>
+		<result property="schoolCode" column="SCHOOL_CODE"/>
 		<result property="name"       column="NAME"/>
 		<result property="grade"      column="GRADE"/>
 		<result property="semester"   column="SEMESTER"/>
 		<result property="track"      column="TRACK"/>
+		<result property="status"     column="STATUS"
+			javaType="com.ax.student.StudentStatusEnum"
+			typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
 		<result property="schoolName" column="SCHOOL_NAME"/>
+		<result property="consultantNo" column="CONSULTANT_NO"/>
 		<result property="consultantNickname" column="CONSULTANT_NICKNAME"/>
 		<result property="consultantOrgName" column="CONSULTANT_ORG_NAME"/>
 		<collection property="target" ofType="TargetInfoPair" resultMap="pairMap"/>
@@ -26,7 +31,7 @@
 	</resultMap>
 	
 
-	<insert id="insertStudent" parameterType="StudentRegister"
+	<insert id="insertStudent" parameterType="StudentInsert"
 		useGeneratedKeys="true"
     keyProperty="studentNo"
     keyColumn="STUDENT_NO">
@@ -40,17 +45,26 @@
 	<select id="selectStudent" parameterType="_int" resultMap="StudentDetailMap">
 		select
 			S.STUDENT_NO
-			,S.NAME
+			,S.NAME as NAME
 			,S.GRADE
 			,S.SEMESTER
 			,S.TRACK
-			,SCH.NAME AS SCHOOL_NAME
+			,S.STATUS
+			,SCH.SCHOOL_CODE
+			,SCH.NAME as SCHOOL_NAME
 			,T.MAJOR
 			,T.UNIV
 			,T.RANKING
+			,CON.CONSULTANT_NO
+			,ORG.NAME as CONSULTANT_ORG_NAME
+			,M.NICKNAME as CONSULTANT_NICKNAME
 		from STUDENT S
 		left join SCHOOL SCH on (S.SCHOOL_CODE = SCH.SCHOOL_CODE)
 		left join TARGET_INFO T on (S.STUDENT_NO = T.STUDENT_NO)
+		left join CONSULTANT_STUDENT CS on (CS.STUDENT_NO = S.STUDENT_NO)
+		left join CONSULTANT CON on (CON.CONSULTANT_NO = CS.CONSULTANT_NO)
+		left join CONSULTANT_ORG ORG on (ORG.ORG_NO = CON.ORG_NO)
+		left join MEMBER M on (M.MEMBER_NO = CON.CONSULTANT_NO)
 		where S.STUDENT_NO = #{studentNo}
 		order by T.RANKING ASC
 	</select>
@@ -110,7 +124,7 @@
 					left join MEMBER M on (M.MEMBER_NO = CON.CONSULTANT_NO)
 					<where>
 						<if test="name!=null and name!=''">
-							and S.NAME like '%' || #{name} || '%'
+							and S.NAME like '%' || #{name} || '%' escape '/'
 						</if>
 						<if test="grade!=0">
 							and S.GRADE = #{grade}
@@ -119,10 +133,10 @@
 							and S.SEMESTER = #{semester}
 						</if>
 						<if test="track!=null and track!=''">
-							and S.TRACK like '%' || #{track} || '%'
+							and S.TRACK like '%' || #{track} || '%' escape '/'
 						</if>
 						<if test="schoolName!=null and schoolName!=''">
-							and SCH.NAME like '%' || #{schoolName} || '%'
+							and SCH.NAME like '%' || #{schoolName} || '%' escape '/'
 						</if>
 						<if test="(targetUniv!=null and targetUniv!='')
 							or (targetMajor!=null and targetMajor!='')">
@@ -133,10 +147,10 @@
 								inner join STUDENT S2 on(T2.STUDENT_NO = S2.STUDENT_NO)
 								where S2.STUDENT_NO = S.STUDENT_NO
 								<if test="targetUniv!=null and targetUniv!=''">
-									and T2.UNIV like '%' || #{targetUniv} || '%'
+									and T2.UNIV like '%' || #{targetUniv} || '%' escape '/'
 								</if>
 								<if test="targetMajor!=null and targetMajor!=''">
-									and T2.MAJOR like '%' || #{targetMajor} || '%'
+									and T2.MAJOR like '%' || #{targetMajor} || '%' escape '/'
 								</if>
 							)
 						</if>
@@ -154,10 +168,10 @@
 							)
 						</if>
 						<if test="consultantNickname!=null and consultantNickname!=''">
-							and M.NICKNAME like '%' || #{consultantNickname} || '%'
+							and M.NICKNAME like '%' || #{consultantNickname} || '%' escape '/'
 						</if>
 						<if test="consultantOrgName!=null and consultantOrgName!=''">
-							and CON_ORG.NAME like '%' || #{consultantOrgName} || '%'
+							and CON_ORG.NAME like '%' || #{consultantOrgName} || '%' escape '/'
 						</if>
 					</where>
 					order by S.STUDENT_NO DESC
@@ -249,4 +263,22 @@
 		where CS.CONSULTANT_NO = #{consultantNo}
 		order by STU.STUDENT_NO desc, TI.RANKING asc
 	</select>
+
+
+	<update id="updateStudent" parameterType="StudentInsert">
+		update STUDENT
+		set
+			NAME = #{name}
+			,GRADE = #{grade}
+			,SEMESTER = #{semester}
+			,TRACK = #{track}
+			,SCHOOL_CODE = #{schoolCode}
+		where STUDENT_NO = #{studentNo}
+	</update>
+
+	<update id="updateStatus">
+		update STUDENT
+		set STATUS = #{status}
+		where STUDENT_NO = #{studentNo}
+	</update>
 </mapper>

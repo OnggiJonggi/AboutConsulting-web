@@ -15,11 +15,11 @@
 			,SPECIALIZED
 			,SPECIALIZED_TYPE
 		from SCHOOL
-		where NAME like '%' || #{schoolName} || '%'
+		where NAME like '%' || #{schoolName} || '%' escape '/'
 	</select>
 
 
-	<insert id="insertSchool" parameterType="SchoolRegister" >
+	<insert id="insertSchool" parameterType="SchoolDetail" >
 		insert into SCHOOL(
 			SCHOOL_CODE
 			,NAME

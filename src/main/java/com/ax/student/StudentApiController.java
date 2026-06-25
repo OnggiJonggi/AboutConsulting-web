@@ -1,5 +1,6 @@
 package com.ax.student;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
@@ -12,16 +13,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.ax.consultant.ConsultantService;
 import com.ax.global.common.SearchResultVO;
 import com.ax.global.file.FileDataVO;
 import com.ax.global.security.CryptoComponent;
 import com.ax.global.security.CustomUserDetails;
+import com.ax.global.security.RoleEnum;
 import com.ax.student.mock.MockService;
 import com.ax.student.mock.MockStatusEnum;
 import com.ax.student.record.RecordService;
 import com.ax.student.record.RecordStatusEnum;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class StudentApiController {
 	private final StudentService studentService;
+	private final ConsultantService consultantService;
 	private final RecordService recordService;
 	private final MockService mockService;
 	private final CryptoComponent cryptoComponent;
@@ -65,15 +71,58 @@ public class StudentApiController {
 	
 	/**
 	 * 학생 수정
-	 * 관리자, 컨설턴트
+	 * 관리자, 컨설턴트 : 담당, 학생 : 본인
 	 */
-	@PutMapping("{encryptedStudentNo}/update")
-	public ResponseEntity<Void> putMethodName() {
+	@PutMapping("{encryptedStudentNo}")
+	public ResponseEntity<Void> updateStudent(
+			@ModelAttribute @Valid StudentVO.Insert student,
+			@PathVariable String encryptedStudentNo,
+			@AuthenticationPrincipal CustomUserDetails userDetails) throws Exception{
+		
+		int studentNo = Integer.valueOf(cryptoComponent.decrypt(encryptedStudentNo));
+		
+		// 컨설턴트라면 담당 학생인지 확인
+		if(userDetails.getAuthorities().stream()
+		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.CONSULTANT.getPrefix()))) {
+			int consultantNo = Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo()));
+			
+			boolean inCharge = consultantService.isInCharge(consultantNo, studentNo);
+			if(inCharge) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+		}
 		
 		
+		student.setStudentNo(studentNo);
+		studentService.updateStudent(student);
 		
 		return ResponseEntity.ok().build();
 	}
+	
+	/**
+	 * 학생 상태값 수정
+	 * 관리자, 컨설턴트 : 담당
+	 */
+	@PutMapping("{encryptedStudentNo}/status")
+	public ResponseEntity<Void> deleteStudent(
+			@PathVariable String encryptedStudentNo,
+			@RequestParam StudentStatusEnum status,
+			@AuthenticationPrincipal CustomUserDetails userDetails) throws Exception{
+		
+		int studentNo = Integer.valueOf(cryptoComponent.decrypt(encryptedStudentNo));
+		
+		// 컨설턴트라면 담당 학생인지 확인
+		if(userDetails.getAuthorities().stream()
+		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.CONSULTANT.getPrefix()))) {
+			int consultantNo = Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo()));
+			
+			boolean inCharge = consultantService.isInCharge(consultantNo, studentNo);
+			if(inCharge) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+		}
+		
+		studentService.updateStatus(studentNo, status);
+		
+		return ResponseEntity.ok().build();
+	}
+	
 
 	/**
 	 * 생기부 업로드

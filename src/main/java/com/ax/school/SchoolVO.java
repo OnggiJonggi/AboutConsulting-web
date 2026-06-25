@@ -12,10 +12,14 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 public class SchoolVO {
+	
+	/**
+	 * TODO : api검색을 하지 않고 삽입하는 객체
+	 */
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Data
-	public static class Registor{
+	public static class Insert{
 		
 		@NotBlank(message="코드가 뭐에요")
 		private String schoolCode;

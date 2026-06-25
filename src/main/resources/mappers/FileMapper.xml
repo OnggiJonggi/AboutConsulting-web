@@ -5,7 +5,7 @@
 
 <mapper namespace="com.ax.global.file.FileMapper">
 
-  <insert id="insertInfo" parameterType="FileInfoRegistor"
+  <insert id="insertInfo" parameterType="FileInfoInsert"
     useGeneratedKeys="true"
     keyProperty="fileNo"
     keyColumn="FILE_NO">

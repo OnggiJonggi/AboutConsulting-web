@@ -64,7 +64,7 @@ public class FileComponent {
 	    Files.write(targetFile, file.getBytes());
 		
 		// FileInfoRegistor 객체 생성
-		FileInfoVO.Registor registor = FileInfoVO.Registor.builder()
+		FileInfoVO.Insert Insert = FileInfoVO.Insert.builder()
 				.originalName(originalName)
 				.changedName(changedName)
 				.mime(file.getMime())
@@ -73,7 +73,7 @@ public class FileComponent {
 				.build();
 		
 		// 파일 메타데이터 저장
-		int result1 = fileMapper.insertInfo(registor);
+		int result1 = fileMapper.insertInfo(Insert);
 		if(result1==0) throw new Exception();
 		
 		
@@ -81,7 +81,7 @@ public class FileComponent {
 		FileInfoVO.InsertMapping insertMapping = FileInfoVO.InsertMapping.builder()
 				.target(target)
 				.groupNo(groupNo)
-				.fileNo(registor.getFileNo()).build();
+				.fileNo(Insert.getFileNo()).build();
 		
 		// 파일-맵핑 테이블 저장
 		int result2 = fileMapper.insertMapping(insertMapping);
@@ -89,7 +89,7 @@ public class FileComponent {
 		
 		// FileInfoInsertHistory 객체 생성
 		FileInfoVO.InsertHistory insertHistory = FileInfoVO.InsertHistory.builder()
-				.fileNo(registor.getFileNo())
+				.fileNo(Insert.getFileNo())
 				.originalName(originalName)
 				.changedName(changedName)
 				.savePath(path)

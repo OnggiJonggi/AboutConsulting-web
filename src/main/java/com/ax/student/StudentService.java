@@ -6,13 +6,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.ax.global.common.SanitizeComponent;
 import com.ax.global.common.SearchResultVO;
 import com.ax.global.exception.CustomException;
 import com.ax.global.exception.ErrorCodeEnum;
-import com.ax.global.security.CryptoComponent;
+import com.ax.member.MemberRegexp;
+import com.ax.school.SchoolRegexp;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public class StudentService{
 	private final StudentMapper studentMapper;
 	private final TargetInfoMapper targetInfoMapper;
-	private final CryptoComponent cryptoComponent;
+	private final SanitizeComponent sanitizeComponent;
 //	private final HmacComponent hmacComponent;
 	
 	
@@ -31,7 +35,7 @@ public class StudentService{
 	 * 학생 등록
 	 */
 	@Transactional
-	public String register(StudentVO.Register studentRegister) throws Exception {
+	public int register(StudentVO.Insert Insert) throws Exception {
 		
 		// 목표 대학/학과 HMAC 검증(미사용)
 //		if(studentRegister.getTarget()!=null && !studentRegister.getTarget().isEmpty()) {
@@ -47,18 +51,18 @@ public class StudentService{
 //		}
 		
 		// 학생 등록
-		studentMapper.insertStudent(studentRegister);
+		studentMapper.insertStudent(Insert);
 		
 		/*
 		 * 지망 학교/학과 등록
 		 * 지망 순위가 높은 학교가 없고 낮은 학교가 있으면 순위 당기기
 		 */
-		List<TargetInfoVO.Register> filtered = Optional.ofNullable(studentRegister.getTarget())
+		List<TargetInfoVO.Insert> filtered = Optional.ofNullable(Insert.getTarget())
 			    .orElse(Collections.emptyList())
 			    .stream()
 			    .filter(t -> t.getUniv() != null && !t.getUniv().trim().isEmpty())
 			    .filter(t -> t.getMajor() != null && !t.getMajor().trim().isEmpty())
-			    .sorted(Comparator.comparingInt(TargetInfoVO.Register::getRanking))
+			    .sorted(Comparator.comparingInt(TargetInfoVO.Insert::getRanking))
 			    .collect(Collectors.toList());
 		
 		if (filtered.isEmpty())
@@ -68,26 +72,35 @@ public class StudentService{
 		    filtered.get(i).setRanking(i + 1);
 		}
 
-		targetInfoMapper.insertTarget(studentRegister.getStudentNo(), filtered);
+		targetInfoMapper.insertTarget(Insert.getStudentNo(), filtered);
 		
 		// 암호화된 학생 식별번호 반납
-		return cryptoComponent.encrypt(String.valueOf(studentRegister.getStudentNo()));
+		return Insert.getStudentNo();
 	}
 
 	/**
-	 * 학생 목록 조회
+	 * 학생 목록 검색
 	 */
-	public SearchResultVO<StudentVO.Detail> getList(StudentVO.Search studentSearch) throws Exception {
+	public SearchResultVO<StudentVO.Detail> getList(StudentVO.Search search) throws Exception {
+		
+		// 검색어 소독
+		search.setName(sanitizeComponent.searchKeyword(search.getName(), StudentRegexp.NAME_MAX_LENGTH));
+		search.setTrack(sanitizeComponent.searchKeyword(search.getTrack(), StudentRegexp.TRACK_MAX_LENGTH));
+		search.setSchoolName(sanitizeComponent.searchKeyword(search.getSchoolName(), SchoolRegexp.NAME_MAX_LENGTH));
+		search.setTargetUniv(sanitizeComponent.searchKeyword(search.getTargetUniv(), StudentRegexp.TARGET_UNIV_MAX_LENGTH));
+		search.setTargetMajor(sanitizeComponent.searchKeyword(search.getTargetMajor(), StudentRegexp.TARGET_MAJOR_MAX_LENGTH));
+		search.setConsultantNickname(sanitizeComponent.searchKeyword(search.getConsultantNickname(), MemberRegexp.NAME_MAX_LENGTH));
+//		search.setConsultantOrgName(sanitizeComponent.searchKeyword(null, 0));
 		
 		// 검색
-		List<StudentVO.Detail> result = studentMapper.selectStudentList(studentSearch);
+		List<StudentVO.Detail> result = studentMapper.selectStudentList(search);
 		
 		// 검색 결과 수
-		int totalCount = studentMapper.selectStudentListTotalCount(studentSearch);
+		int totalCount = studentMapper.selectStudentListTotalCount(search);
 		
 		// SearchResultVO로 감싸기
 		SearchResultVO<StudentVO.Detail> searchResult = new SearchResultVO<StudentVO.Detail>(
-				result, totalCount, studentSearch.getPage());
+				result, totalCount, search.getPage());
 		
 		return searchResult;
 	}
@@ -98,6 +111,49 @@ public class StudentService{
 	 */
 	public StudentVO.Detail getStudentBasicInfo(int studentNo) throws Exception {
 		return studentMapper.selectStudent(studentNo);
+	}
+
+	/**
+	 * 학생 업데이트
+	 */
+	public void updateStudent(StudentVO.Insert student) {
+		
+		// 기본정보 업데이트
+		int result1 = studentMapper.updateStudent(student);
+		if(result1==0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+		
+		// 지망 학교/학과 지우기
+		targetInfoMapper.delete(student.getStudentNo());
+		
+		/*
+		 * 지망 학교/학과 등록
+		 * 지망 순위가 높은 학교가 없고 낮은 학교가 있으면 순위 당기기
+		 */
+		List<TargetInfoVO.Insert> filtered = Optional.ofNullable(student.getTarget())
+			    .orElse(Collections.emptyList())
+			    .stream()
+			    .filter(t -> t.getUniv() != null && !t.getUniv().trim().isEmpty())
+			    .filter(t -> t.getMajor() != null && !t.getMajor().trim().isEmpty())
+			    .sorted(Comparator.comparingInt(TargetInfoVO.Insert::getRanking))
+			    .collect(Collectors.toList());
+		
+		if (filtered.isEmpty())
+		    throw new CustomException(ErrorCodeEnum.TARGET_REQUIRED);
+
+		for (int i = 0; i < filtered.size(); i++) {
+		    filtered.get(i).setRanking(i + 1);
+		}
+
+		targetInfoMapper.insertTarget(student.getStudentNo(), filtered);
+		
+	}
+
+	/**
+	 * 학생 상태값 변경
+	 */
+	public void updateStatus(int studentNo, StudentStatusEnum status) {
+		int result = studentMapper.updateStatus(studentNo, status);
+		if(result==0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 	}
 
 }

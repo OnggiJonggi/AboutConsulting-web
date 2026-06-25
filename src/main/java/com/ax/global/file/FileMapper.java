@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface FileMapper {
 
-	public int insertInfo(FileInfoVO.Registor registor);
+	public int insertInfo(FileInfoVO.Insert insert);
 
 	public int insertMapping(FileInfoVO.InsertMapping insertMapping);
 

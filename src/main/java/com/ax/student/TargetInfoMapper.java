@@ -8,7 +8,10 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface TargetInfoMapper {
 
-	public void insertTarget(@Param("studentNo")int studentNo
-			,@Param("list")List<TargetInfoVO.Register> list);
+	public void insertTarget(
+			@Param("studentNo")int studentNo
+			,@Param("list")List<TargetInfoVO.Insert> list);
+
+	public void delete(int studentNo);
 
 }

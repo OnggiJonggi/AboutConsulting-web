@@ -19,9 +19,9 @@
     <!-- ── 헤더 영역 ── -->
     <div class="detail-header">
       <div class="detail-header__top">
-        <a th:href="@{/student}" class="btn-back">
+        <button type="button" class="btn-back" id="basic-btn-back" onclick="history.back()">
           <i data-lucide="chevron-left" class="icon-sm"></i>
-        </a>
+        </button>
         <h1 class="student-name" th:text="${studentBasicInfo.name}">김학생</h1>
       </div>
       <div class="student-meta">
@@ -89,22 +89,109 @@
           </div>
         </div>
 
+        <div sec:authorize="hasRole('ADMIN') or hasRole('CONSULTANT')">
+          <div class="info-section">
+            <div class="info-card" id="basic-status-card">
+              <div class="info-card__header">
+                <i data-lucide="shield-check" class="icon-sm"></i>
+                <span class="info-card__title">상태</span>
+              </div>
+              <span id="basic-status-badge" th:classappend="${studentBasicInfo.status.name() == 'ACTIVE'} ? 'status-badge status-badge--active' :
+                                 (${studentBasicInfo.status.name() == 'SUSPENDED'} ? 'status-badge status-badge--suspended' :
+                                 (${studentBasicInfo.status.name() == 'DELETED'} ? 'status-badge status-badge--deleted' :
+                                 'status-badge status-badge--graduate'))" th:text="${studentBasicInfo.status.name() == 'ACTIVE'} ? '정상' :
+                          (${studentBasicInfo.status.name() == 'SUSPENDED'} ? '정지' :
+                          (${studentBasicInfo.status.name() == 'DELETED'} ? '삭제' : '졸업'))">
+                정상
+              </span>
+              <button type="button" class="btn-status-edit" id="basic-btn-status-edit"
+                th:data-current="${studentBasicInfo.status.name()}">
+                <i data-lucide="pencil" class="icon-sm"></i>
+                상태 수정
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- 버튼 영역 -->
         <div class="action-bar" id="basic-action-bar">
           <div sec:authorize="hasRole('ADMIN') or hasRole('CONSULTANT')">
-            <a th:href="@{/api/student/{no}/update(no=${encryptedStudentNo})}" class="btn-primary"
-              id="basic-btn-update">
+            <button type="button" class="btn-primary" id="basic-btn-update">
               <i data-lucide="pencil-line" class="icon-sm"></i>
               정보 수정하기
-            </a>
-          </div>
-          <div sec:authorize="hasRole('ADMIN')">
-            <button class="btn-danger" id="basic-btn-delete"
-              th:data-url="@{/api/student/{no}/delete(no=${encryptedStudentNo})}">
-              <i data-lucide="trash-2" class="icon-sm"></i>
-              학생 삭제하기
             </button>
           </div>
+        </div>
+
+        <!-- ── 담당 컨설턴트 카드 ── -->
+        <div class="info-section" id="basic-consultant-section">
+          <div class="section-title">
+            <i data-lucide="user-check" class="icon-sm"></i>
+            <span>담당 컨설턴트</span>
+          </div>
+
+          <!-- 담당 컨설턴트가 있는 경우 -->
+          <th:block th:if="${studentBasicInfo.encConsultantNo != null and studentBasicInfo.encConsultantNo != ''}">
+
+            <!-- ADMIN: 카드 클릭 시 컨설턴트 상세로 이동 -->
+            <div sec:authorize="hasRole('ADMIN')">
+              <a th:href="@{/consultant/{encNo}(encNo=${studentBasicInfo.encConsultantNo})}"
+                class="consultant-card consultant-card--link" id="basic-consultant-card">
+                <div class="consultant-card__item">
+                  <span class="consultant-card__label">
+                    <i data-lucide="user" class="icon-sm"></i>컨설턴트
+                  </span>
+                  <span class="consultant-card__value" th:text="${studentBasicInfo.consultantNickname}">닉네임</span>
+                </div>
+                <div class="consultant-card__divider"></div>
+                <div class="consultant-card__item">
+                  <span class="consultant-card__label">
+                    <i data-lucide="building-2" class="icon-sm"></i>소속
+                  </span>
+                  <span class="consultant-card__value" th:text="${studentBasicInfo.consultantOrgName}">소속기관</span>
+                </div>
+                <i data-lucide="chevron-right" class="icon-sm consultant-card__arrow"></i>
+              </a>
+            </div>
+
+            <!-- ADMIN 외 권한: 클릭 불가 카드 -->
+            <div sec:authorize="!hasRole('ADMIN')">
+              <div class="consultant-card" id="basic-consultant-card">
+                <div class="consultant-card__item">
+                  <span class="consultant-card__label">
+                    <i data-lucide="user" class="icon-sm"></i>컨설턴트
+                  </span>
+                  <span class="consultant-card__value" th:text="${studentBasicInfo.consultantNickname}">닉네임</span>
+                </div>
+                <div class="consultant-card__divider"></div>
+                <div class="consultant-card__item">
+                  <span class="consultant-card__label">
+                    <i data-lucide="building-2" class="icon-sm"></i>소속
+                  </span>
+                  <span class="consultant-card__value" th:text="${studentBasicInfo.consultantOrgName}">소속기관</span>
+                </div>
+              </div>
+            </div>
+
+          </th:block>
+
+          <!-- 담당 컨설턴트가 없는 경우 -->
+          <th:block th:if="${studentBasicInfo.encConsultantNo == null or studentBasicInfo.encConsultantNo == ''}">
+            <div class="consultant-card consultant-card--empty" id="basic-consultant-empty">
+              <i data-lucide="user-x" class="icon-sm"></i>
+              <span>담당 컨설턴트가 배정되지 않았습니다.</span>
+
+              <!-- ADMIN만 배정 버튼 노출 -->
+              <div sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/consultant/charged(encStuNo=${encryptedStudentNo})}" class="btn-primary"
+                  id="basic-btn-assign-consultant">
+                  <i data-lucide="user-plus" class="icon-sm"></i>
+                  컨설턴트 배정하기
+                </a>
+              </div>
+            </div>
+          </th:block>
+
         </div>
 
       </div>
@@ -116,18 +203,281 @@
 
     </div>
   </div>
+  <div th:if="${studentRegistor != null}">
+    <div class="modal-backdrop" id="basic-edit-modal" style="display:none;">
+      <div class="modal-box modal-box--lg">
+        <div class="modal-header">
+          <h3 class="modal-title">
+            <i data-lucide="pencil-line" class="icon-sm"></i>
+            기본 정보 수정
+          </h3>
+          <button type="button" class="modal-close-btn" id="basic-edit-modal-close">
+            <i data-lucide="x" class="icon-sm"></i>
+          </button>
+        </div>
 
-  <!-- 삭제 확인 모달 -->
-  <div class="modal-backdrop" id="basic-delete-modal" style="display:none;">
-    <div class="modal-box">
-      <div class="modal-icon">
-        <i data-lucide="alert-triangle"></i>
+        <form id="basic-edit-form" novalidate>
+
+          <!-- ① 이름 -->
+          <div class="form-group">
+            <label class="form-label" for="basic-edit-name">
+              <i data-lucide="user" class="label-icon"></i>
+              이름 <span class="required">*</span>
+            </label>
+            <input type="text" id="basic-edit-name" name="name" class="form-control" placeholder="이름을 입력하세요 (한글 1~10자)"
+              maxlength="10" autocomplete="off" th:value="${studentBasicInfo.name}">
+            <div class="invalid-feedback" id="basic-edit-nameError"></div>
+          </div>
+
+          <!-- ② 학교 -->
+          <div class="form-group">
+            <label class="form-label">
+              <i data-lucide="school" class="label-icon"></i>
+              학교 <span class="required">*</span>
+            </label>
+            <div class="school-selected-area" id="basic-edit-schoolSelectedArea">
+              <input type="hidden" id="basic-edit-schoolCode" name="schoolCode"
+                th:value="${studentBasicInfo.schoolCode}">
+              <div class="school-selected-display has-value" id="basic-edit-schoolDisplay"
+                onclick="basicEditOpenSchoolPanel()">
+                <i data-lucide="search" class="icon-sm"></i>
+                <span id="basic-edit-schoolDisplayText" class="school-display-name"
+                  th:text="${studentBasicInfo.schoolName}">학교명</span>
+                <i data-lucide="chevron-down" class="icon-sm ml-auto"></i>
+              </div>
+            </div>
+            <div class="invalid-feedback" id="basic-edit-schoolError"></div>
+
+            <!-- 학교 검색 패널 -->
+            <div class="school-panel" id="basic-edit-schoolPanel" style="display:none;">
+              <div class="school-panel__header">
+                <span class="school-panel__title">학교 검색</span>
+                <button type="button" class="school-panel__close" onclick="basicEditCloseSchoolPanel()">
+                  <i data-lucide="x" class="icon-sm"></i>
+                </button>
+              </div>
+              <div class="school-panel__search-row">
+                <input type="text" id="basic-edit-schoolNameInput" class="form-control" placeholder="학교 이름을 입력하세요"
+                  autocomplete="off">
+                <button type="button" class="btn btn-primary btn-sm" id="basic-edit-btnSearchSchool">
+                  <i data-lucide="search" class="icon-sm"></i>
+                  검색
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" id="basic-edit-btnAddSchool">
+                  <i data-lucide="plus" class="icon-sm"></i>
+                  학교 추가하기
+                </button>
+              </div>
+              <div id="basic-edit-schoolResultArea" class="school-result-area" style="display:none;"></div>
+            </div>
+          </div>
+
+          <!-- ③ 학년 -->
+          <div class="form-group">
+            <label class="form-label">
+              <i data-lucide="layers" class="label-icon"></i>
+              학년 <span class="required">*</span>
+            </label>
+            <div class="track-group">
+              <label class="track-option">
+                <input type="radio" name="basic-edit-grade" id="basic-edit-grade-1" value="1"
+                  th:checked="${studentBasicInfo.grade == 1}">
+                <span class="track-label">1학년</span>
+              </label>
+              <label class="track-option">
+                <input type="radio" name="basic-edit-grade" id="basic-edit-grade-2" value="2"
+                  th:checked="${studentBasicInfo.grade == 2}">
+                <span class="track-label">2학년</span>
+              </label>
+              <label class="track-option">
+                <input type="radio" name="basic-edit-grade" id="basic-edit-grade-3" value="3"
+                  th:checked="${studentBasicInfo.grade == 3}">
+                <span class="track-label">3학년</span>
+              </label>
+            </div>
+            <div class="invalid-feedback" id="basic-edit-gradeError"></div>
+          </div>
+
+          <!-- ④ 학기 -->
+          <div class="form-group">
+            <label class="form-label">
+              <i data-lucide="calendar" class="label-icon"></i>
+              학기 <span class="required">*</span>
+            </label>
+            <div class="track-group">
+              <label class="track-option">
+                <input type="radio" name="basic-edit-semester" id="basic-edit-semester-1" value="1"
+                  th:checked="${studentBasicInfo.semester == 1}">
+                <span class="track-label">1학기</span>
+              </label>
+              <label class="track-option">
+                <input type="radio" name="basic-edit-semester" id="basic-edit-semester-2" value="2"
+                  th:checked="${studentBasicInfo.semester == 2}">
+                <span class="track-label">2학기</span>
+              </label>
+            </div>
+            <div class="invalid-feedback" id="basic-edit-semesterError"></div>
+          </div>
+
+          <!-- ⑤ 계열 -->
+          <div class="form-group">
+            <label class="form-label">
+              <i data-lucide="git-branch" class="label-icon"></i>
+              계열 <span class="required">*</span>
+            </label>
+            <div class="track-group">
+              <label class="track-option">
+                <input type="radio" name="basic-edit-track" id="basic-edit-track-munka" value="문과"
+                  th:checked="${studentBasicInfo.track == '문과'}">
+                <span class="track-label">문과</span>
+              </label>
+              <label class="track-option">
+                <input type="radio" name="basic-edit-track" id="basic-edit-track-igwa" value="이과"
+                  th:checked="${studentBasicInfo.track == '이과'}">
+                <span class="track-label">이과</span>
+              </label>
+              <label class="track-option">
+                <input type="radio" name="basic-edit-track" id="basic-edit-track-yecho" value="예체능"
+                  th:checked="${studentBasicInfo.track == '예체능'}">
+                <span class="track-label">예체능</span>
+              </label>
+            </div>
+            <div class="invalid-feedback" id="basic-edit-trackError"></div>
+          </div>
+
+          <!-- ⑥ 목표 대학 & 전공 -->
+          <div class="form-group">
+            <label class="form-label">
+              <i data-lucide="graduation-cap" class="label-icon"></i>
+              목표 대학 &amp; 전공
+            </label>
+            <div class="target-list" id="basic-edit-targetList">
+
+              <!-- 1지망 -->
+              <div class="target-item" data-index="0">
+                <div class="target-rank-badge">1지망</div>
+                <input type="hidden" name="target[0].ranking" value="1">
+                <div class="target-inputs">
+                  <div class="target-input-wrap">
+                    <input type="text" name="target[0].univ" class="form-control target-univ"
+                      placeholder="목표 대학 (한글/영문/숫자 1~20자)" maxlength="20" autocomplete="off"
+                      th:value="${studentBasicInfo.target != null and studentBasicInfo.target.size() > 0} ? ${studentBasicInfo.target[0].univ} : ''">
+                    <div class="invalid-feedback target-univ-error"></div>
+                  </div>
+                  <div class="target-input-wrap">
+                    <input type="text" name="target[0].major" class="form-control target-major"
+                      placeholder="목표 전공 (한글/영문/숫자 1~20자)" maxlength="20" autocomplete="off"
+                      th:value="${studentBasicInfo.target != null and studentBasicInfo.target.size() > 0} ? ${studentBasicInfo.target[0].major} : ''">
+                    <div class="invalid-feedback target-major-error"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2지망 -->
+              <div class="target-item" data-index="1">
+                <div class="target-rank-badge">2지망</div>
+                <input type="hidden" name="target[1].ranking" value="2">
+                <div class="target-inputs">
+                  <div class="target-input-wrap">
+                    <input type="text" name="target[1].univ" class="form-control target-univ"
+                      placeholder="목표 대학 (한글/영문/숫자 1~20자)" maxlength="20" autocomplete="off"
+                      th:value="${studentBasicInfo.target != null and studentBasicInfo.target.size() > 1} ? ${studentBasicInfo.target[1].univ} : ''">
+                    <div class="invalid-feedback target-univ-error"></div>
+                  </div>
+                  <div class="target-input-wrap">
+                    <input type="text" name="target[1].major" class="form-control target-major"
+                      placeholder="목표 전공 (한글/영문/숫자 1~20자)" maxlength="20" autocomplete="off"
+                      th:value="${studentBasicInfo.target != null and studentBasicInfo.target.size() > 1} ? ${studentBasicInfo.target[1].major} : ''">
+                    <div class="invalid-feedback target-major-error"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3지망 -->
+              <div class="target-item" data-index="2">
+                <div class="target-rank-badge">3지망</div>
+                <input type="hidden" name="target[2].ranking" value="3">
+                <div class="target-inputs">
+                  <div class="target-input-wrap">
+                    <input type="text" name="target[2].univ" class="form-control target-univ"
+                      placeholder="목표 대학 (한글/영문/숫자 1~20자)" maxlength="20" autocomplete="off"
+                      th:value="${studentBasicInfo.target != null and studentBasicInfo.target.size() > 2} ? ${studentBasicInfo.target[2].univ} : ''">
+                    <div class="invalid-feedback target-univ-error"></div>
+                  </div>
+                  <div class="target-input-wrap">
+                    <input type="text" name="target[2].major" class="form-control target-major"
+                      placeholder="목표 전공 (한글/영문/숫자 1~20자)" maxlength="20" autocomplete="off"
+                      th:value="${studentBasicInfo.target != null and studentBasicInfo.target.size() > 2} ? ${studentBasicInfo.target[2].major} : ''">
+                    <div class="invalid-feedback target-major-error"></div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="invalid-feedback" id="basic-edit-targetPairError"></div>
+          </div>
+
+          <!-- 폼 하단 버튼 -->
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="basic-edit-cancel">취소</button>
+            <button type="submit" class="btn-primary" id="basic-edit-submit">
+              <i data-lucide="save" class="icon-sm"></i>
+              수정하기
+            </button>
+          </div>
+
+        </form>
       </div>
-      <h3 class="modal-title">학생을 삭제하시겠습니까?</h3>
-      <p class="modal-desc">삭제된 학생 정보는 복구할 수 없습니다.</p>
-      <div class="modal-actions">
-        <button class="btn-secondary" id="basic-delete-cancel">취소</button>
-        <button class="btn-danger" id="basic-delete-confirm">삭제하기</button>
+    </div>
+  </div>
+
+  <div sec:authorize="hasRole('ADMIN') or hasRole('CONSULTANT')">
+    <div class="modal-backdrop" id="basic-status-modal" style="display:none;">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3 class="modal-title">
+            <i data-lucide="shield-check" class="icon-sm"></i>
+            상태 수정
+          </h3>
+          <button type="button" class="modal-close-btn" id="basic-status-modal-close">
+            <i data-lucide="x" class="icon-sm"></i>
+          </button>
+        </div>
+        <p class="modal-desc" style="margin-bottom:1rem;">변경할 상태를 선택하세요.</p>
+        <div class="status-options" id="basic-status-options">
+          <label class="status-option">
+            <input type="radio" name="basic-status-radio" id="basic-status-ACTIVE" value="ACTIVE">
+            <span class="status-option__label status-option__label--active">
+              <i data-lucide="check-circle" class="icon-sm"></i>정상
+            </span>
+          </label>
+          <label class="status-option">
+            <input type="radio" name="basic-status-radio" id="basic-status-SUSPENDED" value="SUSPENDED">
+            <span class="status-option__label status-option__label--suspended">
+              <i data-lucide="pause-circle" class="icon-sm"></i>정지
+            </span>
+          </label>
+          <label class="status-option">
+            <input type="radio" name="basic-status-radio" id="basic-status-DELETED" value="DELETED">
+            <span class="status-option__label status-option__label--deleted">
+              <i data-lucide="x-circle" class="icon-sm"></i>삭제
+            </span>
+          </label>
+          <label class="status-option">
+            <input type="radio" name="basic-status-radio" id="basic-status-GRADUATE" value="GRADUATE">
+            <span class="status-option__label status-option__label--graduate">
+              <i data-lucide="graduation-cap" class="icon-sm"></i>졸업
+            </span>
+          </label>
+        </div>
+        <div class="invalid-feedback" id="basic-status-error"></div>
+        <div class="modal-actions" style="margin-top:1.25rem;">
+          <button type="button" class="btn-secondary" id="basic-status-cancel">취소</button>
+          <button type="button" class="btn-primary" id="basic-status-confirm">
+            <i data-lucide="check" class="icon-sm"></i>
+            수정 확인
+          </button>
+        </div>
       </div>
     </div>
   </div>

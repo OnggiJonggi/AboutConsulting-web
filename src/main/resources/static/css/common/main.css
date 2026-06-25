@@ -185,6 +185,14 @@ a {
   max-width: 520px;
 }
 
+.card-grid--2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.card-grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
 .card-grid--4 {
   max-width: 680px;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -253,6 +261,14 @@ a {
   stroke-width: 2;
   flex-shrink: 0;
 }
+
+.menu-card.disabled-card {
+  pointer-events: none;
+  cursor: not-allowed;
+  opacity: 0.4;
+  text-decoration: none;
+}
+
 
 /* ── 반응형 ── */
 @media (max-width: 600px) {

@@ -12,7 +12,7 @@ public interface MemberMapper {
 	
 	public MemberVO.Detail selectMemberById(String userId);
 
-	public int insertJoin(MemberVO.Join member);
+	public int insertJoin(MemberVO.Insert member);
 
 	public int selectCheckId(String userId);
 

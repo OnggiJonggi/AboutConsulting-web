@@ -24,16 +24,16 @@
         left join CONSULTANT_STUDENT CS on (CON.CONSULTANT_NO = CS.CONSULTANT_NO)
         <where>
           <if test="name!=null and name!=''">
-            and MEM.NAME like '%' || #{name} || '%'
+            and MEM.NAME like '%' || #{name} || '%' escape '/'
           </if>
           <if test="nickname!=null and nickname!=''">
-            and MEM.NICKNAME like '%' || #{nickname} || '%'
+            and MEM.NICKNAME like '%' || #{nickname} || '%' escape '/'
           </if>
           <if test="status!=null">
             and MEM.STATUS = #{status}
           </if>
           <if test="orgName!=null and orgName!=''">
-            and ORG.NAME like '%' || #{orgName} || '%'
+            and ORG.NAME like '%' || #{orgName} || '%' escape '/'
           </if>
           <if test="studentName!=null and studentName!=''">
             and exists (
@@ -42,8 +42,16 @@
               left join CONSULTANT_STUDENT CS2 on (CON2.CONSULTANT_NO = CS2.CONSULTANT_NO)
               left join STUDENT STU2 on (STU2.STUDENT_NO = CS2.STUDENT_NO)
               where CON2.CONSULTANT_NO = CON.CONSULTANT_NO
-              and STU2.NAME like '%' || #{studentName} || '%'
+              and STU2.NAME like '%' || #{studentName} || '%' escape '/'
             )
+          </if>
+          <if test="hasOrg!=null">
+            <if test="hasOrg==true">
+              and ORG.ORG_NO is not null
+            </if>
+            <if test="hasOrg==false">
+              and ORG.ORG_NO is null
+            </if>
           </if>
         </where>
         group by
@@ -79,16 +87,16 @@
     left join CONSULTANT_ORG ORG on (ORG.ORG_NO = CON.ORG_NO)
     <where>
       <if test="name!=null and name!=''">
-        and MEM.NAME like '%' || #{name} || '%'
+        and MEM.NAME like '%' || #{name} || '%' escape '/'
       </if>
       <if test="nickname!=null and nickname!=''">
-        and MEM.NICKNAME like '%' || #{nickname} || '%'
+        and MEM.NICKNAME like '%' || #{nickname} || '%' escape '/'
       </if>
       <if test="status!=null">
         and MEM.STATUS = #{status}
       </if>
       <if test="orgName!=null and orgName!=''">
-        and ORG.NAME like '%' || #{orgName} || '%'
+        and ORG.NAME like '%' || #{orgName} || '%' escape '/'
       </if>
       <if test="studentName!=null and studentName!=''">
         and exists (
@@ -97,25 +105,33 @@
           left join CONSULTANT_STUDENT CS2 on (CON2.CONSULTANT_NO = CS2.CONSULTANT_NO)
           left join STUDENT STU2 on (STU2.STUDENT_NO = CS2.STUDENT_NO)
           where CON2.CONSULTANT_NO = CON.CONSULTANT_NO
-          and STU2.NAME like '%' || #{studentName} || '%'
+          and STU2.NAME like '%' || #{studentName} || '%' escape '/'
         )
+      </if>
+      <if test="hasOrg!=null">
+        <if test="hasOrg==true">
+          and ORG.ORG_NO is not null
+        </if>
+        <if test="hasOrg==false">
+          and ORG.ORG_NO is null
+        </if>
       </if>
       <if test="inCharged!=null">
         and exists(
           select 1
-          from CONSULTANT CON3
-          left join CONSULTANT_STUDENT CS3 on (CON3.CONSULTANT_NO = CS3.CONSULTANT_NO)
-          where CON3.CONSULTANT_NO = CON.CONSULTANT_NO
-          group by CON3.CONSULTANT_NO
+          from CONSULTANT CON4
+          left join CONSULTANT_STUDENT CS4 on (CON4.CONSULTANT_NO = CS4.CONSULTANT_NO)
+          where CON4.CONSULTANT_NO = CON.CONSULTANT_NO
+          group by CON4.CONSULTANT_NO
           <choose>
             <when test="inCharged==false">
-              having count(CS3.STUDENT_NO) = 0
+              having count(CS4.STUDENT_NO) = 0
             </when>
             <when test="chargedCountStart>0 and chargedCountEnd==0">
-              having count(CS3.STUDENT_NO) &gt;= #{chargedCountStart}
+              having count(CS4.STUDENT_NO) &gt;= #{chargedCountStart}
             </when>
             <when test="chargedCountStart>0 or chargedCountEnd>0">
-              having count(CS3.STUDENT_NO) between least(#{chargedCountStart}, #{chargedCountEnd})
+              having count(CS4.STUDENT_NO) between least(#{chargedCountStart}, #{chargedCountEnd})
                 and greatest(#{chargedCountStart}, #{chargedCountEnd})
             </when>
           </choose>
@@ -148,7 +164,7 @@
 			,ORG.NAME
 	</select>
 
-  <select id="selectIsCharged" resultType="_int">
+  <select id="selectIsInCharge" resultType="_int">
     select COUNT(*)
     from CONSULTANT_STUDENT
     where CONSULTANT_NO = #{consultantNo}

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.ax.consultant.ConsultantService;
 import com.ax.global.common.SearchResultVO;
 import com.ax.global.security.CryptoComponent;
 import com.ax.global.security.CustomUserDetails;
@@ -34,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class StudentController {
 	private final StudentService studentService;
+	private final ConsultantService consultantService;
 	private final RecordService recordService;
 	private final MockService mockService;
 	private final CryptoComponent cryptoComponent;
@@ -68,7 +70,7 @@ public class StudentController {
 	 */
 	@GetMapping("register")
 	public String goRegister(Model model) {
-		model.addAttribute("studentRegister", new StudentVO.Register());
+		model.addAttribute("studentRegister", new StudentVO.Insert());
 		return "student/register";
 	}
 	
@@ -78,17 +80,23 @@ public class StudentController {
 	 */
 	@PostMapping("register")
 	public String register(
-			@ModelAttribute @Valid StudentVO.Register studentRegister
+			@ModelAttribute @Valid StudentVO.Insert studentRegister
 			,BindingResult bindingResult
 			,HttpSession session
 			,Model model)throws Exception {
 		
 		// 유효성 통과 못함
 		if(bindingResult.hasErrors()) {
-			model.addAttribute("studentRegister", new StudentVO.Register());
+			model.addAttribute("studentRegister", new StudentVO.Insert());
 			return "student/register";
 		}
-		return "redirect:/student/"+studentService.register(studentRegister);
+		
+		// 학생 등록, 학생 번호 반환
+		int studentNo = studentService.register(studentRegister);
+		String encStudentNo = cryptoComponent.encrypt(String.valueOf(studentNo));
+		
+		// 등록한 학생 상세 페이지로
+		return "redirect:/student/"+encStudentNo;
 	}
 	
 	
@@ -105,18 +113,45 @@ public class StudentController {
 		
 		int studentNo = Integer.valueOf(cryptoComponent.decrypt(encryptedStudentNo));
 		
+		// 컨설턴트라면 담당 학생인지 확인
+		if(userDetails.getAuthorities().stream()
+		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.CONSULTANT.getPrefix()))) {
+			int consultantNo = Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo()));
+			
+			boolean inCharge = consultantService.isInCharge(consultantNo, studentNo);
+			if(inCharge) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+			
+			// 덤으로 기본정보 수정용 StudentVO.Registor객체 넣기
+			model.addAttribute("studentRegistor", new StudentVO.Insert());
+			
+		}else if(userDetails.getAuthorities().stream()
+		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.ADMIN.getPrefix()))){
+			
+			// 관리자여도 StudentVO.Registor객체 넣기
+			model.addAttribute("studentRegistor", new StudentVO.Insert());
+		}
+		
 		// 네비 바에게 여기가 어디고 나는 누구인지 알려줌
 		model.addAttribute("studentMenu", "basic");
 		model.addAttribute("encryptedStudentNo", encryptedStudentNo);
 		
 		// 학생 기본 정보 조회
-		StudentVO.Detail studentBasicInfo = studentService.getStudentBasicInfo(studentNo);
+		StudentVO.Detail detail = studentService.getStudentBasicInfo(studentNo);
 		
 		// 없어? 404로 가세요라
-		if(studentBasicInfo==null)
+		if(detail==null)
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		
-		model.addAttribute("studentBasicInfo", studentBasicInfo);
+		// 컨설턴트 식별번호 있으면 암호화
+		if(detail.getConsultantNo()!=0) {
+			detail.setEncConsultantNo(cryptoComponent.encrypt(String.valueOf(detail.getConsultantNo())));
+			detail.setConsultantNo(0);
+		}
+		// 내부 식별번호 비우기
+		detail.setStudentNo(0);
+		
+		
+		model.addAttribute("studentBasicInfo", detail);
 		
 		return "student/view/main";
 	}
@@ -143,7 +178,7 @@ public class StudentController {
 		if(userDetails.getAuthorities().stream()
 		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.ADMIN.getPrefix()))) {
 			
-			model.addAttribute("studentRegistor", new StudentVO.Register());
+			model.addAttribute("studentRegistor", new StudentVO.Insert());
 		}
 		
 		return "student/view/record :: content";

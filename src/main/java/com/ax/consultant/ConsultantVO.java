@@ -72,6 +72,7 @@ public class ConsultantVO {
 		private String studentName; // 담당 학생 이름
 		
 		// CONSULTANT_ORG 테이블
+		private Boolean hasOrg; // 소속 있나요
 		private String orgName; // 소속 이름
 		
 		// CONSULTANT_STUDENT 테이블

@@ -1,4 +1,4 @@
-package com.ax.member;
+																												package com.ax.member;
 
 import java.util.List;
 
@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.ax.global.common.SanitizeComponent;
 import com.ax.global.common.SearchResultVO;
 import com.ax.global.exception.CustomException;
 import com.ax.global.exception.ErrorCodeEnum;
@@ -15,21 +16,24 @@ import com.ax.global.security.CryptoComponent;
 import com.ax.global.security.RoleEnum;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService{
 	private final PasswordEncoder passwordEncoder;
 	private final MemberMapper memberMapper;
 	private final CryptoComponent cryptoComponent;
+	private final SanitizeComponent sanitizeComponent;
     
 	/**
 	 * 새로운 계정 생성
 	 */
-	public void join(MemberVO.Join member) {
+	public void join(MemberVO.Insert member) {
 		
 		// 아이디, 닉네임 중복 검사
 		if(memberMapper.selectCheckId(member.getUserId()) > 0)
@@ -57,14 +61,25 @@ public class MemberService{
 	 * 닉네임 중복 확인
 	 */
 	public void checkNick(String nickname) {
+		
+		// 검색어 소독
+		nickname = sanitizeComponent.searchKeywordNotLike(nickname, MemberRegexp.NAME_MAX_LENGTH);
+
+		// 중복 확인
 		if(memberMapper.selectCheckNickname(nickname) > 0)
 			throw new CustomException(ErrorCodeEnum.NICKNAME_IS_DUPLICATED);
 	}
 
 	/**
-	 * 회원 목록 확인
+	 * 회원 목록 검색
 	 */
 	public SearchResultVO<MemberVO.Detail> getList(MemberVO.Search search) throws Exception {
+		
+		// 검색어 소독
+		search.setUserId(sanitizeComponent.searchKeyword(search.getUserId(), MemberRegexp.ID_MAX_LENGTH));
+		search.setName(sanitizeComponent.searchKeyword(search.getName(), MemberRegexp.NAME_MAX_LENGTH));
+		search.setNickname(sanitizeComponent.searchKeyword(search.getNickname(), MemberRegexp.NAME_MAX_LENGTH));
+		search.setPhone(sanitizeComponent.searchKeyword(search.getPhone(), MemberRegexp.PHONE_MAX_LENGTH));
 		
 		// 목록 조회
 		List<MemberVO.Detail> result = memberMapper.selectMemberList(search);
@@ -137,6 +152,11 @@ public class MemberService{
 	 * 닉네임 중복 확인 (수정용)
 	 */
 	public void checkUpdatedNickname(int memberNo, String nickname) {
+		
+		// 검색어 소독
+		nickname = sanitizeComponent.searchKeywordNotLike(nickname, MemberRegexp.NAME_MAX_LENGTH);
+		
+		// 조회
 		if(memberMapper.selectUpdatedNickname(memberNo, nickname) > 0)
 			throw new CustomException(ErrorCodeEnum.NICKNAME_IS_DUPLICATED);
 	}

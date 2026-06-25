@@ -9,6 +9,6 @@ public interface SchoolMapper {
 
 	public List<SchoolVO.Detail> selectSchoolList(String schoolName);
 
-	public void insertSchool(SchoolVO.Detail target);
+	public int insertSchool(SchoolVO.Detail school);
 
 }

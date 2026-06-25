@@ -12,7 +12,9 @@
 		<result property="name" column="NAME"/>
 		<result property="nickname" column="NICKNAME"/>
 		<result property="phone" column="PHONE"/>
-		<result property="status" column="status"/>
+		<result property="status" column="STATUS"
+				javaType="com.ax.member.MemberStatusEnum"
+        typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
 		<collection property="role" ofType="string">
 			<result column="ROLE"/>
 		</collection>
@@ -33,7 +35,7 @@
 		and M.STATUS = 'ACTIVE'
 	</select>
 	
-	<insert id="insertJoin" parameterType="MemberJoin" 
+	<insert id="insertJoin" parameterType="MemberInsert" 
 		useGeneratedKeys="true"
     keyProperty="memberNo"
     keyColumn="MEMBER_NO">
@@ -87,16 +89,16 @@
 					from MEMBER M
 					<where>
 						<if test="userId!=null and userId!='' ">
-							and ID like  '%' || #{userId} || '%'
+							and ID like  '%' || #{userId} || '%' escape '/'
 						</if>
 						<if test="name!=null and name!='' ">
-							and NAME like '%' || #{name} || '%'
+							and NAME like '%' || #{name} || '%' escape '/'
 						</if>
 						<if test="nickname!=null and nickname!='' ">
-							and NICKNAME like '%' || #{nickname} || '%'
+							and NICKNAME like '%' || #{nickname} || '%' escape '/'
 						</if>
 						<if test="phone!=null and phone!='' ">
-							and PHONE like '%' || #{phone} || '%'
+							and PHONE like '%' || #{phone} || '%' escape '/'
 						</if>
 						<if test="status!=null and status.name()!=''">
 							and STATUS = #{status}
@@ -129,22 +131,22 @@
 		left join ROLE_INFO RI on (RI.ROLE_NO = MR.ROLE_NO)
 		<where>
 			<if test="userId!=null and userId!='' ">
-				and M.ID like '%' || #{userId} || '%'
+				and M.ID like '%' || #{userId} || '%' escape '/'
 			</if>
 			<if test="name!=null and name!='' ">
-				and M.NAME like '%' || #{name} || '%'
+				and M.NAME like '%' || #{name} || '%' escape '/'
 			</if>
 			<if test="nickname!=null and nickname!='' ">
-				and M.NICKNAME like '%' || #{nickname} || '%'
+				and M.NICKNAME like '%' || #{nickname} || '%' escape '/'
 			</if>
 			<if test="phone!=null and phone!='' ">
-				and M.PHONE like '%' || #{phone} || '%'
+				and M.PHONE like '%' || #{phone} || '%' escape '/'
 			</if>
 			<if test="status!=null and status.name()!='' ">
 				and M.STATUS = #{status}
 			</if>
 			<if test="role!=null and role.name()!='' ">
-				and RI.NAME = 'ROLE_' || #{role} 
+				and RI.NAME = 'ROLE_' || #{role}  escape '/'
 			</if>
 		</where>
 	</select>
@@ -191,8 +193,9 @@
 
 	<insert id="insertRole">
 		insert into MEMBER_ROLE(MEMBER_NO, ROLE_NO)
-		values(#{memberNo}, #{role})
-		<!-- !!!!! -->
+		select #{memberNo}, ROLE_NO
+		from ROLE_INFO
+		where NAME = 'ROLE_' || #{role}
 	</insert>
 
 	<update id="updateStatus">

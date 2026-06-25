@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.ax.consultant.org.OrgService;
 import com.ax.global.common.SearchResultVO;
 import com.ax.global.security.CryptoComponent;
 import com.ax.global.security.CustomUserDetails;
@@ -26,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConsultantController {
 	private final ConsultantService consultantService;
+	private final OrgService orgService;
 	private final StudentService studentService;
 	private final CryptoComponent cryptoComponent;
 
@@ -56,7 +58,7 @@ public class ConsultantController {
 	/**
 	 * 컨설턴트 세부사항으로
 	 * 관리자
-	 * 컨설턴트 : 본인
+	 * 컨설턴트 : 같은 소속
 	 */
 	@GetMapping({"/{encryptedConsultantNo}", "/myinfo"})
 	public String goInfo(
@@ -75,8 +77,18 @@ public class ConsultantController {
 		}else if(userDetails.getAuthorities().stream()
 		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.CONSULTANT.getPrefix()))) {
 			
-			// 컨설턴트면 로그인 계정에서 컨설턴트 식별번호(=회원 식별번호) 추출
-			consultantNo = Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo())); 
+			if(encryptedConsultantNo==null) {
+				// 컨설턴트가 본인 페이지로 온 경우
+				consultantNo = Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo())); 
+			}else {
+				// 컨설턴트가 같은 소속 다른 컨설턴트 페이지로 온 경우
+				consultantNo = Integer.valueOf(cryptoComponent.decrypt(encryptedConsultantNo));
+				
+				// 같은 소속인지 확인
+				int memberNo = Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo()));
+				boolean isSameOrg = orgService.isSameOrg(consultantNo, memberNo);
+				if(!isSameOrg) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+			}
 			
 			// 그도 아니면 어케들어왔노 끄져라
 		}else throw new ResponseStatusException(HttpStatus.FORBIDDEN);

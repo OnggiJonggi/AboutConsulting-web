@@ -16,17 +16,17 @@
     	<!-- Member -->
         <typeAlias type="com.ax.member.MemberVO$Login" alias="MemberLogin"/>
         <typeAlias type="com.ax.member.MemberVO$Detail" alias="MemberDetail"/>
-        <typeAlias type="com.ax.member.MemberVO$Join" alias="MemberJoin"/>
+        <typeAlias type="com.ax.member.MemberVO$Insert" alias="MemberInsert"/>
         <typeAlias type="com.ax.member.MemberVO$Search" alias="MemberSearch"/>
         <typeAlias type="com.ax.member.MemberVO$Update" alias="MemberUpdate"/>
         
         <!-- Student -->
-        <typeAlias type="com.ax.student.StudentVO$Register" alias="StudentRegister"/>
+        <typeAlias type="com.ax.student.StudentVO$Insert" alias="StudentInsert"/>
         <typeAlias type="com.ax.student.StudentVO$Detail" alias="StudentDetail"/>
         <typeAlias type="com.ax.student.StudentVO$Search" alias="StudentSearch"/>
 
         <!-- TargetInfo -->
-        <typeAlias type="com.ax.student.TargetInfoVO$Register" alias="TargetInfoRegister"/>
+        <typeAlias type="com.ax.student.TargetInfoVO$Insert" alias="TargetInfoInsert"/>
         <typeAlias type="com.ax.student.TargetInfoVO$Pair" alias="TargetInfoPair"/>
         
         <!-- Record -->
@@ -45,15 +45,20 @@
         <typeAlias type="com.ax.student.mock.MockVO$Insert" alias="MockInsert"/>
 
         <!-- School -->
-        <typeAlias type="com.ax.school.SchoolVO$Registor" alias="SchoolRegister"/>
+        <typeAlias type="com.ax.school.SchoolVO$Insert" alias="SchoolInsert"/>
         <typeAlias type="com.ax.school.SchoolVO$Detail" alias="SchoolDetail"/>
         
         <!-- Consultant -->
         <typeAlias type="com.ax.consultant.ConsultantVO$Detail" alias="ConsultantDetail"/>
         <typeAlias type="com.ax.consultant.ConsultantVO$Search" alias="ConsultantSearch"/>
         
+        <!-- ConsultantOrg -->
+        <typeAlias type="com.ax.consultant.org.OrgVO$Insert" alias="OrgInsert"/>
+        <typeAlias type="com.ax.consultant.org.OrgVO$Detail" alias="OrgDetail"/>
+        <typeAlias type="com.ax.consultant.org.OrgVO$Search" alias="OrgSearch"/>
+
         <!-- FileInfo -->
-        <typeAlias type="com.ax.global.file.FileInfoVO$Registor" alias="FileInfoRegistor"/>
+        <typeAlias type="com.ax.global.file.FileInfoVO$Insert" alias="FileInfoInsert"/>
         <typeAlias type="com.ax.global.file.FileInfoVO$Detail" alias="FileInfoDetail"/>
         <typeAlias type="com.ax.global.file.FileInfoVO$InsertMapping" alias="FileInfoInsertMapping"/>
         <typeAlias type="com.ax.global.file.FileInfoVO$GetFile" alias="FileInfoGetFile"/>

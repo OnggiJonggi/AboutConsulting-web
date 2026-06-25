@@ -15,7 +15,7 @@ public interface ConsultantMapper {
 
 	public ConsultantVO.Detail selectOne(int consultantNo);
 	
-	public int selectIsCharged(
+	public int selectIsInCharge(
 			@Param("consultantNo") int consultantNo,
 			@Param("studentNos") Set<Integer> studentNos);
 

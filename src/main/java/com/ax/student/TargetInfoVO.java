@@ -14,7 +14,7 @@ public class TargetInfoVO {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	@Data
-	public static class Register{
+	public static class Insert{
 		@NotBlank(message="대학이 없어요")
 		@Pattern(regexp = StudentRegexp.TARGET_UNIV_REGEXP, message="대학 이름이 이상해요")
 		private String univ;

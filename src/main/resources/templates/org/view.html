@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소속</title>
+  <th:block th:replace="~{/common/fragment :: common}"></th:block>
+  <link rel="stylesheet" th:href="@{/css/org/view.css}">
+</head>
+
+<body>
+
+  <div class="detail-wrapper">
+
+    <!-- ── 헤더 영역 ── -->
+    <div class="detail-header">
+      <div class="detail-header__top">
+        <a href="javascript:history.back()" class="btn-back">
+          <i data-lucide="chevron-left" class="icon-sm"></i>
+        </a>
+        <div class="header-name-block">
+          <h1 class="org-name" th:text="${orgBasicInfo.name}">소속명</h1>
+
+          <!-- ADMIN 또는 CONSULTANT_LEADER만 소속명 수정 버튼 표시 -->
+          <div sec:authorize="hasAnyRole('ADMIN','CONSULTANT_LEADER')">
+            <button type="button" class="btn-icon-text" id="btnOpenNameEdit" title="소속명 수정하기">
+              <i data-lucide="pencil" class="icon-sm"></i>
+              소속명 수정하기
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 소속명 수정 폼 (기본 hidden) -->
+      <div sec:authorize="hasAnyRole('ADMIN','CONSULTANT_LEADER')">
+        <div id="nameEditArea" class="name-edit-area" style="display:none;">
+          <div class="name-edit-row">
+            <input type="text" id="inputOrgName" class="input-text" maxlength="20" placeholder="새 소속명 입력"
+              th:value="${orgBasicInfo.name}" />
+            <button type="button" class="btn-secondary" id="btnCheckName">중복 확인</button>
+          </div>
+          <div id="nameEditMsg" class="edit-msg"></div>
+          <button type="button" class="btn-primary" id="btnSubmitName" style="display:none; margin-top:0.5rem;">소속명
+            수정하기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 정보 카드 영역 ── -->
+    <div class="detail-content">
+
+      <!-- 대표 -->
+      <div class="info-section">
+        <div class="info-card">
+          <div class="info-card__header">
+            <i data-lucide="crown" class="icon-sm"></i>
+            <span class="info-card__title">대표</span>
+          </div>
+          <p class="info-card__value" th:text="${orgBasicInfo.leaderNickname}">대표 별명</p>
+        </div>
+      </div>
+
+      <!-- 소속 컨설턴트 수 -->
+      <div class="info-section">
+        <div class="info-card">
+          <div class="info-card__header">
+            <i data-lucide="users" class="icon-sm"></i>
+            <span class="info-card__title">컨설턴트 수</span>
+          </div>
+          <p class="info-card__value">
+            <span th:text="${orgBasicInfo.consultantCount}">0</span>명
+          </p>
+        </div>
+      </div>
+
+      <!-- 전체 담당 학생 수 -->
+      <div class="info-section">
+        <div class="info-card">
+          <div class="info-card__header">
+            <i data-lucide="graduation-cap" class="icon-sm"></i>
+            <span class="info-card__title">담당 학생 총합</span>
+          </div>
+          <p class="info-card__value">
+            <span th:text="${orgBasicInfo.studentCount}">0</span>명
+          </p>
+        </div>
+      </div>
+
+      <!-- 상태 (ADMIN 또는 CONSULTANT_LEADER만 표시) -->
+      <div sec:authorize="hasAnyRole('ADMIN','CONSULTANT_LEADER')">
+        <div class="info-section">
+          <div class="info-card">
+            <div class="info-card__header">
+              <i data-lucide="activity" class="icon-sm"></i>
+              <span class="info-card__title">상태</span>
+            </div>
+            <div class="status-row">
+              <th:block th:switch="${orgBasicInfo.status?.name()}">
+                <span th:case="'ACTIVE'" class="status-badge status--active">정상</span>
+                <span th:case="'SUSPENDED'" class="status-badge status--suspended">정지</span>
+                <span th:case="'DELETED'" class="status-badge status--deleted">삭제</span>
+                <span th:case="*" class="status-badge status--active" th:text="${orgBasicInfo.status}">상태</span>
+              </th:block>
+
+              <!-- ADMIN만 상태 수정 버튼 표시 -->
+              <div sec:authorize="hasRole('ADMIN')">
+                <button type="button" class="btn-secondary btn-sm" id="btnOpenStatusEdit">
+                  <i data-lucide="settings-2" class="icon-sm"></i>
+                  상태 수정하기
+                </button>
+              </div>
+            </div>
+
+            <!-- 상태 수정 폼 (기본 hidden) -->
+            <div sec:authorize="hasRole('ADMIN')">
+              <div id="statusEditArea" class="status-edit-area" style="display:none;">
+                <select id="selectStatus" class="input-select">
+                  <option value="ACTIVE" th:selected="${orgBasicInfo.status?.name() == 'ACTIVE'}">정상</option>
+                  <option value="SUSPENDED" th:selected="${orgBasicInfo.status?.name() == 'SUSPENDED'}">정지</option>
+                  <option value="DELETED" th:selected="${orgBasicInfo.status?.name() == 'DELETED'}">삭제</option>
+                </select>
+                <button type="button" class="btn-primary btn-sm" id="btnSubmitStatus">
+                  수정 완료
+                </button>
+                <button type="button" class="btn-ghost btn-sm" id="btnCancelStatus">취소</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── 컨설턴트 카드 영역 ── -->
+    <div class="charged-section">
+
+      <div class="charged-header">
+        <div class="charged-header__left">
+          <i data-lucide="briefcase" class="icon-sm"></i>
+          <span class="charged-title">소속 컨설턴트</span>
+          <span class="charged-count">
+            총 <strong th:text="${orgBasicInfo.consultantCount}">0</strong>명
+          </span>
+        </div>
+
+        <!-- ADMIN만 배정 페이지 이동 아이콘 -->
+        <div sec:authorize="hasRole('ADMIN')">
+          <a th:href="@{/org/charged(encOrgNo=${encOrgNo})}" class="btn-assign-link" title="소속-컨설턴트 배정 페이지로 이동">
+            <i data-lucide="user-plus" class="icon-sm"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- 컨설턴트 카드 그리드 -->
+      <div class="consultant-grid">
+
+        <th:block th:if="${orgBasicInfo.consultantDetail != null and !orgBasicInfo.consultantDetail.isEmpty()}">
+          <div th:each="c : ${orgBasicInfo.consultantDetail}" class="consultant-card"
+            th:attr="data-enc=${c.encryptedConsultantNo}" onclick="goConsultant(this)">
+
+            <div class="consultant-card__top">
+              <i data-lucide="user-round" class="consultant-icon"></i>
+              <span class="consultant-nick" th:text="${c.nickname}">닉네임</span>
+            </div>
+            <div class="consultant-card__bottom">
+              <i data-lucide="graduation-cap" class="meta-icon"></i>
+              <span class="consultant-student-count">
+                담당 학생 <strong th:text="${c.studentCount}">0</strong>명
+              </span>
+            </div>
+
+          </div>
+        </th:block>
+
+        <!-- 컨설턴트 없음 -->
+        <div th:if="${orgBasicInfo.consultantDetail == null or orgBasicInfo.consultantDetail.isEmpty()}"
+          class="empty-msg">
+          <i data-lucide="user-x" class="empty-icon"></i>
+          <p>소속 컨설턴트가 없습니다.</p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script th:inline="javascript">
+    const ENC_ORG_NO = /*[[${encOrgNo}]]*/ '';
+  </script>
+  <script th:src="@{/js/org/view.js}"></script>
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

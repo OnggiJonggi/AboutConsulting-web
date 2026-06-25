@@ -95,7 +95,7 @@ public class SchoolApiController {
 			return ResponseEntity.notFound().build();
 		
 		try {
-			schoolService.registor(target);
+			schoolService.insertOne(target);
 		} catch (DuplicateKeyException e) {
 			// 중복된 경우
 			session.removeAttribute("schoolSearchResult");

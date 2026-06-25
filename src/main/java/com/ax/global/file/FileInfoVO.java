@@ -22,7 +22,7 @@ public class FileInfoVO {
 	@Data
 	@Builder
 	@ToString
-	public static class Registor {
+	public static class Insert {
 		private int fileNo;
 		private String originalName;
 		private String changedName;

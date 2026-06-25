@@ -49,7 +49,7 @@ public class MemberController {
 	@GetMapping("/join")
 	public String goJoin(Model model) {
 		// thymeleaf에서 th:object로 받아갈 빈 객체 보내기
-		model.addAttribute("memberJoin", new MemberVO.Join());
+		model.addAttribute("memberJoin", new MemberVO.Insert());
 		return "member/join";
 	}
 	
@@ -60,13 +60,13 @@ public class MemberController {
 	 */
 	@PostMapping("/join")
 	public String join(
-			@ModelAttribute @Valid MemberVO.Join member,
+			@ModelAttribute @Valid MemberVO.Insert member,
 			BindingResult bindingResult,
 			Model model){
 		
 		// 유효성 검사 실패하면 가세요라
 		if(bindingResult.hasErrors()) {
-			model.addAttribute("memberJoin", new MemberVO.Join());
+			model.addAttribute("memberJoin", new MemberVO.Insert());
 			return "member/join";
 		}
 		

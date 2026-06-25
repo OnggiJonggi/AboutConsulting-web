@@ -77,12 +77,20 @@
             </a>
         </div>
 
-        <!-- ADMIN: 1행 -->
-        <div sec:authorize="hasRole('ADMIN')" class="card-grid card-grid--4">
+        <!-- ADMIN: 1행 - 회원 관리 -->
+        <div sec:authorize="hasRole('ADMIN')" class="card-grid card-grid--2">
             <a th:href="@{/member}" class="menu-card">
                 <i data-lucide="book-user" class="menu-card__icon"></i>
                 <span class="menu-card__label">회원 목록</span>
             </a>
+            <a th:href="@{/admin}" class="menu-card disabled-card">
+                <i data-lucide="shield-check" class="menu-card__icon"></i>
+                <span class="menu-card__label">관리자 페이지</span>
+            </a>
+        </div>
+
+        <!-- ADMIN: 2행 - 학생 관리 -->
+        <div sec:authorize="hasRole('ADMIN')" class="card-grid card-grid--2" style="margin-top: 1rem;">
             <a th:href="@{/student}" class="menu-card">
                 <i data-lucide="graduation-cap" class="menu-card__icon"></i>
                 <span class="menu-card__label">학생 목록</span>
@@ -91,25 +99,29 @@
                 <i data-lucide="user-round-plus" class="menu-card__icon"></i>
                 <span class="menu-card__label">학생 등록</span>
             </a>
-            <a th:href="@{/admin}" class="menu-card">
-                <i data-lucide="shield-check" class="menu-card__icon"></i>
-                <span class="menu-card__label">관리자 페이지</span>
-            </a>
         </div>
 
-        <!-- ADMIN: 2행 -->
-        <div sec:authorize="hasRole('ADMIN')" class="card-grid card-grid--4" style="margin-top: 1rem;">
-            <a th:href="@{/consultant/charged}" class="menu-card">
-                <i data-lucide="link" class="menu-card__icon"></i>
-                <span class="menu-card__label">컨설턴트 - 학생 배정</span>
-            </a>
+        <!-- ADMIN: 3행 - 컨설턴트 관리 -->
+        <div sec:authorize="hasRole('ADMIN')" class="card-grid card-grid--2" style="margin-top: 1rem;">
             <a th:href="@{/consultant}" class="menu-card">
                 <i data-lucide="users" class="menu-card__icon"></i>
                 <span class="menu-card__label">컨설턴트 목록</span>
             </a>
+            <a th:href="@{/consultant/charged}" class="menu-card">
+                <i data-lucide="link" class="menu-card__icon"></i>
+                <span class="menu-card__label">컨설턴트 - 학생 배정</span>
+            </a>
+        </div>
+
+        <!-- ADMIN: 4행 - 소속 관리 -->
+        <div sec:authorize="hasRole('ADMIN')" class="card-grid card-grid--3" style="margin-top: 1rem;">
             <a th:href="@{/org}" class="menu-card">
                 <i data-lucide="building-2" class="menu-card__icon"></i>
                 <span class="menu-card__label">컨설턴트 소속 목록</span>
+            </a>
+            <a th:href="@{/org/register}" class="menu-card">
+                <i data-lucide="plus-circle" class="menu-card__icon"></i>
+                <span class="menu-card__label">소속 생성</span>
             </a>
             <a th:href="@{/org/charged}" class="menu-card">
                 <i data-lucide="git-merge" class="menu-card__icon"></i>

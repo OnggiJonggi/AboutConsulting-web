@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소속 등록</title>
+  <th:block th:replace="~{/common/fragment :: common}"></th:block>
+  <link rel="stylesheet" th:href="@{/css/org/register.css}">
+</head>
+
+<body>
+
+  <div class="register-wrapper">
+
+    <!-- ── 상단 헤더 ── -->
+    <div class="page-header">
+      <a th:href="@{/}" class="logo-link">
+        <img th:src="@{/img/main-logo.png}" alt="어바웃컨설팅 로고" class="header-logo">
+      </a>
+      <h1 class="page-title">
+        <i data-lucide="building-2" class="title-icon"></i>
+        소속 등록
+      </h1>
+    </div>
+
+    <!-- ── 소속 이름 입력 영역 ── -->
+    <div class="name-section">
+      <div class="name-section__inner">
+        <div class="section-title">
+          <i data-lucide="pencil-line" class="section-icon"></i>
+          소속 이름
+        </div>
+        <div class="name-input-row">
+          <input type="text" id="orgName" class="filter-input name-input" placeholder="소속 이름을 입력하세요 (최대 20자)"
+            maxlength="20" autocomplete="off">
+          <button type="button" id="checkNameBtn" class="btn-check">
+            <i data-lucide="search-check" class="btn-icon"></i>
+            중복 검사
+          </button>
+        </div>
+        <span id="nameMsg" class="name-msg"></span>
+      </div>
+    </div>
+
+    <!-- ── 컨설턴트 조회/등록 영역 ── -->
+    <div class="content-area">
+
+      <!-- ── 왼쪽: 필터 영역 ── -->
+      <aside class="filter-panel">
+        <div class="filter-header">
+          <i data-lucide="sliders-horizontal" class="filter-header__icon"></i>
+          <span>검색 필터</span>
+        </div>
+
+        <form id="searchForm" autocomplete="off">
+          <!-- 고정 hidden 값 -->
+          <input type="hidden" name="status" value="ACTIVE">
+          <input type="hidden" name="hasOrg" value="false">
+
+          <!-- 이름 -->
+          <div class="filter-group">
+            <label class="filter-label" for="f-name">
+              <i data-lucide="user" class="label-icon"></i>이름
+            </label>
+            <input type="text" id="f-name" name="name" class="filter-input" placeholder="이름 입력">
+          </div>
+
+          <!-- 별명 -->
+          <div class="filter-group">
+            <label class="filter-label" for="f-nickname">
+              <i data-lucide="at-sign" class="label-icon"></i>별명
+            </label>
+            <input type="text" id="f-nickname" name="nickname" class="filter-input" placeholder="별명 입력">
+          </div>
+
+          <!-- 현재 페이지 hidden -->
+          <input type="hidden" id="f-page" name="page" value="1">
+
+          <!-- 검색 버튼 -->
+          <button type="button" id="searchBtn" class="btn-search">
+            <i data-lucide="search" class="btn-icon"></i>
+            검색
+          </button>
+        </form>
+      </aside>
+
+      <!-- ── 가운데: 검색 결과 영역 ── -->
+      <section class="result-panel">
+
+        <div class="result-header">
+          <span class="result-title">
+            <i data-lucide="list" class="result-header__icon"></i>
+            검색 결과
+          </span>
+          <span class="result-count">
+            총 <strong id="totalCount">0</strong>명
+          </span>
+        </div>
+
+        <!-- 카드 목록 -->
+        <div id="consultantList" class="consultant-list">
+          <!-- JS에서 초기 서버 데이터로 렌더링 -->
+        </div>
+
+        <!-- 페이징 -->
+        <div class="pagination-area" id="paginationArea" style="display:none;">
+          <div class="pagination" id="paginationInner"></div>
+        </div>
+
+      </section>
+
+      <!-- ── 오른쪽: 선택된 컨설턴트 영역 ── -->
+      <section class="selected-panel">
+        <div class="result-header">
+          <span class="result-title">
+            <i data-lucide="user-check" class="result-header__icon"></i>
+            선택된 컨설턴트
+          </span>
+          <span class="result-count">
+            <strong id="selectedCount">0</strong>명 선택
+          </span>
+        </div>
+
+        <div id="selectedList" class="selected-list">
+          <div class="empty-msg" id="selectedEmpty">
+            <i data-lucide="users" class="empty-icon"></i>
+            <p>컨설턴트를 선택해주세요.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ── 폼 제출 영역 ── -->
+    <div class="submit-area">
+      <form id="registerForm" method="post" th:action="@{/org/register}">
+        <input type="hidden" id="f-orgNameSubmit" name="name">
+        <input type="hidden" id="f-encLeaderNo" name="encLeaderNo">
+        <!-- encConsultantNos는 JS에서 동적으로 append -->
+        <div id="encConsultantNosContainer"></div>
+
+        <button type="submit" id="submitBtn" class="btn-submit" disabled>
+          <i data-lucide="save" class="btn-icon"></i>
+          소속 등록
+        </button>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- 서버 초기 데이터를 JS 변수로 전달 -->
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    const INIT_RESULT = {
+      list: /*[[${SearchResult.list}]]*/[],
+      totalCount: /*[[${SearchResult.totalCount}]]*/ 0,
+      totalPage: /*[[${SearchResult.totalPage}]]*/ 0,
+      startPage: /*[[${SearchResult.startPage}]]*/ 1,
+      endPage: /*[[${SearchResult.endPage}]]*/ 1,
+      hasPrev: /*[[${SearchResult.hasPrev}]]*/ false,
+      hasNext: /*[[${SearchResult.hasNext}]]*/ false
+    };
+    /*]]>*/
+  </script>
+
+  <script th:src="@{/js/org/register.js}"></script>
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ax.consultant.org.OrgMapper">
+	<!-- <resultMap id="OrgDetailMap" type="OrgDetail">
+		<id property="orgNo" column="ORG_NO"/>
+		<result property="name" column="NAME"/>
+		<result property="status" column="STATUS"
+			javaType="com.ax.consultant.org.OrgStatusEnum"
+			typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+		<result property="counsultantCount" column="CONSULTANT_COUNT"/>
+		<result property="studentCount" column="STUDENT_COUNT"/>
+		<result property="leaderNo" column="LEADER_NO"/>
+		<result property="leaderNickname" column="LEADER_NICKNAME"/>
+		<collection property="consultantDetail" ofType="consultantDetail">
+			<id property="consultantNo" column="CON_CONSULTANT_NO"/>
+			<result property="userId" column="CON_ID"/>
+			<result property="nickname" column="CON_NICKNAME"/>
+			<result property="name" column="CON_NAME"/>
+			<result property="status" column="CON_STATUS"/>
+			<result property="studentCount" column="CON_STUDENT_COUNT"/>
+		</collection>
+	</resultMap> -->
+
+
+	<select id="selectList" parameterType="OrgSearch" resultType="OrgDetail">
+		select * from(
+			select A.*, ROWNUM RN
+			from(
+				select
+					ORG.ORG_NO
+					,ORG.NAME
+					,ORG.STATUS
+					,LEADER_MEM.MEMBER_NO as LEADER_NO
+					,LEADER_MEM.NICKNAME as LEADER_NICKNAME
+					,count(distinct CON.CONSULTANT_NO) as CONSULTANT_COUNT
+					,sum(CS_COUNT.STUDENT_COUNT) as STUDENT_COUNT
+				from CONSULTANT_ORG ORG
+				left join MEMBER LEADER_MEM on (LEADER_MEM.MEMBER_NO = ORG.LEADER_NO)
+				left join CONSULTANT CON on (CON.ORG_NO = ORG.ORG_NO)
+				left join (
+					select CONSULTANT_NO, count(*) as STUDENT_COUNT
+					from CONSULTANT_STUDENT
+					group by CONSULTANT_NO
+				) CS_COUNT on (CS_COUNT.CONSULTANT_NO = CON.CONSULTANT_NO)
+				<where>
+					<if test="name=null and name!=''">
+						and ORG.NAME like '%' || #{name} || '%' escape '/'
+					</if>
+					<if test="status!=null">
+						and ORG.STATUS = #{status}
+					</if>
+					<if test="(consultantName!=null and consultantName!='')
+						or (consultantNickname!=null and consultantNickname!='')">
+						and exists(
+							select 1
+							from CONSULTANT CON2
+							left join MEMBER MEM2 on (CON2.CONSULTANT_NO = MEM2.MEMBER_NO)
+							where ORG.ORG_NO = CON2.ORG_NO
+							<if test="consultantName!=null and consultantName!=''">
+								and MEM2.NAME like '%' || #{consultantName} || '%' escape '/'
+							</if>
+							<if test="consultantNickname!=null and consultantNickname!=''">
+								and MEM2.NICKNAME like '%' || #{consultantNickname} || '%' escape '/'
+							</if>
+						)
+					</if>
+				</where>
+				group by ORG.ORG_NO, ORG.NAME, ORG.STATUS, LEADER_MEM.MEMBER_NO, LEADER_MEM.NICKNAME
+				order by ORG_NO desc
+			) A
+			where ROWNUM &lt;= #{endRow}
+		) B
+		where RN &gt;= #{startRow}
+	</select>
+
+	<select id="selectListTotalCount" parameterType="OrgSearch" resultType="_int">
+		select count(*)
+		from CONSULTANT_ORG ORG
+		<where>
+			<if test="name!=null and name!=''">
+				and ORG.NAME like '%' || #{name} || '%' escape '/'
+			</if>
+			<if test="status!=null">
+				and ORG.STATUS = #{status}
+			</if>
+			<if test="(consultantName!=null and consultantName!='')
+				or (consultantNickname!=null and consultantNickname!='')">
+				and exists(
+					select 1
+					from CONSULTANT CON2
+					left join MEMBER MEM2 on (CON2.CONSULTANT_NO = MEM2.MEMBER_NO)
+					where ORG.ORG_NO = CON2.ORG_NO
+					<if test="consultantName!=null and consultantName!=''">
+						and MEM2.NAME like '%' || #{consultantName} || '%' escape '/'
+					</if>
+					<if test="consultantNickname!=null and consultantNickname!=''">
+						and MEM2.NICKNAME like '%' || #{consultantNickname} || '%' escape '/'
+					</if>
+				)
+			</if>
+		</where>
+	</select>
+
+	<select id="selectIsBelog" resultType="_int">
+		select ORG.ORG_NO
+		from CONSULTANT_ORG ORG
+		left join CONSULTANT CON on (CON.ORG_NO = ORG.ORG_NO)
+		where CON.CONSULTANT_NO = #{memberNo}
+	</select>
+
+	<select id="select" resultType="OrgDetail" parameterType="_int">
+		select
+			ORG.ORG_NO
+			,ORG.NAME
+			,ORG.STATUS
+			,LEADER_MEM.MEMBER_NO as LEADER_NO
+			,LEADER_MEM.NICKNAME as LEADER_NICKNAME
+			,count(distinct CON.CONSULTANT_NO) as CONSULTANT_COUNT
+			,sum(CS_COUNT.STUDENT_COUNT) as STUDENT_COUNT
+		from CONSULTANT_ORG ORG
+		left join MEMBER LEADER_MEM on (LEADER_MEM.MEMBER_NO = ORG.LEADER_NO)
+		left join CONSULTANT CON on (CON.ORG_NO = ORG.ORG_NO)
+		left join CONSULTANT_STUDENT CS on (CON.CONSULTANT_NO = CS.CONSULTANT_NO)
+		left join (
+			select CONSULTANT_NO, count(*) as STUDENT_COUNT
+			from CONSULTANT_STUDENT
+			group by CONSULTANT_NO
+		) CS_COUNT on (CS_COUNT.CONSULTANT_NO = CON.CONSULTANT_NO)
+		where ORG.ORG_NO = #{orgNo}
+		group by ORG.ORG_NO, ORG.NAME ,ORG.STATUS ,LEADER_MEM.MEMBER_NO ,LEADER_MEM.NICKNAME
+	</select>
+
+	<select id="selectConsultant">
+		select
+			MEM.ID as USER_ID
+			,MEM.NAME
+			,MEM.NICKNAME
+			,MEM.STATUS
+			,CON.CONSULTANT_NO
+			,ORG.NAME as ORG_NAME
+			,count(CS.STUDENT_NO) as STUDENT_COUNT
+		from CONSULTANT CON
+		left join MEMBER MEM on (MEM.MEMBER_NO = CON.CONSULTANT_NO)
+		left join CONSULTANT_ORG ORG on (ORG.ORG_NO = CON.ORG_NO)
+		left join CONSULTANT_STUDENT CS on (CS.CONSULTANT_NO = CON.CONSULTANT_NO)
+		where CON.ORG_NO = #{orgNo}
+		group by
+			MEM.ID
+			,MEM.NAME
+			,MEM.NICKNAME
+			,MEM.STATUS
+			,CON.CONSULTANT_NO
+			,ORG.NAME
+	</select>
+
+	<select id="selectCheckName" resultType="_int">
+		select count(*)
+		<choose>
+			<when test="orgNo != 0 ">
+				from (
+					select *
+					from CONSULTANT_ORG
+					where ORG_NO != #{orgNo}
+				)
+			</when>
+			<otherwise>
+				from CONSULTANT_ORG
+			</otherwise>
+		</choose>
+		where NAME = #{name}
+	</select>
+
+	<update id="updateName">
+		update CONSULTANT_ORG
+		set NAME = #{name}
+		where ORG_NO = #{orgNo}
+	</update>
+
+	<insert id="insertOrg" parameterType="OrgInsert"
+		useGeneratedKeys="true"
+    keyProperty="orgNo"
+    keyColumn="ORG_NO">
+		insert into CONSULTANT_ORG(
+			LEADER_NO, NAME
+		) values(
+			#{leaderNo}, #{name}
+		)
+	</insert>
+
+	<update id="updateConsultantOrg">
+		update CONSULTANT
+		set ORG_NO = #{orgNo}
+		where CONSULTANT_NO in
+		<foreach collection="list" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<update id="updateStatus">
+		update CONSULTANT_ORG
+		set STATUS = #{status}
+		where ORG_NO = #{orgNo}
+	</update>
+
+	<select id="selectIsSameOrg" resultType="_int">
+		select
+			case when(
+				count(distinct ORG_NO) = 1
+				and count(ORG_NO) = 2
+			)
+			then 1
+			else 0
+		end
+		from CONSULTANT
+		where CONSULTANT_NO in (#{no1}, #{no2})
+	</select>
+
+</mapper>

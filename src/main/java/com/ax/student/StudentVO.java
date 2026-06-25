@@ -23,7 +23,7 @@ public class StudentVO {
 	@NoArgsConstructor
 	@Data
 	@ToString(callSuper = true)
-	public static class Register{
+	public static class Insert{
 		
 		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private int studentNo;
@@ -33,11 +33,11 @@ public class StudentVO {
 		private String name;
 		
 		@Min(value = 1, message = "학년은 1 이상이어야 합니다")
-		@Max(value = 3, message = "학년은 3 이하이어야 합니다")
+		@Max(value = StudentRegexp.GRADE_MAX, message = "학년은 3 이하이어야 합니다")
 		private Integer grade;
 		
 		@Min(value = 1, message = "학기는 1 이상이에요")
-		@Max(value = 2, message = "학년은 2 이하에요")
+		@Max(value = StudentRegexp.SEMESTER_MAX, message = "학기는 2 이하에요")
 		private Integer semester;
 		
 		@NotBlank(message="계열이 뭐에요")
@@ -46,7 +46,7 @@ public class StudentVO {
 		
 		private int schoolCode;
 		
-		private List<TargetInfoVO.Register> target;
+		private List<TargetInfoVO.Insert> target;
 	}
 	
 	@NoArgsConstructor
@@ -58,13 +58,14 @@ public class StudentVO {
 		
 		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private int studentNo;
-		
 		private String encryptedStudentNo;
 		
+		private int schoolCode;
 		private String name;
 		private int grade;
 		private int semester;
 		private String track;
+		private StudentStatusEnum status;
 		
 		// SCHOOL 테이블
 		private String schoolName;
@@ -73,13 +74,16 @@ public class StudentVO {
 		private List<TargetInfoVO.Pair> target;
 		
 		// CONSULTANT 테이블
+		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+		private int consultantNo;
+		private String encConsultantNo;
 		private String consultantNickname;
 		
 		// CONSULTANT_ORG 테이블
 		private String consultantOrgName;
 		
 		/**
-		 * 학생 식별번호 암호화용 setter
+		 * 식별번호 암호화용 setter
 		 */
 		public void setStudentNo(int studentNo) {
 			this.studentNo = studentNo;
@@ -87,7 +91,12 @@ public class StudentVO {
 		public void setEncryptedStudentNo(String encryptedStudentNo) {
 			this.encryptedStudentNo = encryptedStudentNo;
 		}
-		
+		public void setConsultantNo(int consultantNo) {
+			this.consultantNo = consultantNo;
+		}
+		public void setEncConsultantNo(String encConsultantNo) {
+			this.encConsultantNo = encConsultantNo;
+		}
 	}
 	
 	@NoArgsConstructor
