@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.ax.consultant.ConsultantService;
@@ -192,5 +193,86 @@ public class OrgController {
 		int orgNo = orgService.register(insert);
 		String encOrgNo = cryptoComponent.encrypt(String.valueOf(orgNo));
 		return "redirect:/org/"+encOrgNo;
+	}
+	
+	/**
+	 * 소속 - 컨설턴트 배정 페이지로
+	 * 관리자
+	 */
+	@GetMapping("charged")
+	public String goCharged(
+			@RequestParam(required=false) String encOrgNo,
+			@RequestParam(required=false) String encConNo,
+			Model model) throws Exception {
+		
+		// encOrgNo 쿼리스트링으로 있으면 그거 씀
+		if(encOrgNo != null) {
+			
+			// 소속 세부사항 조회
+			int orgNo = Integer.valueOf(cryptoComponent.decrypt(encOrgNo));
+			
+			// 정보 조회
+			OrgVO.Detail detail = orgService.getDetail(orgNo);
+			
+			// 식별번호 암호화
+			detail.setOrgNo(0);
+			for(ConsultantVO.Detail item : detail.getConsultantDetail()) {
+				item.setEncryptedConsultantNo(cryptoComponent.encrypt(String.valueOf(item.getConsultantNo())));
+				item.setConsultantNo(0);
+			}
+			
+			model.addAttribute("encOrgNo", encOrgNo);
+			model.addAttribute("orgBasicInfo", detail);
+			
+		} else {
+			// 쿼리스트링에 없으면 소속 검색
+			OrgVO.Search orgSearch = new OrgVO.Search();
+			model.addAttribute("orgSearch", orgSearch);
+			
+			// 상태값 = 정상 인 소속만 조회
+			orgSearch.setStatus(OrgStatusEnum.ACTIVE);
+			
+			// 조회
+			SearchResultVO<OrgVO.Detail> orgResult = orgService.getList(orgSearch);
+			if(orgResult!= null && orgResult.getList()!=null && !orgResult.getList().isEmpty()) {
+				for(OrgVO.Detail item : orgResult.getList()) {
+					item.setEncLeaderNo(cryptoComponent.encrypt(String.valueOf(item.getLeaderNo())));
+					item.setEncOrgNo(cryptoComponent.encrypt(String.valueOf(item.getOrgNo())));
+					item.setOrgNo(0);
+					item.setLeaderNo(0);
+				}
+			}
+			model.addAttribute("orgList", orgResult);
+		}
+		
+		// encConNo 쿼리스트링 있을 경우
+		if(encConNo!=null) {
+			model.addAttribute("encConNo", encConNo);
+			
+			// 이 컨설턴트가 이미 배정되었나요?
+			int conNo = Integer.valueOf(cryptoComponent.decrypt(encConNo));
+			int orgNo = orgService.isBelong(conNo);
+			
+			// 배정 되어 있으면 가세요라
+			if(orgNo > 0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+			
+		} else {
+			// 쿼리스트링에 없으면 컨설턴트 검색
+			ConsultantVO.Search consultantSearch = new ConsultantVO.Search();
+			model.addAttribute("consultantSearch", consultantSearch);
+			
+			// 상태값 = 정상, 소속 없는 컨설턴트만 조회 
+			consultantSearch.setStatus(MemberStatusEnum.ACTIVE);
+			consultantSearch.setHasOrg(false);
+			
+			SearchResultVO<ConsultantVO.Detail> consultantResult= consultantService.getList(consultantSearch);
+			for(ConsultantVO.Detail item : consultantResult.getList()) {
+				item.setEncryptedConsultantNo(cryptoComponent.encrypt(String.valueOf(item.getConsultantNo())));
+				item.setConsultantNo(0);
+			}
+			model.addAttribute("consultantResult", consultantResult);
+		}
+		
+		return "org/charged";
 	}
 }

@@ -1,6 +1,7 @@
 package com.ax.consultant.org;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,8 @@ import org.springframework.web.server.ResponseStatusException;
 import com.ax.consultant.ConsultantVO;
 import com.ax.global.common.SanitizeComponent;
 import com.ax.global.common.SearchResultVO;
+import com.ax.global.security.RoleEnum;
+import com.ax.member.MemberMapper;
 import com.ax.member.MemberRegexp;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OrgService {
 	private final OrgMapper orgMapper;
+	private final MemberMapper memberMapper;
 	private final SanitizeComponent sanitizeComponent;
 
 	/**
@@ -94,11 +98,16 @@ public class OrgService {
 		// 조직 생성
 		orgMapper.insertOrg(Insert);
 		int orgNo = Insert.getOrgNo();
-		if(orgNo==0) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+		if(orgNo == 0) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
 		
 		// 생성된 조직에 구성원 삽입
-		int result = orgMapper.updateConsultantOrg(orgNo, Insert.getConsultantNos());
-		if(result!=Insert.getConsultantNos().size())
+		int result1 = orgMapper.updateConsultantOrg(orgNo, Insert.getConsultantNos());
+		if(result1 != Insert.getConsultantNos().size())
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+		
+		// 대표 컨설턴트는 권한 추가
+		int result2 = memberMapper.insertRole(Insert.getLeaderNo(), RoleEnum.CONSULTANT_LEADER);
+		if(result2 == 0)
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
 		
 		return orgNo;
@@ -136,5 +145,55 @@ public class OrgService {
 		
 		if(result == 1) return true;
 		else return false;
+	}
+
+	/**
+	 * 소속 - 컨설턴트 배정
+	 */
+	@Transactional
+	public void updateCharged(int orgNo, int leaderNo, Set<Integer> conNos) {
+
+		// 모든 구성원 삭제
+		orgMapper.updateConsultantOrgForNull(orgNo);
+		
+		// 구성원 삽입
+		int result1 = orgMapper.updateConsultantOrg(orgNo, conNos);
+		if(result1 != conNos.size())
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+		
+		// 기존 대표 컨설턴트의 컨설턴트 식별번호 추출
+		int oldLeaderNo = orgMapper.selectLeaderNo(orgNo);
+		if(oldLeaderNo == 0)
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+		
+		// 대표 컨설턴트 변경
+		if(oldLeaderNo != leaderNo) {
+			
+			// CONSULTANT_ORG 테이블 수정
+			int result2 = orgMapper.updateOrgLeader(orgNo, leaderNo); 
+			if(result2 == 0)
+				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+			
+			// 새로운 대표 컨설턴트 권한 추가
+			int result3 = memberMapper.insertRole(leaderNo, RoleEnum.CONSULTANT_LEADER);
+			if(result3 == 0)
+				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+			
+			// 기존 대표 모든 권한 삭제
+			int result4 = memberMapper.deleteRole(oldLeaderNo);
+			if(result4 == 0)
+				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+			
+			// 기존 대표 컨설턴트 권한(CONSULTANT) 추가
+			int result5 = memberMapper.insertRole(oldLeaderNo, RoleEnum.CONSULTANT);
+			if(result5 == 0)
+				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+			
+		} else {
+			// 대표 미 변경 -> 다시 대표로 올려놓기
+			int result6 = orgMapper.updateOrgLeader(orgNo, oldLeaderNo);
+			if(result6 == 0)
+				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 }

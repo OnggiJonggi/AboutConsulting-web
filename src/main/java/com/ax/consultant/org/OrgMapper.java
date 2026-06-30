@@ -26,6 +26,8 @@ public interface OrgMapper {
 			@Param("name") String name);
 
 	public void insertOrg(OrgVO.Insert insert);
+	
+	public void updateConsultantOrgForNull(int orgNo);
 
 	public int updateConsultantOrg(
 			@Param("orgNo") int orgNo,
@@ -42,4 +44,11 @@ public interface OrgMapper {
 	public int selectIsSameOrg(
 			@Param("no1") int no1,
 			@Param("no2") int no2);
+
+	public int selectLeaderNo(int orgNo);
+	
+	public int updateOrgLeader(
+			@Param("orgNo") int orgNo,
+			@Param("leaderNo") int leaderNo);
+
 }

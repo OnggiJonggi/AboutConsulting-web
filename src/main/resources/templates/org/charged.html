@@ -11,6 +11,296 @@
 
 <body>
 
+  <script th:inline="javascript">
+    const PAGE_DATA = {
+      encOrgNo: /*[[${encOrgNo}]]*/ null,
+      encConNo: /*[[${encConNo}]]*/ null,
+      orgBasicInfo: /*[[${orgBasicInfo}]]*/ null
+    };
+  </script>
+
+  <div class="charged-wrapper">
+
+    <div class="page-header">
+      <a th:href="@{/}" class="logo-link">
+        <img th:src="@{/img/main-logo.png}" alt="어바웃컨설팅 로고" class="header-logo">
+      </a>
+      <h1 class="page-title">
+        <i data-lucide="link" class="title-icon"></i>
+        소속 - 컨설턴트 배정
+      </h1>
+    </div>
+
+    <div class="dual-area">
+      <!-- 왼쪽: 소속 영역 -->
+      <section class="side-panel">
+        <div class="side-panel__title">
+          <i data-lucide="building-2" class="title-icon-sm"></i>
+          소속
+        </div>
+
+        <div th:if="${encOrgNo != null}" class="preset-notice">
+          <i data-lucide="check-circle-2" class="preset-icon"></i>
+          <span>소속이 이미 선택되었습니다.</span>
+        </div>
+
+        <div class="filter-panel" th:classappend="${encOrgNo != null} ? ' is-disabled' : ''">
+          <div class="filter-header">
+            <i data-lucide="sliders-horizontal" class="filter-header__icon"></i>
+            <span>검색 필터</span>
+          </div>
+
+          <form id="orgSearchForm" autocomplete="off">
+            <input type="hidden" name="status" value="ACTIVE">
+
+            <fieldset class="filter-fieldset" th:disabled="${encOrgNo != null}">
+              <div class="filter-group">
+                <label class="filter-label" for="of-name">
+                  <i data-lucide="building-2" class="label-icon"></i>소속명
+                </label>
+                <input type="text" id="of-name" name="name" class="filter-input" placeholder="소속명 입력"
+                  th:value="${orgSearch != null ? orgSearch.name : ''}">
+              </div>
+
+              <button type="button" id="orgSearchBtn" class="btn-search">
+                <i data-lucide="search" class="btn-icon"></i>
+                검색
+              </button>
+            </fieldset>
+          </form>
+        </div>
+
+        <div class="result-panel" th:if="${encOrgNo == null}">
+          <div class="result-header">
+            <span class="result-title">
+              <i data-lucide="list" class="result-header__icon"></i>
+              검색 결과
+            </span>
+            <span class="result-count">
+              총 <strong id="orgTotalCount" th:text="${orgList != null ? orgList.totalCount : 0}">0</strong>개
+            </span>
+          </div>
+
+          <div id="orgList" class="org-list">
+            <th:block th:if="${orgList != null and orgList.list != null and !orgList.list.isEmpty()}">
+              <div th:each="org : ${orgList.list}" class="org-card" th:attr="data-enc=${org.encOrgNo},
+                         data-name=${org.name},
+                         data-consultant-count=${org.consultantCount},
+                         data-student-count=${org.studentCount},
+                         data-leader-nickname=${org.leaderNickname != null ? org.leaderNickname : ''}">
+                <div class="card-row card-row--primary">
+                  <span class="card-org-name">
+                    <i data-lucide="building-2" class="card-icon"></i>
+                    <span th:text="${org.name}">소속명</span>
+                  </span>
+                  <span class="card-leader">
+                    <i data-lucide="crown" class="card-icon-sm"></i>
+                    <span th:text="${org.leaderNickname != null ? org.leaderNickname : '-'}">대표</span>
+                  </span>
+                </div>
+
+                <div class="card-row card-row--secondary">
+                  <span class="card-stat" title="소속 컨설턴트 수">
+                    <i data-lucide="users" class="meta-icon"></i>
+                    <span th:text="${org.consultantCount} + '명'">0명</span>
+                  </span>
+                  <span class="card-stat" title="전체 담당 학생 수">
+                    <i data-lucide="graduation-cap" class="meta-icon"></i>
+                    <span th:text="${org.studentCount} + '명'">0명</span>
+                  </span>
+                </div>
+              </div>
+            </th:block>
+
+            <div th:if="${orgList == null or orgList.list == null or orgList.list.isEmpty()}" class="empty-msg">
+              <i data-lucide="search-x" class="empty-icon"></i>
+              <p>검색 결과가 없습니다.</p>
+            </div>
+          </div>
+
+          <div class="pagination-area" id="orgPaginationArea" th:if="${orgList != null and orgList.totalPage > 0}">
+            <div class="pagination">
+              <button type="button" class="page-nav" th:classappend="${orgList.hasPrev} ? '' : 'hidden'"
+                th:attr="data-page=${orgList.startPage - 1}">
+                <i data-lucide="chevron-left"></i>
+              </button>
+
+              <div class="page-numbers">
+                <th:block th:each="p : ${#numbers.sequence(orgList.startPage, orgList.endPage)}">
+                  <button type="button" class="page-num"
+                    th:classappend="${orgSearch != null and p == orgSearch.page} ? ' active' : ''" th:text="${p}"
+                    th:attr="data-page=${p}">1</button>
+                </th:block>
+              </div>
+
+              <button type="button" class="page-nav" th:classappend="${orgList.hasNext} ? '' : 'hidden'"
+                th:attr="data-page=${orgList.endPage + 1}">
+                <i data-lucide="chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 오른쪽: 컨설턴트 영역 -->
+      <section class="side-panel">
+        <div class="side-panel__title">
+          <i data-lucide="contact" class="title-icon-sm"></i>
+          컨설턴트
+        </div>
+
+        <div th:if="${encConNo != null}" class="preset-notice">
+          <i data-lucide="check-circle-2" class="preset-icon"></i>
+          <span>컨설턴트가 이미 선택되었습니다.</span>
+        </div>
+
+        <div class="filter-panel" th:classappend="${encConNo != null} ? ' is-disabled' : ''">
+          <div class="filter-header">
+            <i data-lucide="sliders-horizontal" class="filter-header__icon"></i>
+            <span>검색 필터</span>
+          </div>
+
+          <form id="consultantSearchForm" autocomplete="off">
+            <input type="hidden" name="status" value="ACTIVE">
+            <input type="hidden" name="hasOrg" value="false">
+
+            <fieldset class="filter-fieldset" th:disabled="${encConNo != null}">
+              <div class="filter-group">
+                <label class="filter-label" for="cf-name">
+                  <i data-lucide="user" class="label-icon"></i>이름
+                </label>
+                <input type="text" id="cf-name" name="name" class="filter-input" placeholder="이름 입력"
+                  th:value="${consultantSearch != null ? consultantSearch.name : ''}">
+              </div>
+
+              <div class="filter-group">
+                <label class="filter-label" for="cf-nickname">
+                  <i data-lucide="at-sign" class="label-icon"></i>별명
+                </label>
+                <input type="text" id="cf-nickname" name="nickname" class="filter-input" placeholder="별명 입력"
+                  th:value="${consultantSearch != null ? consultantSearch.nickname : ''}">
+              </div>
+
+              <button type="button" id="consultantSearchBtn" class="btn-search">
+                <i data-lucide="search" class="btn-icon"></i>
+                검색
+              </button>
+            </fieldset>
+          </form>
+        </div>
+
+        <div class="result-panel" th:if="${encConNo == null}">
+          <div class="result-header">
+            <span class="result-title">
+              <i data-lucide="list" class="result-header__icon"></i>
+              검색 결과
+            </span>
+            <span class="result-count">
+              총 <strong id="consultantTotalCount"
+                th:text="${consultantResult != null ? consultantResult.totalCount : 0}">0</strong>명
+            </span>
+          </div>
+
+          <div id="consultantList" class="consultant-list">
+            <th:block
+              th:if="${consultantResult != null and consultantResult.list != null and !consultantResult.list.isEmpty()}">
+              <div th:each="consultant : ${consultantResult.list}" class="consultant-card" th:attr="data-enc=${consultant.encryptedConsultantNo},
+                         data-nickname=${consultant.nickname},
+                         data-userid=${consultant.userId},
+                         data-name=${consultant.name},
+                         data-student-count=${consultant.studentCount}">
+                <div class="card-row card-row--primary">
+                  <span class="card-nickname">
+                    <i data-lucide="contact" class="card-icon"></i>
+                    <span th:text="${consultant.nickname}">별명</span>
+                  </span>
+                  <span class="card-student-count">
+                    <i data-lucide="users-round" class="card-icon-sm"></i>
+                    <span th:text="${consultant.studentCount} + '명'">0명</span>
+                  </span>
+                </div>
+
+                <div class="card-row card-row--secondary">
+                  <span class="card-userid">
+                    <i data-lucide="id-card" class="meta-icon"></i>
+                    <span th:text="${consultant.userId}">아이디</span>
+                  </span>
+                  <span class="card-name">
+                    <i data-lucide="user-round" class="meta-icon"></i>
+                    <span th:text="${consultant.name}">이름</span>
+                  </span>
+                </div>
+              </div>
+            </th:block>
+
+            <div th:if="${consultantResult == null or consultantResult.list == null or consultantResult.list.isEmpty()}"
+              class="empty-msg">
+              <i data-lucide="search-x" class="empty-icon"></i>
+              <p>검색 결과가 없습니다.</p>
+            </div>
+          </div>
+
+          <div class="pagination-area" id="consultantPaginationArea"
+            th:if="${consultantResult != null and consultantResult.totalPage > 0}">
+            <div class="pagination">
+              <button type="button" class="page-nav" th:classappend="${consultantResult.hasPrev} ? '' : 'hidden'"
+                th:attr="data-page=${consultantResult.startPage - 1}">
+                <i data-lucide="chevron-left"></i>
+              </button>
+
+              <div class="page-numbers">
+                <th:block th:each="p : ${#numbers.sequence(consultantResult.startPage, consultantResult.endPage)}">
+                  <button type="button" class="page-num"
+                    th:classappend="${consultantSearch != null and p == consultantSearch.page} ? ' active' : ''"
+                    th:text="${p}" th:attr="data-page=${p}">1</button>
+                </th:block>
+              </div>
+
+              <button type="button" class="page-nav" th:classappend="${consultantResult.hasNext} ? '' : 'hidden'"
+                th:attr="data-page=${consultantResult.endPage + 1}">
+                <i data-lucide="chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 아래: 배정 영역 -->
+    <section class="assign-area">
+      <div class="assign-header">
+        <i data-lucide="sparkles" class="assign-header__icon"></i>
+        배정 영역
+      </div>
+
+      <div class="assign-layout">
+        <div class="assign-slot">
+          <div class="assign-slot__label">
+            <i data-lucide="building-2" class="slot-label-icon"></i>
+            소속 배정
+          </div>
+          <div id="assignedOrgSlot" class="assign-slot__content"></div>
+        </div>
+
+        <div class="assign-slot">
+          <div class="assign-slot__label">
+            <i data-lucide="users" class="slot-label-icon"></i>
+            컨설턴트 배정
+          </div>
+          <div id="assignedConsultantSlot" class="assign-slot__content assign-slot__content--consultants"></div>
+        </div>
+      </div>
+
+      <div class="assign-footer">
+        <button type="button" id="assignBtn" class="btn-assign">
+          <i data-lucide="check-check" class="btn-icon"></i>
+          배정하기
+        </button>
+      </div>
+    </section>
+
+  </div>
+
   <script th:src="@{/js/org/charged.js}"></script>
   <script>lucide.createIcons();</script>
 </body>

@@ -80,7 +80,13 @@
           <!-- 컨설턴트 - 학생 배정 -->
           <a th:href="@{/consultant/charged(encConNo=${consultantDetail.encryptedConsultantNo})}" class="btn-secondary">
             <i data-lucide="user-plus" class="icon-sm"></i>
-            컨설턴트 - 학생 배정
+            학생 배정
+          </a>
+          <!-- 소속 배정 -->
+          <a th:if="${consultantDetail.orgName == null or consultantDetail.orgName == ''}"
+            th:href="@{/org/charged(encConNo=${consultantDetail.encryptedConsultantNo})}" class="btn-secondary">
+            <i data-lucide="building-2" class="icon-sm"></i>
+            소속 배정
           </a>
         </div>
       </div>

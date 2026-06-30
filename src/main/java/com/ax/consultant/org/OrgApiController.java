@@ -1,25 +1,32 @@
 package com.ax.consultant.org;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ax.consultant.ConsultantVO;
 import com.ax.global.common.SearchResultVO;
 import com.ax.global.security.CryptoComponent;
 
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/org")
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class OrgApiController {
 	private final OrgService orgService;
 	private final CryptoComponent cryptoComponent;
@@ -27,11 +34,11 @@ public class OrgApiController {
 	
 	/**
 	 * 소속 검색
+	 * 관리자
 	 */
 	@GetMapping("")
 	public ResponseEntity<SearchResultVO<OrgVO.Detail>> getList(
 			@ModelAttribute OrgVO.Search search) throws Exception{
-		
 		// 목록 조회
 		SearchResultVO<OrgVO.Detail> result = orgService.getList(search);
 		
@@ -44,7 +51,6 @@ public class OrgApiController {
 				item.setLeaderNo(0);
 			}
 		}
-		
 		return ResponseEntity.ok(result);
 	}
 	
@@ -88,6 +94,7 @@ public class OrgApiController {
 	
 	/**
 	 * 소속 상태값 변경
+	 * 관리자
 	 */
 	@PutMapping("{encOrgNo}/status")
 	public ResponseEntity<Void> updateStatus(
@@ -99,4 +106,54 @@ public class OrgApiController {
 		
 		return ResponseEntity.ok().build();
 	}
+	
+	/**
+	 * 소속 기본정보 조회
+	 * 관리자
+	 */
+	@GetMapping("{encOrgNo}")
+	public ResponseEntity<OrgVO.Detail> getOrgBasicInfo(
+			@PathVariable String encOrgNo) throws Exception{
+		
+		int orgNo = Integer.valueOf(cryptoComponent.decrypt(encOrgNo));
+		OrgVO.Detail result = orgService.getDetail(orgNo);
+		
+		// 없으면 404
+		if(result == null) return ResponseEntity.notFound().build();
+		
+		// 식별번호 암호화
+		result.setOrgNo(0);
+		for(ConsultantVO.Detail item : result.getConsultantDetail()) {
+			item.setEncryptedConsultantNo(cryptoComponent.encrypt(String.valueOf(item.getConsultantNo())));
+			item.setConsultantNo(0);
+		}
+		
+		
+		return ResponseEntity.ok(result);
+	}
+	
+	/**
+	 * 소속 - 컨설턴트 배정
+	 * 관리자
+	 */
+	@PostMapping("charged")
+	public ResponseEntity<Void> insertCharged(
+			@RequestParam String encOrgNo,
+			@RequestParam String encLederNo,
+			@RequestParam Set<String> encConNos) throws Exception{
+		
+		// 복호화
+		int orgNo = Integer.valueOf(cryptoComponent.decrypt(encOrgNo));
+		int leaderNo = Integer.valueOf(cryptoComponent.decrypt(encLederNo));
+		Set<Integer> conNos = new HashSet<Integer>();
+		for(String item : encConNos) {
+			int conNo = Integer.valueOf(cryptoComponent.decrypt(item));
+			conNos.add(conNo);
+		}
+		
+		orgService.updateCharged(orgNo, leaderNo, conNos);
+		
+		return ResponseEntity.ok().build();
+	}
+	
 }

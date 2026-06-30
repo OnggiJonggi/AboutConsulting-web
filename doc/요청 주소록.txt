@@ -14,7 +14,7 @@
   컨설턴트 - 학생 배정(get, /consultant/charged)
   컨설턴트 소속 목록(get, /org)
   소속 생성(get, /org/register)
-!  컨설턴트 - 소속 배정(get, /org/charged)
+  컨설턴트 - 소속 배정(get, /org/charged)
 로그인 - 권한 CONSULTANT
   담당 학생 목록(get, /consultant/myinfo)
   내 소속(get, /org/myinfo)
@@ -90,7 +90,7 @@
   담당 학생 세부사항으로(get, /student/{encryptedStudentNo})
 권한 - ADMIN
   회원 세부사항으로(get, /member/{encryptedMemberNo})
-!  소속 - 컨설턴트 배정 페이지로(get, /org/charged?encConNo={encryptedConsultantNo})
+  소속 - 컨설턴트 배정 페이지로(get, /org/charged?encConNo={encryptedConsultantNo})
   컨설턴트 - 학생 배정 페이지로(get, /consultant/charged?encConNo={encryptedConsultantNo})
   담당 학생 삭제(delete, /api/consultant/{encryptedConsultantNo}/charged)
 
@@ -113,15 +113,14 @@
   상태값 변경(put, /api/org/{encOrgNo}/status)
   소속 - 컨설턴트 배정 페이지로(get, /org/charged?encOrgNo={encOrgNo})
 
-
 소속 등록(org/register)
   소속 이름 중복확인(get, /api/org/check-name)
   컨설턴트 검색(get, /api/consultant)
   폼 제출(post, /org/register)
 
-!소속 - 컨설턴트 배정(/org/charged)
+소속 - 컨설턴트 배정(/org/charged)
   소속 검색(get, /api/org)
+  소속 기본정보 조회(get, /api/org/{encOrgNo})
   컨설턴트 검색(get, /api/consultant)
-  소속 - 컨설턴트 배정(get, /api/org/charged)
+  소속 - 컨설턴트 배정(post, /api/org/charged)
   소속 기본정보 페이지로(get, /org/{encOrgNo})
-  컨설턴트 기본정보 페이지로(get, /consultant/{encryptedConsultantNo})

@@ -46,10 +46,10 @@
 					group by CONSULTANT_NO
 				) CS_COUNT on (CS_COUNT.CONSULTANT_NO = CON.CONSULTANT_NO)
 				<where>
-					<if test="name=null and name!=''">
+					<if test="name != null and name != ''">
 						and ORG.NAME like '%' || #{name} || '%' escape '/'
 					</if>
-					<if test="status!=null">
+					<if test="status != null">
 						and ORG.STATUS = #{status}
 					</if>
 					<if test="(consultantName!=null and consultantName!='')
@@ -80,7 +80,7 @@
 		select count(*)
 		from CONSULTANT_ORG ORG
 		<where>
-			<if test="name!=null and name!=''">
+			<if test="name != null and name!=''">
 				and ORG.NAME like '%' || #{name} || '%' escape '/'
 			</if>
 			<if test="status!=null">
@@ -105,7 +105,7 @@
 	</select>
 
 	<select id="selectIsBelog" resultType="_int">
-		select ORG.ORG_NO
+		select nvl(max(ORG.ORG_NO), 0)
 		from CONSULTANT_ORG ORG
 		left join CONSULTANT CON on (CON.ORG_NO = ORG.ORG_NO)
 		where CON.CONSULTANT_NO = #{memberNo}
@@ -190,6 +190,12 @@
 		)
 	</insert>
 
+	<update id="updateConsultantOrgForNull" parameterType="_int">
+		update CONSULTANT
+		set ORG_NO = null
+		where ORG_NO = #{orgNo}
+	</update>
+
 	<update id="updateConsultantOrg">
 		update CONSULTANT
 		set ORG_NO = #{orgNo}
@@ -217,5 +223,17 @@
 		from CONSULTANT
 		where CONSULTANT_NO in (#{no1}, #{no2})
 	</select>
+
+	<select id="selectLeaderNo" parameterType="_int" resultType="_int">
+		select nvl(max(LEADER_NO), 0)
+		from CONSULTANT_ORG
+		where ORG_NO = #{orgNo}
+	</select>
+
+	<update id="updateOrgLeader">
+		update CONSULTANT_ORG
+		set LEADER_NO = #{leaderNo}
+		where ORG_NO = #{orgNo}
+	</update>
 
 </mapper>
