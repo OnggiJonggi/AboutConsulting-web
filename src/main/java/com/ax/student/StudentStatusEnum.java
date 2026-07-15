@@ -1,5 +1,8 @@
 package com.ax.student;
 
+/**
+ * STUDENT 테이블 STATUS
+ */
 public enum StudentStatusEnum {
 	ACTIVE, // 정상
 	SUSPENDED, // 정지

@@ -1,0 +1,12 @@
+{
+	"grade_strengths": {
+	  "strength_1": "문장",
+	  "strength_2": "문장",
+	  "strength_3": "문장"
+	},
+	"grade_weaknesses": {
+	  "weakness_1": "문장",
+	  "weakness_2": "문장",
+	  "weakness_3": "문장"
+	}
+}

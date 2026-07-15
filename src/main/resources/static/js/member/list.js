@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
       ? '<span class="status-badge ' + statusClass + '">' + escapeHtml(member.status) + '</span>'
       : '';
 
-    return '<div class="member-card" onclick="location.href=\'/member/' + escapeHtml(member.encryptedMemberNo) + '\'">' +
+    return '<div class="member-card" onclick="location.href=\'/member/' + escapeHtml(member.encMemberNo) + '\'">' +
       '<div class="member-main">' +
       '<div class="member-id-row">' +
       '<i data-lucide="user-round" class="member-icon"></i>' +

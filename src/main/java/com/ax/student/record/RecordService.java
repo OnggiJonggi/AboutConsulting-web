@@ -2,20 +2,28 @@ package com.ax.student.record;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.ax.global.file.FileDataVO;
+import com.ax.global.file.FileInfoVO;
+import com.ax.global.file.FileMapper;
 import com.ax.global.file.component.FileComponent;
-import com.ax.global.file.component.TargetEnum;
+import com.ax.global.file.component.RootSavePathEnum;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RecordService{
 	private final RecordMapper recordMapper;
+	private final FileMapper fileMapper;
 	private final FileComponent fileComponent;
-	private final apiRecordComponent apiRecordComponent;
+	private final RecordAsyncComponent apiRecordComponent;
 	
 	/**
 	 * 생기부 저장 및 분석
@@ -24,6 +32,7 @@ public class RecordService{
 	 * @param studentNo
 	 * @param memberNo
 	 */
+	@Transactional
 	public int insertRecord(FileDataVO file, int studentNo, int memberNo) throws Exception {
 		
 		RecordVO.GroupStatus recordGroup = RecordVO.GroupStatus.builder()
@@ -39,11 +48,28 @@ public class RecordService{
 		int groupNo = recordGroup.getGroupNo();
 		if(groupNo==0) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
 		
-		// 파일 저장
-		fileComponent.saveFile(file, groupNo, TargetEnum.RECORD_FILE, memberNo);
+		// 저장
+		FileInfoVO.HandOver handOver = new FileInfoVO.HandOver(
+				file, memberNo, RootSavePathEnum.RECORD_FILE);
+		fileComponent.save(handOver,
+				fileNo ->{
+					FileInfoVO.InsertMapping insertMapping = FileInfoVO.InsertMapping.builder()
+							.target(RootSavePathEnum.RECORD_FILE)
+							.groupNo(groupNo)
+							.fileNo(groupNo).build();
+					fileMapper.insertMapping(insertMapping);
+				}
+			);
 		
-		// 비동기 작업
-		apiRecordComponent.analysisRecord(file.getBytes(), groupNo, studentNo);
+		// 커밋 후 비동기 작업
+		TransactionSynchronizationManager.registerSynchronization(
+			    new TransactionSynchronization() {
+			        @Override
+			        public void afterCommit() {
+						apiRecordComponent.analysisRecord(studentNo, groupNo, file.getBytes());
+			        }
+			    }
+			);
 		
 		return groupNo;
 	}
@@ -73,7 +99,7 @@ public class RecordService{
 
 	/**
 	 * groupNo로 생기부 상태 확인
-	 * @param encryptedStudentNo
+	 * @param encStudentNo
 	 */
 	public String getStatus(int groupNo) throws Exception {
 		return recordMapper.selectRecordStatus(groupNo);

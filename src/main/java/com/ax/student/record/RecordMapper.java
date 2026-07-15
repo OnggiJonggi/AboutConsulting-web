@@ -16,7 +16,4 @@ public interface RecordMapper {
 	public RecordVO.Detail selectRecord(int studentNo);
 
 	public int insertRecord(RecordVO.Insert insert);
-
-
-
 }

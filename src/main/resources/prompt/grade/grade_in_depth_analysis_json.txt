@@ -1,0 +1,11 @@
+{
+  "grade_in_depth_analysis": {
+    "korean": { "analysis_content": "분석내용" },
+    "math": { "analysis_content": "분석내용" },
+    "english": { "analysis_content": "분석내용" },
+    "social": { "analysis_content": "분석내용" },
+    "science": { "analysis_content": "분석내용" },
+    "korean_history": { "analysis_content": "분석내용" },
+    "general_elective": { "analysis_content": "분석내용" }
+  }
+}

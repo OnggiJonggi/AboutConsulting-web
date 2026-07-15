@@ -85,6 +85,7 @@
 		left join TARGET_INFO T on (S.STUDENT_NO = T.STUDENT_NO)
 		left join SCHOOL SCH on (SCH.SCHOOL_CODE = S.SCHOOL_CODE)
 		where S.STUDENT_NO = #{studentNo}
+		and S.STATUS = 'ACTIVE'
 		order by T.RANKING ASC
 	</select>
 

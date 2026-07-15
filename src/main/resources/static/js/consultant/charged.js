@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
 
   /* ── 서버에서 전달된 선택 사전값 ── */
-  const presetConNo = PAGE_DATA.encryptedConsultantNo || null;
-  const presetStuNo = PAGE_DATA.encryptedStudentNo || null;
+  const presetConNo = PAGE_DATA.encConsultantNo || null;
+  const presetStuNo = PAGE_DATA.encStudentNo || null;
 
   /* ── 선택 상태 저장 ── */
   let selectedConsultant = presetConNo
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const statusInfo = statusMap[consultant.status] || { label: consultant.status, cls: '' };
 
     return '<div class="consultant-card" ' +
-      'data-enc="' + escapeHtml(consultant.encryptedConsultantNo) + '" ' +
+      'data-enc="' + escapeHtml(consultant.encConsultantNo) + '" ' +
       'data-nickname="' + escapeHtml(consultant.nickname || '') + '" ' +
       'data-org="' + escapeHtml(consultant.orgName || '-') + '">' +
       '<div class="card-row card-row--primary">' +
@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function () {
       : '';
 
     return '<div class="student-card" ' +
-      'data-enc="' + escapeHtml(student.encryptedStudentNo) + '" ' +
+      'data-enc="' + escapeHtml(student.encStudentNo) + '" ' +
       'data-name="' + escapeHtml(student.name || '') + '">' +
       '<div class="student-main">' +
       '<div class="student-name-row">' +
@@ -541,10 +541,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const params = {
-      encryptedConsultantNo: conEnc
+      encConsultantNo: conEnc
     };
 
-    // encryptedStudentNos 배열을 반복 파라미터로 전송
+    // encStudentNos 배열을 반복 파라미터로 전송
     const stuEncs = selectedStudents.map(s => s.enc);
 
     $.ajax({
@@ -565,14 +565,14 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  /* encryptedStudentNos를 List<String>으로 인식시키기 위한 FormData 직렬화 */
+  /* encStudentNos를 List<String>으로 인식시키기 위한 FormData 직렬화 */
   function buildFormData(params, stuEncs) {
     const parts = [];
     Object.keys(params).forEach(function (key) {
       parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
     });
     stuEncs.forEach(function (enc) {
-      parts.push(encodeURIComponent('encryptedStudentNos') + '=' + encodeURIComponent(enc));
+      parts.push(encodeURIComponent('encStudentNos') + '=' + encodeURIComponent(enc));
     });
     return parts.join('&');
   }

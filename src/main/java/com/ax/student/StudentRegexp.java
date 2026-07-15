@@ -1,5 +1,8 @@
 package com.ax.student;
 
+/**
+ * 학생 유효성 검사용 정규식
+ */
 public class StudentRegexp {
 	private StudentRegexp() {}
 

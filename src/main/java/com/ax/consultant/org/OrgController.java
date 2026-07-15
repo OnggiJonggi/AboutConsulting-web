@@ -55,8 +55,8 @@ public class OrgController {
 		// 대표 컨설턴트 식별번호, 소속 식별번호 암호화
 		if(result!= null && result.getList()!=null && !result.getList().isEmpty()) {
 			for(OrgVO.Detail item : result.getList()) {
-				item.setEncLeaderNo(cryptoComponent.encrypt(String.valueOf(item.getLeaderNo())));
-				item.setEncOrgNo(cryptoComponent.encrypt(String.valueOf(item.getOrgNo())));
+				item.setEncLeaderNo(cryptoComponent.encrypt(item.getLeaderNo()));
+				item.setEncOrgNo(cryptoComponent.encrypt(item.getOrgNo()));
 				item.setOrgNo(0);
 				item.setLeaderNo(0);
 			}
@@ -84,14 +84,14 @@ public class OrgController {
 				&& userDetails.getAuthorities().stream()
 		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.ADMIN.getPrefix()))) {
 			// org/{encOrgNo} 로 접근 - 관리자만 가능
-			orgNo = Integer.valueOf(cryptoComponent.decrypt(encOrgNo));
+			orgNo = cryptoComponent.decrypt(encOrgNo);
 			model.addAttribute("encOrgNo", encOrgNo);
 		}else {
 			// org/myinfo 로 접근
 			// 이 컨설턴트 소속 식별번호 추출
-			int memberNo =  Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo()));
+			int memberNo =  cryptoComponent.decrypt(userDetails.getEncMemberNo());
 			orgNo = orgService.isBelong(memberNo);
-			model.addAttribute("encOrgNo", cryptoComponent.encrypt(String.valueOf(orgNo)));
+			model.addAttribute("encOrgNo", cryptoComponent.encrypt(orgNo));
 		}
 		
 		if(orgNo==0) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -102,7 +102,7 @@ public class OrgController {
 		// 식별번호 암호화
 		detail.setOrgNo(0);
 		for(ConsultantVO.Detail item : detail.getConsultantDetail()) {
-			item.setEncryptedConsultantNo(cryptoComponent.encrypt(String.valueOf(item.getConsultantNo())));
+			item.setEncConsultantNo(cryptoComponent.encrypt(item.getConsultantNo()));
 			item.setConsultantNo(0);
 		}
 		
@@ -136,7 +136,7 @@ public class OrgController {
 		// 암호화
 		if(result!=null && result.getList()!=null && !result.getList().isEmpty()) {
 			for(ConsultantVO.Detail item : result.getList()) {
-				item.setEncryptedConsultantNo(cryptoComponent.encrypt(String.valueOf(item.getConsultantNo())));
+				item.setEncConsultantNo(cryptoComponent.encrypt(item.getConsultantNo()));
 				item.setConsultantNo(0);
 			}
 		}
@@ -165,7 +165,7 @@ public class OrgController {
 		}
 		
 		// 대표 식별번호 복호화
-		insert.setLeaderNo(Integer.valueOf(cryptoComponent.decrypt(insert.getEncLeaderNo())));
+		insert.setLeaderNo(cryptoComponent.decrypt(insert.getEncLeaderNo()));
 		insert.setEncLeaderNo(null);
 		
 		// 대표 식별번호가 소속 컨설턴트 식별번호에 있는지 확인
@@ -176,7 +176,7 @@ public class OrgController {
 		Set<Integer> conNos = new HashSet<Integer>(); 
 		
 		for(String item : encConNos) {
-			int conNo = Integer.valueOf(cryptoComponent.decrypt(item));
+			int conNo = cryptoComponent.decrypt(item);
 			conNos.add(conNo);
 			
 			// 컨설턴트 번호가 리더 번호와 같아요!
@@ -191,7 +191,7 @@ public class OrgController {
 		
 		// 소속 생성 및 소속 식별번호 반환
 		int orgNo = orgService.register(insert);
-		String encOrgNo = cryptoComponent.encrypt(String.valueOf(orgNo));
+		String encOrgNo = cryptoComponent.encrypt(orgNo);
 		return "redirect:/org/"+encOrgNo;
 	}
 	
@@ -209,7 +209,7 @@ public class OrgController {
 		if(encOrgNo != null) {
 			
 			// 소속 세부사항 조회
-			int orgNo = Integer.valueOf(cryptoComponent.decrypt(encOrgNo));
+			int orgNo = cryptoComponent.decrypt(encOrgNo);
 			
 			// 정보 조회
 			OrgVO.Detail detail = orgService.getDetail(orgNo);
@@ -217,7 +217,7 @@ public class OrgController {
 			// 식별번호 암호화
 			detail.setOrgNo(0);
 			for(ConsultantVO.Detail item : detail.getConsultantDetail()) {
-				item.setEncryptedConsultantNo(cryptoComponent.encrypt(String.valueOf(item.getConsultantNo())));
+				item.setEncConsultantNo(cryptoComponent.encrypt(item.getConsultantNo()));
 				item.setConsultantNo(0);
 			}
 			
@@ -236,8 +236,8 @@ public class OrgController {
 			SearchResultVO<OrgVO.Detail> orgResult = orgService.getList(orgSearch);
 			if(orgResult!= null && orgResult.getList()!=null && !orgResult.getList().isEmpty()) {
 				for(OrgVO.Detail item : orgResult.getList()) {
-					item.setEncLeaderNo(cryptoComponent.encrypt(String.valueOf(item.getLeaderNo())));
-					item.setEncOrgNo(cryptoComponent.encrypt(String.valueOf(item.getOrgNo())));
+					item.setEncLeaderNo(cryptoComponent.encrypt(item.getLeaderNo()));
+					item.setEncOrgNo(cryptoComponent.encrypt(item.getOrgNo()));
 					item.setOrgNo(0);
 					item.setLeaderNo(0);
 				}
@@ -250,7 +250,7 @@ public class OrgController {
 			model.addAttribute("encConNo", encConNo);
 			
 			// 이 컨설턴트가 이미 배정되었나요?
-			int conNo = Integer.valueOf(cryptoComponent.decrypt(encConNo));
+			int conNo = cryptoComponent.decrypt(encConNo);
 			int orgNo = orgService.isBelong(conNo);
 			
 			// 배정 되어 있으면 가세요라
@@ -267,7 +267,7 @@ public class OrgController {
 			
 			SearchResultVO<ConsultantVO.Detail> consultantResult= consultantService.getList(consultantSearch);
 			for(ConsultantVO.Detail item : consultantResult.getList()) {
-				item.setEncryptedConsultantNo(cryptoComponent.encrypt(String.valueOf(item.getConsultantNo())));
+				item.setEncConsultantNo(cryptoComponent.encrypt(item.getConsultantNo()));
 				item.setConsultantNo(0);
 			}
 			model.addAttribute("consultantResult", consultantResult);

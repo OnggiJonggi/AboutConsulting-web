@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>소속 - 컨설턴트 배정</title>
-  <th:block th:replace="~{/common/fragment :: common}"></th:block>
+  <th:block th:replace="~{common/fragment :: common}"></th:block>
   <link rel="stylesheet" th:href="@{/css/org/charged.css}">
 </head>
 
@@ -204,7 +204,7 @@
           <div id="consultantList" class="consultant-list">
             <th:block
               th:if="${consultantResult != null and consultantResult.list != null and !consultantResult.list.isEmpty()}">
-              <div th:each="consultant : ${consultantResult.list}" class="consultant-card" th:attr="data-enc=${consultant.encryptedConsultantNo},
+              <div th:each="consultant : ${consultantResult.list}" class="consultant-card" th:attr="data-enc=${consultant.encConsultantNo},
                          data-nickname=${consultant.nickname},
                          data-userid=${consultant.userId},
                          data-name=${consultant.name},

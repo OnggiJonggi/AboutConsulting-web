@@ -1,0 +1,11 @@
+{
+  "academic_roadmap": {
+    "title": "교과 성적 강화 방안",
+    "description": "설명",
+    "boxes": {
+      "box_1": "문장",
+      "box_2": "문장",
+      "box_3": "문장"
+    }
+  }
+}

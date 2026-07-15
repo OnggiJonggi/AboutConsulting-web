@@ -1,5 +1,11 @@
 package com.ax.school;
 
+/**
+ * 학교 유효성 검사용 정규식
+ * 
+ * 학교 데이터는 나이스에서 가져오니까 학교 등록에 사용하지 않음
+ * SanitizeComponent 클래스의 메서드에서 최대 길이 상수만 검색어 소독용으로 씀.
+ */
 public class SchoolRegexp {
 	private SchoolRegexp() {}
 

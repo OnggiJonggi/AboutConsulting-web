@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>회원 기본정보</title>
-  <th:block th:replace="~{/common/fragment :: common}"></th:block>
+  <th:block th:replace="~{common/fragment :: common}"></th:block>
   <link rel="stylesheet" th:href="@{/css/member/basicinfo.css}">
 </head>
 
@@ -319,7 +319,7 @@
   </div>
 
   <script th:inline="javascript">
-    const ENCRYPTED_MEMBER_NO = /*[[${memberDetail.encryptedMemberNo}]]*/ '';
+    const ENCRYPTED_MEMBER_NO = /*[[${memberDetail.encMemberNo}]]*/ '';
     const ORIGINAL_NICKNAME = /*[[${memberDetail.nickname}]]*/ '';
     const ORIGINAL_PHONE = /*[[${memberDetail.phone}]]*/ '';
   </script>

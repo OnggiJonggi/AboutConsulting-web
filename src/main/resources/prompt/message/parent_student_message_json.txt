@@ -1,0 +1,4 @@
+{
+  "advice_for_parents": "학부모님께드리는조언",
+  "encouragement_message_for_student": "학생에게드리는응원의메시지"
+}

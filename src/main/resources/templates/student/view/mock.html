@@ -51,7 +51,7 @@
     </div>
 
     <!-- 모의고사 개별 카드 -->
-    <div th:each="mock : ${mockList}" class="mock-card" th:id="'mock-card-' + ${mock.encryptedMockNo}">
+    <div th:each="mock : ${mockList}" class="mock-card" th:id="'mock-card-' + ${mock.encMockNo}">
 
       <!-- 카드 헤더 : 날짜 + 등록일 -->
       <div class="mock-card__header">
@@ -106,20 +106,20 @@
       <div class="mock-card__actions">
         <!-- 원본 확인 -->
         <button class="mock-action-btn mock-action-btn--view" type="button" title="원본 확인"
-          th:data-encrypted-mock-no="${mock.encryptedMockNo}" onclick="mockViewOriginal(this)">
+          th:data-enc-mock-no="${mock.encMockNo}" onclick="mockViewOriginal(this)">
           <i data-lucide="file-search" class="icon-sm"></i>
         </button>
         <!-- 점수 수정 (ADMIN or CONSULTANT) -->
         <div sec:authorize="hasRole('ADMIN') or hasRole('CONSULTANT')">
           <button class="mock-action-btn mock-action-btn--edit" type="button" title="점수 수정"
-            th:data-encrypted-mock-no="${mock.encryptedMockNo}" onclick="mockUpdate(this)">
+            th:data-enc-mock-no="${mock.encMockNo}" onclick="mockUpdate(this)">
             <i data-lucide="pencil-line" class="icon-sm"></i>
           </button>
         </div>
         <!-- 원본 삭제 (ADMIN) -->
         <div sec:authorize="hasRole('ADMIN')">
           <button class="mock-action-btn mock-action-btn--delete" type="button" title="원본 삭제"
-            th:data-encrypted-mock-no="${mock.encryptedMockNo}" onclick="mockDelete(this)">
+            th:data-enc-mock-no="${mock.encMockNo}" onclick="mockDelete(this)">
             <i data-lucide="trash-2" class="icon-sm"></i>
           </button>
         </div>

@@ -41,21 +41,24 @@ public class StudentController {
 	private final CryptoComponent cryptoComponent;
 	
 	/**
-	 * 학생 목록 조회
+	 * 학생 목록 조회 페이지로
 	 * 관리자
+	 * 
+	 * 전형적인 검색 필터 - 검색 결과 - 페이징 바 레이이웃
 	 */
 	@GetMapping("")
 	public String getList(Model model) throws Exception {
 		
+		// thymeleaf용 검색 객체
 		StudentVO.Search studentSearch = new StudentVO.Search();
 		model.addAttribute("studentSearch", studentSearch);
 		
-		// 검색해요
+		// 초기 검색
 		SearchResultVO<StudentVO.Detail> result = studentService.getList(studentSearch);
 		
 		// 학생 식별번호 암호화
 		for(StudentVO.Detail student : result.getList()) {
-			student.setEncryptedStudentNo(cryptoComponent.encrypt(String.valueOf(student.getStudentNo())));
+			student.setEncStudentNo(cryptoComponent.encrypt(student.getStudentNo()));
 			student.setStudentNo(0);
 		}
 		
@@ -67,6 +70,9 @@ public class StudentController {
 	/**
 	 * 학생 등록 페이지로
 	 * 관리자
+	 * 
+	 * 이름, 학교명, 학년, 학기, 계열, 목표 대학 및 전공 입력
+	 * 학교명은 DB 조회(검색 버튼) 혹은 나이스 API사용(학교 추가하기 버튼)
 	 */
 	@GetMapping("register")
 	public String goRegister(Model model) {
@@ -77,6 +83,8 @@ public class StudentController {
 	/**
 	 * 학생 등록
 	 * 관리자
+	 * 
+	 * 등록 성공 시 등록한 학생 상세페이지로 이동
 	 */
 	@PostMapping("register")
 	public String register(
@@ -93,7 +101,7 @@ public class StudentController {
 		
 		// 학생 등록, 학생 번호 반환
 		int studentNo = studentService.register(studentRegister);
-		String encStudentNo = cryptoComponent.encrypt(String.valueOf(studentNo));
+		String encStudentNo = cryptoComponent.encrypt(studentNo);
 		
 		// 등록한 학생 상세 페이지로
 		return "redirect:/student/"+encStudentNo;
@@ -105,18 +113,18 @@ public class StudentController {
 	 * 관리자
 	 * 컨설턴트 : 담당 학생
 	 */
-	@GetMapping("{encryptedStudentNo}")
+	@GetMapping("{encStudentNo}")
 	public String goView(
-			@PathVariable String encryptedStudentNo,
+			@PathVariable String encStudentNo,
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			Model model) throws Exception {
 		
-		int studentNo = Integer.valueOf(cryptoComponent.decrypt(encryptedStudentNo));
+		int studentNo = cryptoComponent.decrypt(encStudentNo);
 		
 		// 컨설턴트라면 담당 학생인지 확인
 		if(userDetails.getAuthorities().stream()
 		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.CONSULTANT.getPrefix()))) {
-			int consultantNo = Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo()));
+			int consultantNo = cryptoComponent.decrypt(userDetails.getEncMemberNo());
 			
 			boolean inCharge = consultantService.isInCharge(consultantNo, studentNo);
 			if(inCharge) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
@@ -133,7 +141,7 @@ public class StudentController {
 		
 		// 네비 바에게 여기가 어디고 나는 누구인지 알려줌
 		model.addAttribute("studentMenu", "basic");
-		model.addAttribute("encryptedStudentNo", encryptedStudentNo);
+		model.addAttribute("encStudentNo", encStudentNo);
 		
 		// 학생 기본 정보 조회
 		StudentVO.Detail detail = studentService.getStudentBasicInfo(studentNo);
@@ -144,7 +152,7 @@ public class StudentController {
 		
 		// 컨설턴트 식별번호 있으면 암호화
 		if(detail.getConsultantNo()!=0) {
-			detail.setEncConsultantNo(cryptoComponent.encrypt(String.valueOf(detail.getConsultantNo())));
+			detail.setEncConsultantNo(cryptoComponent.encrypt(detail.getConsultantNo()));
 			detail.setConsultantNo(0);
 		}
 		// 내부 식별번호 비우기
@@ -159,19 +167,18 @@ public class StudentController {
 	/**
 	 * 학생 상세 - 생기부 조각 응답
 	 * 관리자/담당 컨설턴트/학생 자신
-	 * @param encryptedStudentNo
 	 */
-	@GetMapping("{encryptedStudentNo}/record")
+	@GetMapping("{encStudentNo}/record")
 	public String getRecordFragment(
-			@PathVariable String encryptedStudentNo,
+			@PathVariable String encStudentNo,
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			Model model) throws Exception {
 		
 		model.addAttribute("studentMenu", "record");
-		model.addAttribute("encryptedStudentNo", encryptedStudentNo);
+		model.addAttribute("encStudentNo", encStudentNo);
 		
 		// 생기부 조회
-		RecordVO.Detail result = recordService.getRecord(Integer.valueOf(cryptoComponent.decrypt(encryptedStudentNo)));
+		RecordVO.Detail result = recordService.getRecord(cryptoComponent.decrypt(encStudentNo));
 		model.addAttribute("studentRecord", result);
 		
 		// 관리자라면 수정용 StudentVO.Registor객체 보내주기
@@ -187,23 +194,22 @@ public class StudentController {
 	/**
 	 * 학생 상세 - 모의고사 조각 응답
 	 * 관리자/담당 컨설턴트/학생 자신
-	 * @param encryptedStudentNo
 	 */
-	@GetMapping("{encryptedStudentNo}/mock")
+	@GetMapping("{encStudentNo}/mock")
 	public String getMockFragment(
-			@PathVariable String encryptedStudentNo
+			@PathVariable String encStudentNo
 			,Model model) throws Exception {
 		
 		model.addAttribute("studentMenu", "mock");
-		model.addAttribute("encryptedStudentNo", encryptedStudentNo);
+		model.addAttribute("encStudentNo", encStudentNo);
 		
 		// 모의고사 조회
-		List<MockVO.Detail> mockList = mockService.getMockScoreList(Integer.valueOf(cryptoComponent.decrypt(encryptedStudentNo)));
+		List<MockVO.Detail> mockList = mockService.getMockScoreList(cryptoComponent.decrypt(encStudentNo));
 		
 		// 모의고사 묶음 식별번호 암호화
 		if(mockList!=null && !mockList.isEmpty()) {
 			for(MockVO.Detail detail : mockList) {
-				detail.setEncryptedMockNo(cryptoComponent.encrypt(String.valueOf(detail.getMockNo())));
+				detail.setEncMockNo(cryptoComponent.encrypt(detail.getMockNo()));
 				detail.setMockNo(0);
 			}
 		}

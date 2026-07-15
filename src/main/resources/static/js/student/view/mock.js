@@ -2,7 +2,7 @@
 
   /* ── 전역 상태 ── */
   let mockPollingTimer = null;
-  let mockEncryptedGroupNo = null;
+  let mockEncGroupNo = null;
 
   /* ─────────────────────────────────────
      초기화 (main.js의 loadFragment가 호출)
@@ -62,7 +62,7 @@
           processData: false,
           contentType: false,
           success: function (responseBody) {
-            mockEncryptedGroupNo = responseBody;
+            mockEncGroupNo = responseBody;
             uploadBtn.classList.add('mock-upload-btn--hidden');
             if (fileNameSpan) fileNameSpan.textContent = '';
             if (fileInput) fileInput.value = '';
@@ -99,7 +99,7 @@
     $.ajax({
       url: '/api/student/mock/status',
       method: 'GET',
-      data: { encryptedGroupNo: mockEncryptedGroupNo },
+      data: { encGroupNo: mockEncGroupNo },
       success: function () {
         /* 200 → 조각 재요청 */
         mockStopPolling();
@@ -141,7 +141,7 @@
   function mockResetUpload(message) {
     const analyzingEl = document.getElementById('mock-analyzing');
     if (analyzingEl) analyzingEl.style.display = 'none';
-    mockEncryptedGroupNo = null;
+    mockEncGroupNo = null;
     mockShowMsg(message, 'error');
 
     const uploadBtn = document.getElementById('mock-upload-btn');
@@ -187,11 +187,11 @@
 
   /* 원본 확인 */
   window.mockViewOriginal = function (btn) {
-    const encNo = btn.dataset.encryptedMockNo;
+    const encNo = btn.dataset.encMockNo;
     $.ajax({
       url: '/api/student/mock/original',
       method: 'GET',
-      data: { encryptedMockNo: encNo },
+      data: { encMockNo: encNo },
       xhrFields: { responseType: 'blob' },
       success: function (blob, status, xhr) {
         const contentDisposition = xhr.getResponseHeader('Content-Disposition') || '';
@@ -214,12 +214,12 @@
 
   /* 점수 수정 */
   window.mockUpdate = function (btn) {
-    const encNo = btn.dataset.encryptedMockNo;
+    const encNo = btn.dataset.encMockNo;
     $.ajax({
       url: '/api/student/mock/update',
       method: 'PUT',
       contentType: 'application/json',
-      data: JSON.stringify({ encryptedMockNo: encNo }),
+      data: JSON.stringify({ encMockNo: encNo }),
       success: function () {
         loadMockFragment();
       },
@@ -232,11 +232,11 @@
   /* 원본 삭제 */
   window.mockDelete = function (btn) {
     if (!confirm('이 모의고사 원본을 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.')) return;
-    const encNo = btn.dataset.encryptedMockNo;
+    const encNo = btn.dataset.encMockNo;
     $.ajax({
       url: '/api/student/mock/delete',
       method: 'DELETE',
-      data: { encryptedMockNo: encNo },
+      data: { encMockNo: encNo },
       success: function () {
         loadMockFragment();
       },

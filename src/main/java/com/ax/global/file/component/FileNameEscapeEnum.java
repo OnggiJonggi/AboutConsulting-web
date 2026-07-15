@@ -1,5 +1,8 @@
 package com.ax.global.file.component;
 
+/**
+ * 파일 이름에 들어가면 쪼까 곤란한 특수문자 이스케이프
+ */
 public enum FileNameEscapeEnum {
     AMP("&",  "&amp;"),
     LT("<",  "&lt;"),

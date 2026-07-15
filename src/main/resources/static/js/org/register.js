@@ -120,9 +120,9 @@ document.addEventListener('DOMContentLoaded', function () {
      검색 결과 카드 HTML 생성
   ══════════════════════════════════ */
   function buildSearchCard(c) {
-    const isSelected = selectedMap.has(c.encryptedConsultantNo);
+    const isSelected = selectedMap.has(c.encConsultantNo);
     const selectedCls = isSelected ? ' selected' : '';
-    return '<div class="consultant-card' + selectedCls + '" data-enc="' + escapeHtml(c.encryptedConsultantNo) + '">' +
+    return '<div class="consultant-card' + selectedCls + '" data-enc="' + escapeHtml(c.encConsultantNo) + '">' +
       '<div class="card-row card-row--primary">' +
       '<span class="card-nickname">' +
       '<i data-lucide="contact" class="card-icon"></i>' +

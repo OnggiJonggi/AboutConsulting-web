@@ -39,7 +39,7 @@ public class MemberVO {
 		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private int memberNo;
 		
-		private String encryptedMemberNo;
+		private String encMemberNo;
 		private String userId;
 		
 		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -99,7 +99,7 @@ public class MemberVO {
 		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private int memberNo;
 		
-		private String encryptedMemberNo;
+		private String encMemberNo;
 		
 		@Pattern(regexp = MemberRegexp.PWD_REGEXP, message="비번 유효성에 안 맞잖아!")
 		private String userPwd;

@@ -6,7 +6,7 @@
 
   /* ── 초기화 ── */
   function initRecord() {
-    let metaEl = document.getElementById('record-encrypted-no');
+    let metaEl = document.getElementById('record-enc-no');
     if (!metaEl) return;
 
     let encNo = metaEl.dataset.no;
@@ -89,7 +89,7 @@
     }
 
     let formData = new FormData();
-    formData.append('encryptedStudentNo', encNo);
+    formData.append('encStudentNo', encNo);
     formData.append('file', fileInput.files[0]);
 
     if (uploadBtn) uploadBtn.disabled = true;
@@ -101,9 +101,9 @@
       processData: false,
       contentType: false,
       success: function (response) {
-        /* 응답 body에서 encryptedGroupNo 추출 */
+        /* 응답 body에서 encGroupNo 추출 */
         let groupNo = (typeof response === 'object')
-          ? response.encryptedGroupNo
+          ? response.encGroupNo
           : response;
 
         /* groupNo 세션스토리지에 저장 (페이지 재로드 후 READY 상태일 때 사용) */
@@ -136,7 +136,7 @@
 
   /* ── 상태 폴링 요청 ── */
   function pollStatus(encNo, groupNo) {
-    let params = groupNo ? { encryptedGroupNo: groupNo } : {};
+    let params = groupNo ? { encGroupNo: groupNo } : {};
 
     $.ajax({
       url: '/api/student/record/status',

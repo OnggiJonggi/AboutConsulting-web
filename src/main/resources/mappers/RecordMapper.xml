@@ -50,28 +50,28 @@
   <insert id="insertRecord" parameterType="RecordInsert">
     INSERT ALL
       INTO RECORD_ANALYSIS (GROUP_NO, ITEM_NO, ANALYSIS)
-      VALUES (#{groupNo}, 1, #{result.gradeStrengthWeakness})
+      VALUES (#{groupNo}, 1, #{gsw})
       
       INTO RECORD_ANALYSIS (GROUP_NO, ITEM_NO, ANALYSIS)
-      VALUES (#{groupNo}, 2, #{result.gradeInDepthAnalysis})
+      VALUES (#{groupNo}, 2, #{gida})
       
       INTO RECORD_ANALYSIS (GROUP_NO, ITEM_NO, ANALYSIS)
-      VALUES (#{groupNo}, 3, #{result.lifeRecordStrengthWeakness})
+      VALUES (#{groupNo}, 3, #{lrsw})
       
       INTO RECORD_ANALYSIS (GROUP_NO, ITEM_NO, ANALYSIS)
-      VALUES (#{groupNo}, 4, #{result.lifeRecordDiagnosisOverview})
+      VALUES (#{groupNo}, 4, #{lrdo})
       
       INTO RECORD_ANALYSIS (GROUP_NO, ITEM_NO, ANALYSIS)
-      VALUES (#{groupNo}, 5, #{result.academicRoadmap})
+      VALUES (#{groupNo}, 5, #{lrra})
       
       INTO RECORD_ANALYSIS (GROUP_NO, ITEM_NO, ANALYSIS)
-      VALUES (#{groupNo}, 6, #{result.projectRecommendations})
+      VALUES (#{groupNo}, 6, #{pr})
       
       INTO RECORD_ANALYSIS (GROUP_NO, ITEM_NO, ANALYSIS)
-      VALUES (#{groupNo}, 7, #{result.careerBookRecommendations})
+      VALUES (#{groupNo}, 7, #{br})
       
       INTO RECORD_ANALYSIS (GROUP_NO, ITEM_NO, ANALYSIS)
-      VALUES (#{groupNo}, 8, #{result.parentStudentMessage})
+      VALUES (#{groupNo}, 8, #{psm})
     SELECT * FROM DUAL
 	</insert>
 
@@ -88,5 +88,5 @@
     where RAG.STUDENT_NO = #{studentNo}
     and RAG.STATUS = 'ACTIVE'
 	</select>
-  
+
 </mapper>

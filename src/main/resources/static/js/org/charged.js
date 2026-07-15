@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function buildPresetConsultant() {
     return {
-      encryptedConsultantNo: PAGE_DATA.encConNo,
+      encConsultantNo: PAGE_DATA.encConNo,
       nickname: '선택된 컨설턴트',
       userId: '',
       name: '',
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function normalizeConsultant(consultant) {
     return {
-      encryptedConsultantNo: consultant.encryptedConsultantNo || consultant.encryptedConsultantNo,
+      encConsultantNo: consultant.encConsultantNo || consultant.encConsultantNo,
       nickname: consultant.nickname || '선택된 컨설턴트',
       userId: consultant.userId || '',
       name: consultant.name || '',
@@ -70,10 +70,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function addConsultant(consultant, silent, deferRender) {
-    if (!consultant || !consultant.encryptedConsultantNo) return false;
+    if (!consultant || !consultant.encConsultantNo) return false;
 
     const normalized = normalizeConsultant(consultant);
-    const enc = normalized.encryptedConsultantNo;
+    const enc = normalized.encConsultantNo;
 
     if (state.selectedConsultants[enc]) {
       if (!silent) alert('이미 선택된 컨설턴트입니다.');
@@ -133,8 +133,8 @@ document.addEventListener('DOMContentLoaded', function () {
     state.selectedConsultants = {};
 
     if (preset) {
-      state.selectedConsultants[preset.encryptedConsultantNo] = normalizeConsultant(preset);
-      state.leaderEnc = preset.encryptedConsultantNo;
+      state.selectedConsultants[preset.encConsultantNo] = normalizeConsultant(preset);
+      state.leaderEnc = preset.encConsultantNo;
     } else {
       state.leaderEnc = null;
     }
@@ -157,13 +157,13 @@ document.addEventListener('DOMContentLoaded', function () {
     state.selectedConsultants = {};
 
     if (preset) {
-      state.selectedConsultants[preset.encryptedConsultantNo] = normalizeConsultant(preset);
+      state.selectedConsultants[preset.encConsultantNo] = normalizeConsultant(preset);
     }
 
     const consultantList = Array.isArray(detail.consultantDetail) ? detail.consultantDetail : [];
     consultantList.forEach(function (item) {
       addConsultant({
-        encryptedConsultantNo: item.encryptedConsultantNo,
+        encConsultantNo: item.encConsultantNo,
         nickname: item.nickname,
         userId: item.userId,
         name: item.name,
@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     if (byNickname) {
-      state.leaderEnc = byNickname.encryptedConsultantNo;
+      state.leaderEnc = byNickname.encConsultantNo;
     }
 
     ensureLeader();
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!card) return;
 
         addConsultant({
-          encryptedConsultantNo: card.getAttribute('data-enc'),
+          encConsultantNo: card.getAttribute('data-enc'),
           nickname: card.getAttribute('data-nickname'),
           userId: card.getAttribute('data-userid'),
           name: card.getAttribute('data-name'),
@@ -432,7 +432,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function buildConsultantCardHtml(consultant) {
     return '' +
       '<div class="consultant-card" ' +
-      'data-enc="' + escapeHtml(consultant.encryptedConsultantNo || '') + '" ' +
+      'data-enc="' + escapeHtml(consultant.encConsultantNo || '') + '" ' +
       'data-nickname="' + escapeHtml(consultant.nickname || '') + '" ' +
       'data-userid="' + escapeHtml(consultant.userId || '') + '" ' +
       'data-name="' + escapeHtml(consultant.name || '') + '" ' +
@@ -583,14 +583,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     slot.innerHTML = consultants.map(function (consultant) {
-      const isLeader = state.leaderEnc === consultant.encryptedConsultantNo;
+      const isLeader = state.leaderEnc === consultant.encConsultantNo;
       const removeDisabled = consultant.preset ? 'disabled' : '';
 
       return '' +
         '<div class="assigned-consultant-card">' +
         '<div class="assigned-card__actions">' +
-        '<button type="button" class="emoji-btn ' + (isLeader ? 'is-active' : '') + '" data-action="set-leader" data-enc="' + escapeHtml(consultant.encryptedConsultantNo) + '" title="대표 컨설턴트로 지정하기">👑</button>' +
-        '<button type="button" class="emoji-btn" data-action="remove-consultant" data-enc="' + escapeHtml(consultant.encryptedConsultantNo) + '" title="삭제하기" ' + removeDisabled + '>❌</button>' +
+        '<button type="button" class="emoji-btn ' + (isLeader ? 'is-active' : '') + '" data-action="set-leader" data-enc="' + escapeHtml(consultant.encConsultantNo) + '" title="대표 컨설턴트로 지정하기">👑</button>' +
+        '<button type="button" class="emoji-btn" data-action="remove-consultant" data-enc="' + escapeHtml(consultant.encConsultantNo) + '" title="삭제하기" ' + removeDisabled + '>❌</button>' +
         '</div>' +
         '<div class="assigned-card__title">' +
         '<i data-lucide="contact" class="card-icon"></i>' +
@@ -640,7 +640,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       const encConNos = consultants.map(function (item) {
-        return item.encryptedConsultantNo;
+        return item.encConsultantNo;
       });
 
       $.ajax({

@@ -45,8 +45,8 @@ public class OrgApiController {
 		// 대표 컨설턴트 식별번호, 소속 식별번호 암호화
 		if(result!= null && result.getList()!=null && !result.getList().isEmpty()) {
 			for(OrgVO.Detail item : result.getList()) {
-				item.setEncLeaderNo(cryptoComponent.encrypt(String.valueOf(item.getLeaderNo())));
-				item.setEncOrgNo(cryptoComponent.encrypt(String.valueOf(item.getOrgNo())));
+				item.setEncLeaderNo(cryptoComponent.encrypt(item.getLeaderNo()));
+				item.setEncOrgNo(cryptoComponent.encrypt(item.getOrgNo()));
 				item.setOrgNo(0);
 				item.setLeaderNo(0);
 			}
@@ -69,7 +69,7 @@ public class OrgApiController {
 		 */
 		int orgNo = 0;
 		if(encOrgNo != null)
-			orgNo = Integer.valueOf(cryptoComponent.decrypt(encOrgNo));
+			orgNo = cryptoComponent.decrypt(encOrgNo);
 		
 		orgService.checkName(orgNo, name);
 		
@@ -86,7 +86,7 @@ public class OrgApiController {
 			@Pattern(regexp=OrgRegexp.NAME_REGEXP, message="이름이 이상해용")
 			@RequestParam String name) throws Exception{
 		
-		int orgNo = Integer.valueOf(cryptoComponent.decrypt(encOrgNo));
+		int orgNo = cryptoComponent.decrypt(encOrgNo);
 		orgService.updateName(orgNo, name);
 		
 		return ResponseEntity.ok().build();
@@ -101,7 +101,7 @@ public class OrgApiController {
 			@PathVariable String encOrgNo,
 			@RequestParam OrgStatusEnum status) throws Exception{
 		
-		int orgNo = Integer.valueOf(cryptoComponent.decrypt(encOrgNo));
+		int orgNo = cryptoComponent.decrypt(encOrgNo);
 		orgService.updateStatus(orgNo, status);
 		
 		return ResponseEntity.ok().build();
@@ -115,7 +115,7 @@ public class OrgApiController {
 	public ResponseEntity<OrgVO.Detail> getOrgBasicInfo(
 			@PathVariable String encOrgNo) throws Exception{
 		
-		int orgNo = Integer.valueOf(cryptoComponent.decrypt(encOrgNo));
+		int orgNo = cryptoComponent.decrypt(encOrgNo);
 		OrgVO.Detail result = orgService.getDetail(orgNo);
 		
 		// 없으면 404
@@ -124,7 +124,7 @@ public class OrgApiController {
 		// 식별번호 암호화
 		result.setOrgNo(0);
 		for(ConsultantVO.Detail item : result.getConsultantDetail()) {
-			item.setEncryptedConsultantNo(cryptoComponent.encrypt(String.valueOf(item.getConsultantNo())));
+			item.setEncConsultantNo(cryptoComponent.encrypt(item.getConsultantNo()));
 			item.setConsultantNo(0);
 		}
 		
@@ -143,11 +143,11 @@ public class OrgApiController {
 			@RequestParam Set<String> encConNos) throws Exception{
 		
 		// 복호화
-		int orgNo = Integer.valueOf(cryptoComponent.decrypt(encOrgNo));
-		int leaderNo = Integer.valueOf(cryptoComponent.decrypt(encLederNo));
+		int orgNo = cryptoComponent.decrypt(encOrgNo);
+		int leaderNo = cryptoComponent.decrypt(encLederNo);
 		Set<Integer> conNos = new HashSet<Integer>();
 		for(String item : encConNos) {
-			int conNo = Integer.valueOf(cryptoComponent.decrypt(item));
+			int conNo = cryptoComponent.decrypt(item);
 			conNos.add(conNo);
 		}
 		

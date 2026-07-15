@@ -1,0 +1,12 @@
+{
+  "strength_summary": {
+    "first_strength": "문장",
+    "second_strength": "문장",
+    "third_strength": "문장"
+  },
+  "weakness_summary": {
+    "first_weakness": "문장",
+    "second_weakness": "문장",
+    "third_weakness": "문장"
+  }
+}

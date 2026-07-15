@@ -1,0 +1,19 @@
+{
+  "career_book_recommendations": [
+    {
+      "book_number": "도서_1",
+      "title": "도서명",
+      "reason": "추천 이유"
+    },
+    {
+      "book_number": "도서_2",
+      "title": "도서명",
+      "reason": "추천 이유"
+    },
+    {
+      "book_number": "도서_3",
+      "title": "도서명",
+      "reason": "추천 이유"
+    }
+  ]
+}

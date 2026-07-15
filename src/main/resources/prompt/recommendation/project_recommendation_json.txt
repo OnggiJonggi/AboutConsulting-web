@@ -1,0 +1,19 @@
+{
+  "project_and_advanced_activity_recommendations": [
+    {
+      "project_number": "프로젝트_1",
+      "title": "제목",
+      "content": "내용"
+    },
+    {
+      "project_number": "프로젝트_2",
+      "title": "제목",
+      "content": "내용"
+    },
+    {
+      "project_number": "프로젝트_3",
+      "title": "제목",
+      "content": "내용"
+    }
+  ]
+}

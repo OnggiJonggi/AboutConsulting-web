@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
       ) +
       '</div>';
 
-    return '<div class="student-card" onclick="location.href=\'/student/' + escapeHtml(student.encryptedStudentNo) + '\'">' +
+    return '<div class="student-card" onclick="location.href=\'/student/' + escapeHtml(student.encStudentNo) + '\'">' +
       '<div class="student-main">' +
       '<div class="student-name-row">' +
       '<i data-lucide="user-round" class="student-icon"></i>' +

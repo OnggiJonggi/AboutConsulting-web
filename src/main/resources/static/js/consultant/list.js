@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     const statusInfo = statusMap[consultant.status] || { label: consultant.status, cls: '' };
 
-    return '<div class="consultant-card" data-enc="' + escapeHtml(consultant.encryptedConsultantNo) + '">' +
+    return '<div class="consultant-card" data-enc="' + escapeHtml(consultant.encConsultantNo) + '">' +
       // 1행
       '<div class="card-row card-row--primary">' +
       '<span class="card-nickname">' +

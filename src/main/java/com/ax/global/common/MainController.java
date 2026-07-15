@@ -8,8 +8,10 @@ public class MainController {
 	
 	/**
 	 * 메인 화면으로 끄져라.
+	 * 
+	 * 비 로그인, 로그인, 관리자, 컨설턴트에 따른 페이지 분기 
 	 */
-	@GetMapping("/")
+	@GetMapping("")
 	public String main() {
 		return "common/main";
 	}

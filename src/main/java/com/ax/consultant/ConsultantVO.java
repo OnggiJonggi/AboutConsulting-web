@@ -30,7 +30,7 @@ public class ConsultantVO {
 		
 		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private int consultantNo; // 컨설턴트 식별번호(회원 식별번호)
-		private String encryptedConsultantNo;
+		private String encConsultantNo;
 		
 		// CONSULTANT_ORG 테이블
 		private String orgName; // 소속 이름
@@ -47,8 +47,8 @@ public class ConsultantVO {
 		public void setConsultantNo(int consultantNo) {
 			this.consultantNo = consultantNo;
 		}
-		public void setEncryptedConsultantNo(String encryptedConsultantNo) {
-			this.encryptedConsultantNo = encryptedConsultantNo;
+		public void setEncConsultantNo(String encConsultantNo) {
+			this.encConsultantNo = encConsultantNo;
 		}
 		// 담당 학생 setter
 		public void setCharged(List<StudentVO.Detail> charged) {

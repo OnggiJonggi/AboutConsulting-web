@@ -2,18 +2,18 @@ package com.ax.global.file;
 
 import java.time.LocalDateTime;
 
-import org.springframework.core.io.Resource;
-
 import com.ax.global.file.component.FileStatusEnum;
-import com.ax.global.file.component.TargetEnum;
+import com.ax.global.file.component.RootSavePathEnum;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 public class FileInfoVO {
 
@@ -41,7 +41,7 @@ public class FileInfoVO {
 		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private int fileNo;
 
-		private String encryptedFileNo;
+		private String encFileNo;
 		private String originalName;
 		private long fileSize;
 		private LocalDateTime savedAt;
@@ -54,7 +54,7 @@ public class FileInfoVO {
 	@Getter
 	@ToString
 	public static class InsertMapping {
-		private TargetEnum target;
+		private RootSavePathEnum target;
 
 		private int groupNo;
 		private int fileNo;
@@ -64,22 +64,11 @@ public class FileInfoVO {
 	@AllArgsConstructor
 	@Getter
 	@ToString
-	public static class GetFile {
+	public static class Basic{
 		private String originalName;
+		private String changedName;
 		private String mime;
 		private String savePath;
-	}
-
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@Getter
-	@Builder
-	@ToString
-	public static class FileResult {
-		private Resource resource;
-		private String originalName;
-		private String mimeType;
-		private boolean inline; // true = 새 탭 렌더링, false = 다운로드
 	}
 
 	/**
@@ -92,7 +81,7 @@ public class FileInfoVO {
 	@ToString
 	public static class UpdateStatus {
 		private int GroupNo;
-		private String encryptedGroupNo;
+		private String encGroupNo;
 
 		private int fileNo;
 		private String status;
@@ -114,5 +103,22 @@ public class FileInfoVO {
 		private LocalDateTime actionAt;
 		private int actionBy;
 	}
-
+	
+	// FileComponent.save() 전용 객체
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Getter
+	@SuperBuilder
+	@ToString(callSuper = true)
+	@EqualsAndHashCode(callSuper = true)
+	public static class HandOver extends FileDataVO{
+		int memberNo;
+		RootSavePathEnum rootSavePath;
+		
+		public HandOver(FileDataVO file, int memberNo, RootSavePathEnum rootSavePath) {
+			super(file.getOriginalName(), file.getMime(), file.getSize(), file.getBytes());
+			this.memberNo = memberNo;
+			this.rootSavePath = rootSavePath;
+		}
+	}
 }

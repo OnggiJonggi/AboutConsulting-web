@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>어바웃컨설팅</title>
-  <th:block th:replace="~{/common/fragment :: common}"></th:block>
+  <th:block th:replace="~{common/fragment :: common}"></th:block>
   <link rel="stylesheet" th:href="@{/css/member/list.css}">
 </head>
 
@@ -131,8 +131,8 @@
 
           <!-- 초기 서버 렌더링 (Thymeleaf) -->
           <th:block th:if="${memberList != null and !memberList.list.isEmpty()}">
-            <div th:each="member : ${memberList.list}" class="member-card"
-              th:attr="data-enc=${member.encryptedMemberNo}" onclick="goMember(this)">
+            <div th:each="member : ${memberList.list}" class="member-card" th:attr="data-enc=${member.encMemberNo}"
+              onclick="goMember(this)">
 
               <div class="member-main">
                 <!-- 아이디 + 이름 -->

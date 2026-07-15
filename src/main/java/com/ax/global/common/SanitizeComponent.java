@@ -10,10 +10,12 @@ public class SanitizeComponent {
 
 	/**
 	 * 검색어 소독
-	 * 오라클의 like 예약어 %,_ 이스케이프 및 길이 제한
+	 * like를 사용하는 검색용
+	 * 
+	 * trim, 최대 길이 제한, 오라클의 like 예약어 %,_ 이스케이프
 	 * 
 	 * @param 검색 문자열
-	 * @param 최대 허용 길이
+	 * @param 최대 허용 길이(정규식 저장소에서 얻어냄)
 	 * @return 소독된 문자열
 	 */
 	public String searchKeyword(String keyword, int maxLength) {
@@ -40,10 +42,12 @@ public class SanitizeComponent {
 	
 	/**
 	 * 검색어 소독
-	 * like를 사용하지 않는 검색
+	 * like를 사용하지 않는 검색용
+	 * 
+	 * trim, 최대 길이 제한
 	 * 
 	 * @param 검색 문자열
-	 * @param 최대 허용 길이
+	 * @param 최대 허용 길이(정규식 저장소에서 얻어냄)
 	 * @return 소독된 문자열
 	 */
 	public String searchKeywordNotLike(String keyword, int maxLength) {

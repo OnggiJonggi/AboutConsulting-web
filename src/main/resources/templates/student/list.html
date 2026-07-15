@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>학생 목록</title>
-  <th:block th:replace="~{/common/fragment :: common}"></th:block>
+  <th:block th:replace="~{common/fragment :: common}"></th:block>
   <link rel="stylesheet" th:href="@{/css/student/list.css}">
 </head>
 
@@ -177,8 +177,8 @@
 
           <!-- 초기 서버 렌더링 (Thymeleaf) -->
           <th:block th:if="${studentList != null and !studentList.list.isEmpty()}">
-            <div th:each="student : ${studentList.list}" class="student-card"
-              th:attr="data-enc=${student.encryptedStudentNo}" onclick="goStudent(this)">
+            <div th:each="student : ${studentList.list}" class="student-card" th:attr="data-enc=${student.encStudentNo}"
+              onclick="goStudent(this)">
 
               <!-- 학생 기본 정보 -->
               <div class="student-main">

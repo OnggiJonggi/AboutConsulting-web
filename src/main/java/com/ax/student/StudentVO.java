@@ -58,7 +58,7 @@ public class StudentVO {
 		
 		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private int studentNo;
-		private String encryptedStudentNo;
+		private String encStudentNo;
 		
 		private int schoolCode;
 		private String name;
@@ -88,8 +88,8 @@ public class StudentVO {
 		public void setStudentNo(int studentNo) {
 			this.studentNo = studentNo;
 		}
-		public void setEncryptedStudentNo(String encryptedStudentNo) {
-			this.encryptedStudentNo = encryptedStudentNo;
+		public void setEncStudentNo(String encStudentNo) {
+			this.encStudentNo = encStudentNo;
 		}
 		public void setConsultantNo(int consultantNo) {
 			this.consultantNo = consultantNo;

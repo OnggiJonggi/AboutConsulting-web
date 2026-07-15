@@ -29,7 +29,7 @@ public class MockVO {
 	@Data
 	public static class Detail{
 		private int mockNo;
-		private String encryptedMockNo;
+		private String encMockNo;
 		private String yearMonth; // YYYY-MM
 		private LocalDateTime startedAt;
 		private LocalDateTime completedAt;

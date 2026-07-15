@@ -321,7 +321,7 @@
   }
 
   /* ════════════════════════════════════
-     정보 수정 폼 제출 (PUT /api/student/{encryptedNo})
+     정보 수정 폼 제출 (PUT /api/student/{encNo})
   ════════════════════════════════════ */
   function submitEditForm(e) {
     e.preventDefault();
@@ -404,7 +404,7 @@
   }
 
   /* ════════════════════════════════════
-     상태 수정 요청 (PUT /api/student/{encryptedNo}/status)
+     상태 수정 요청 (PUT /api/student/{encNo}/status)
   ════════════════════════════════════ */
   function submitStatusChange() {
     const selected = document.querySelector('input[name="basic-status-radio"]:checked');

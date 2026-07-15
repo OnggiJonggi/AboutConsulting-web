@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>컨설턴트 상세</title>
-  <th:block th:replace="~{/common/fragment :: common}"></th:block>
+  <th:block th:replace="~{common/fragment :: common}"></th:block>
   <link rel="stylesheet" th:href="@{/css/consultant/view.css}">
 </head>
 
@@ -73,18 +73,18 @@
       <div sec:authorize="hasRole('ADMIN')">
         <div class="action-bar">
           <!-- 회원 세부사항 -->
-          <a th:href="@{/member/{enc}(enc=${consultantDetail.encryptedConsultantNo})}" class="btn-primary">
+          <a th:href="@{/member/{enc}(enc=${consultantDetail.encConsultantNo})}" class="btn-primary">
             <i data-lucide="id-card" class="icon-sm"></i>
             회원 세부사항
           </a>
           <!-- 컨설턴트 - 학생 배정 -->
-          <a th:href="@{/consultant/charged(encConNo=${consultantDetail.encryptedConsultantNo})}" class="btn-secondary">
+          <a th:href="@{/consultant/charged(encConNo=${consultantDetail.encConsultantNo})}" class="btn-secondary">
             <i data-lucide="user-plus" class="icon-sm"></i>
             학생 배정
           </a>
           <!-- 소속 배정 -->
           <a th:if="${consultantDetail.orgName == null or consultantDetail.orgName == ''}"
-            th:href="@{/org/charged(encConNo=${consultantDetail.encryptedConsultantNo})}" class="btn-secondary">
+            th:href="@{/org/charged(encConNo=${consultantDetail.encConsultantNo})}" class="btn-secondary">
             <i data-lucide="building-2" class="icon-sm"></i>
             소속 배정
           </a>
@@ -111,7 +111,7 @@
 
         <th:block th:if="${consultantDetail.charged != null and !consultantDetail.charged.isEmpty()}">
           <div th:each="student : ${consultantDetail.charged}" class="student-card"
-            th:attr="data-enc=${student.encryptedStudentNo},data-enc-con=${consultantDetail.encryptedConsultantNo}"
+            th:attr="data-enc=${student.encStudentNo},data-enc-con=${consultantDetail.encConsultantNo}"
             onclick="goStudent(this)">
 
             <!-- ADMIN 호버 삭제 버튼 -->
@@ -176,7 +176,7 @@
   </div>
 
   <script th:inline="javascript">
-    const ENCRYPTED_CONSULTANT_NO = /*[[${consultantDetail.encryptedConsultantNo}]]*/ '';
+    const ENCRYPTED_CONSULTANT_NO = /*[[${consultantDetail.encConsultantNo}]]*/ '';
   </script>
   <script th:src="@{/js/consultant/view.js}"></script>
   <script>lucide.createIcons();</script>

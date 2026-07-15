@@ -18,7 +18,7 @@ function deleteCharged(event, btn) {
   $.ajax({
     url: '/api/consultant/' + encConsultantNo + '/charged',
     type: 'DELETE',
-    data: { encryptedStudentNo: encStudentNo },
+    data: { encStudentNo: encStudentNo },
     statusCode: {
       200: function () {
         location.reload();

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.ax.consultant.org.OrgRegexp;
 import com.ax.global.common.SanitizeComponent;
 import com.ax.global.common.SearchResultVO;
 import com.ax.global.exception.CustomException;
@@ -33,6 +34,10 @@ public class StudentService{
 	
 	/**
 	 * 학생 등록
+	 * 
+	 * 대학 및 학과를 API로 검색한다면 검색어를 제대로 파라미터에 보냈는지
+	 * 검사하는 HMAC로직이 필요해요
+	 * 그런데 대학 및 학과 검색 로직이 폐기되면서 HMAC도 같이 폐기됨
 	 */
 	@Transactional
 	public int register(StudentVO.Insert Insert) throws Exception {
@@ -74,7 +79,7 @@ public class StudentService{
 
 		targetInfoMapper.insertTarget(Insert.getStudentNo(), filtered);
 		
-		// 암호화된 학생 식별번호 반납
+		// 학생 식별번호 반납
 		return Insert.getStudentNo();
 	}
 
@@ -90,7 +95,7 @@ public class StudentService{
 		search.setTargetUniv(sanitizeComponent.searchKeyword(search.getTargetUniv(), StudentRegexp.TARGET_UNIV_MAX_LENGTH));
 		search.setTargetMajor(sanitizeComponent.searchKeyword(search.getTargetMajor(), StudentRegexp.TARGET_MAJOR_MAX_LENGTH));
 		search.setConsultantNickname(sanitizeComponent.searchKeyword(search.getConsultantNickname(), MemberRegexp.NAME_MAX_LENGTH));
-//		search.setConsultantOrgName(sanitizeComponent.searchKeyword(null, 0));
+		search.setConsultantOrgName(sanitizeComponent.searchKeyword(search.getConsultantOrgName(), OrgRegexp.NAME_MAX_LENGTH));
 		
 		// 검색
 		List<StudentVO.Detail> result = studentMapper.selectStudentList(search);

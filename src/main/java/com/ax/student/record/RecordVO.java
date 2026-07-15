@@ -3,7 +3,6 @@ package com.ax.student.record;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.ax.student.record.ApiRecordVO.ApiResultsBlock;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -56,6 +55,13 @@ public class RecordVO {
 		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private int groupNo;
 		
-		private ApiResultsBlock result;
+		private String gsw;
+		private String gida;
+		private String lrsw;
+		private String lrdo;
+		private String lrra;
+		private String pr;
+		private String br;
+		private String psm;
 	}
 }

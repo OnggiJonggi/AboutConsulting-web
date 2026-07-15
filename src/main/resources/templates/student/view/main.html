@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>학생 상세</title>
-  <th:block th:replace="~{/common/fragment :: common}"></th:block>
+  <th:block th:replace="~{common/fragment :: common}"></th:block>
   <link rel="stylesheet" th:href="@{/css/student/view/main.css}">
   <link rel="stylesheet" th:href="@{/css/student/view/record.css}">
   <link rel="stylesheet" th:href="@{/css/student/view/mock.css}">
@@ -33,19 +33,19 @@
 
     <!-- ── 네비 바 ── -->
     <nav class="detail-nav">
-      <a th:href="@{/student/{no}(no=${encryptedStudentNo})}" th:classappend="${studentMenu == 'basic'} ? 'active' : ''"
+      <a th:href="@{/student/{no}(no=${encStudentNo})}" th:classappend="${studentMenu == 'basic'} ? 'active' : ''"
         class="detail-nav__item" th:id="nav-basic">
         기본 정보
       </a>
-      <a th:href="@{/student/{no}/record(no=${encryptedStudentNo})}"
+      <a th:href="@{/student/{no}/record(no=${encStudentNo})}"
         th:classappend="${studentMenu == 'record'} ? 'active' : ''" class="detail-nav__item" th:id="nav-record">
         생기부 분석
       </a>
-      <a th:href="@{/student/{no}/mock(no=${encryptedStudentNo})}"
-        th:classappend="${studentMenu == 'mock'} ? 'active' : ''" class="detail-nav__item" th:id="nav-mock">
+      <a th:href="@{/student/{no}/mock(no=${encStudentNo})}" th:classappend="${studentMenu == 'mock'} ? 'active' : ''"
+        class="detail-nav__item" th:id="nav-mock">
         모의고사 분석
       </a>
-      <a th:href="@{/student/{no}/overview(no=${encryptedStudentNo})}"
+      <a th:href="@{/student/{no}/overview(no=${encStudentNo})}"
         th:classappend="${studentMenu == 'overview'} ? 'active' : ''" class="detail-nav__item" th:id="nav-overview">
         종합 분석
       </a>
@@ -183,7 +183,7 @@
 
               <!-- ADMIN만 배정 버튼 노출 -->
               <div sec:authorize="hasRole('ADMIN')">
-                <a th:href="@{/consultant/charged(encStuNo=${encryptedStudentNo})}" class="btn-primary"
+                <a th:href="@{/consultant/charged(encStuNo=${encStudentNo})}" class="btn-primary"
                   id="basic-btn-assign-consultant">
                   <i data-lucide="user-plus" class="icon-sm"></i>
                   컨설턴트 배정하기
@@ -487,7 +487,7 @@
   <script th:src="@{/js/student/view/mock.js}"></script>
   <script th:src="@{/js/student/view/overview.js}"></script>
   <script th:inline="javascript">
-    const ENCRYPTED_NO = /*[[${encryptedStudentNo}]]*/ '';
+    const ENCRYPTED_NO = /*[[${encStudentNo}]]*/ '';
     const STUDENT_MENU = /*[[${studentMenu}]]*/ 'basic';
   </script>
   <script>lucide.createIcons();</script>

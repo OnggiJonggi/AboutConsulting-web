@@ -46,7 +46,7 @@ public class ConsultantApiController {
 		
 		// 암호화
 		for(ConsultantVO.Detail item : result.getList()) {
-			item.setEncryptedConsultantNo(cryptoComponent.encrypt(String.valueOf(item.getConsultantNo())));
+			item.setEncConsultantNo(cryptoComponent.encrypt(item.getConsultantNo()));
 			item.setConsultantNo(0);
 		}
 		
@@ -58,17 +58,17 @@ public class ConsultantApiController {
 	 * 컨설턴트 - 학생 삭제
 	 * 관리자
 	 * 
-	 * @param encryptedStudentNo
-	 * @param encryptedConsultantNo
+	 * @param encStudentNo
+	 * @param encConsultantNo
 	 */
-	@DeleteMapping("{encryptedConsultantNo}/charged")
+	@DeleteMapping("{encConsultantNo}/charged")
 	public ResponseEntity<Void> deleteCharged(
-			@RequestParam String encryptedStudentNo,
-			@PathVariable String encryptedConsultantNo
+			@RequestParam String encStudentNo,
+			@PathVariable String encConsultantNo
 			) throws Exception{
 		
-		int consultantNo = Integer.valueOf(cryptoComponent.decrypt(encryptedConsultantNo));
-		int studentNo = Integer.valueOf(cryptoComponent.decrypt(encryptedStudentNo));
+		int consultantNo = cryptoComponent.decrypt(encConsultantNo);
+		int studentNo = cryptoComponent.decrypt(encStudentNo);
 		
 		consultantService.deleteCharged(consultantNo, studentNo);
 		
@@ -80,20 +80,20 @@ public class ConsultantApiController {
 	 * 컨설턴트 - 학생 연결
 	 * 관리자
 	 * 
-	 * @param encryptedStudentNo
-	 * @param encryptedConsultantNo
+	 * @param encStudentNo
+	 * @param encConsultantNo
 	 */
 	@PostMapping("charged")
 	public ResponseEntity<Void> insertCharged(
-			@RequestParam String encryptedConsultantNo,
-			@RequestParam List<String> encryptedStudentNos
+			@RequestParam String encConsultantNo,
+			@RequestParam List<String> encStudentNos
 			) throws Exception{
 		
 		// 복호화
-		int consultantNo = Integer.valueOf(cryptoComponent.decrypt(encryptedConsultantNo));
+		int consultantNo = cryptoComponent.decrypt(encConsultantNo);
 		Set<Integer> studentNos = new HashSet<Integer>();
-		for(String item : encryptedStudentNos) {
-			studentNos.add(Integer.valueOf(cryptoComponent.decrypt(item)));
+		for(String item : encStudentNos) {
+			studentNos.add(cryptoComponent.decrypt(item));
 		}
 		
 		consultantService.insertCharged(consultantNo, studentNos);

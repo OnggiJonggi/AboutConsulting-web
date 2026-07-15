@@ -44,7 +44,8 @@ public class MemberController {
 
 	/**
 	 * 회원 가입 페이지로 가세요라
-	 * @return 회원가입 페이지
+	 * 
+	 * 아이디 중복확인, 닉네임 중복확인 후 폼 제출
 	 */
 	@GetMapping("/join")
 	public String goJoin(Model model) {
@@ -55,16 +56,15 @@ public class MemberController {
 	
 	/**
 	 * 회원 가입
-	 * BindingResult : @Valid 뒤에 붙여나와 오류 발생 시 결과 저장
-	 * @return 실패하면 기존 페이지, 성공하면 메인화면
 	 */
 	@PostMapping("/join")
 	public String join(
 			@ModelAttribute @Valid MemberVO.Insert member,
 			BindingResult bindingResult,
+			// BindingResult : @Valid 뒤에 붙여나와 오류 발생 시 결과 저장
 			Model model){
 		
-		// 유효성 검사 실패하면 가세요라
+		// 유효성 검사 실패 시 작동
 		if(bindingResult.hasErrors()) {
 			model.addAttribute("memberJoin", new MemberVO.Insert());
 			return "member/join";
@@ -79,13 +79,18 @@ public class MemberController {
 	/**
 	 * 회원 목록 페이지로
 	 * 관리자
+	 * 
+	 * 전형적인 검색 필터 - 검색 결과 - 페이징 바 레이아웃
+	 * 필터 - 아이디, 이름, 별명, 연락처, 권한, 상태
 	 */
 	@GetMapping("")
 	public String getList(Model model) throws Exception {
 		
+		// thymleaf용 검색 틀
 		MemberVO.Search search = new MemberVO.Search();
 		model.addAttribute("memberSearch", search);
 		
+		// 초기 검색 결과
 		SearchResultVO<MemberVO.Detail> result = memberService.getList(search);
 		model.addAttribute("memberList", result);
 		
@@ -96,27 +101,34 @@ public class MemberController {
 	/**
 	 * 회원 상세 정보 보기
 	 * 모든 회원
+	 * 
+	 * 별명, 아이디, 이름, 별명, 전화번호, 권한 표시
+	 * 관리자는 추가로 회원 상태 조회
+	 * 관리자는 이름, 별명, 전화번호, 비밀번호, 권한, 상태 수정 가능
+	 * 관리자는 회원 탈퇴 불가능
+	 * 본인 계정은 이름, 별명, 전화번호, 비밀번호 수정 가능. 권한 및 수정 수정 불가능
+	 * 본인 계정은 회원 탈퇴 가능
 	 */
-	@GetMapping({"/myinfo","/{encryptedMemberNo}"})
+	@GetMapping({"myinfo","{encMemberNo}"})
 	public String myInfo(
-			@PathVariable(required = false) String encryptedMemberNo,
+			@PathVariable(required = false) String encMemberNo,
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			Model model) throws Exception {
 		
 		// 대상 회원 번호 추출
 		int memberNo;
-		if(encryptedMemberNo == null) {
-			memberNo = Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo()));
+		if(encMemberNo == null) {
+			memberNo = cryptoComponent.decrypt(userDetails.getEncMemberNo());
 		}else {
-			memberNo = Integer.valueOf(cryptoComponent.decrypt(encryptedMemberNo));
+			memberNo = cryptoComponent.decrypt(encMemberNo);
 		}
 		MemberVO.Detail result = memberService.getBasicInfo(memberNo);
 		
 		// 대상 회원 번호 암호화
-		result.setEncryptedMemberNo(cryptoComponent.encrypt(String.valueOf(result.getMemberNo())));
+		result.setEncMemberNo(cryptoComponent.encrypt(result.getMemberNo()));
 		result.setMemberNo(0);
 		
-		model.addAttribute("encryptedMemberNo", encryptedMemberNo);
+		model.addAttribute("encMemberNo", encMemberNo);
 		model.addAttribute("memberDetail", result);
 		model.addAttribute("memberUpdate", new MemberVO.Update());
 		
@@ -134,7 +146,7 @@ public class MemberController {
 			HttpServletResponse response) throws Exception {
 
 		// 누구세요
-		int memberNo = Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo()));
+		int memberNo = cryptoComponent.decrypt(userDetails.getEncMemberNo());
 		
 		// 관리자 계정은 탈퇴가 안 되셔요
 		if(userDetails.getAuthorities().stream()

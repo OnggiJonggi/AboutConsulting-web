@@ -1,5 +1,8 @@
 package com.ax.global.security;
 
+/**
+ * ROLE_INFO 테이블의 NAME
+ */
 public enum RoleEnum {
 	SUPER_ADMIN,
 	ADMIN,

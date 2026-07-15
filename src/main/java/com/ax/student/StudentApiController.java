@@ -60,7 +60,7 @@ public class StudentApiController {
 		
 		// 학생 식별번호 암호화
 		for(StudentVO.Detail student : result.getList()) {
-			student.setEncryptedStudentNo(cryptoComponent.encrypt(String.valueOf(student.getStudentNo())));
+			student.setEncStudentNo(cryptoComponent.encrypt(student.getStudentNo()));
 			student.setStudentNo(0);
 		}
 		
@@ -72,19 +72,21 @@ public class StudentApiController {
 	/**
 	 * 학생 수정
 	 * 관리자, 컨설턴트 : 담당, 학생 : 본인
+	 * 
+	 * TODO: 학생 본인 확인
 	 */
-	@PutMapping("{encryptedStudentNo}")
+	@PutMapping("{encStudentNo}")
 	public ResponseEntity<Void> updateStudent(
 			@ModelAttribute @Valid StudentVO.Insert student,
-			@PathVariable String encryptedStudentNo,
+			@PathVariable String encStudentNo,
 			@AuthenticationPrincipal CustomUserDetails userDetails) throws Exception{
 		
-		int studentNo = Integer.valueOf(cryptoComponent.decrypt(encryptedStudentNo));
+		int studentNo = cryptoComponent.decrypt(encStudentNo);
 		
 		// 컨설턴트라면 담당 학생인지 확인
 		if(userDetails.getAuthorities().stream()
 		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.CONSULTANT.getPrefix()))) {
-			int consultantNo = Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo()));
+			int consultantNo = cryptoComponent.decrypt(userDetails.getEncMemberNo());
 			
 			boolean inCharge = consultantService.isInCharge(consultantNo, studentNo);
 			if(inCharge) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
@@ -101,18 +103,18 @@ public class StudentApiController {
 	 * 학생 상태값 수정
 	 * 관리자, 컨설턴트 : 담당
 	 */
-	@PutMapping("{encryptedStudentNo}/status")
+	@PutMapping("{encStudentNo}/status")
 	public ResponseEntity<Void> deleteStudent(
-			@PathVariable String encryptedStudentNo,
+			@PathVariable String encStudentNo,
 			@RequestParam StudentStatusEnum status,
 			@AuthenticationPrincipal CustomUserDetails userDetails) throws Exception{
 		
-		int studentNo = Integer.valueOf(cryptoComponent.decrypt(encryptedStudentNo));
+		int studentNo = cryptoComponent.decrypt(encStudentNo);
 		
 		// 컨설턴트라면 담당 학생인지 확인
 		if(userDetails.getAuthorities().stream()
 		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.CONSULTANT.getPrefix()))) {
-			int consultantNo = Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo()));
+			int consultantNo = cryptoComponent.decrypt(userDetails.getEncMemberNo());
 			
 			boolean inCharge = consultantService.isInCharge(consultantNo, studentNo);
 			if(inCharge) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
@@ -126,11 +128,16 @@ public class StudentApiController {
 
 	/**
 	 * 생기부 업로드
-	 * 관리자/컨설턴트/학생
+	 * 관리자, 컨설턴트, 학생
+	 * 
+	 * 1. 파일 확장자, MIME가 pdf인지 확인
+	 * 2. 파일을 service전달용 객체에 역직렬화
+	 * 3. 서비스 메서드 작동
+	 * 4. RECORD_ANALYSIS_GROUP테이블의 GROUP_NO을 암호화해 반환
 	 */
-	@PostMapping("/{encryptedStudentNo}/record/upload")
+	@PostMapping("{encStudentNo}/record/upload")
 	public ResponseEntity<String> recordUpload(
-			@PathVariable String encryptedStudentNo,
+			@PathVariable String encStudentNo,
 			@RequestParam MultipartFile file,
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			Model model) throws Exception{
@@ -140,8 +147,8 @@ public class StudentApiController {
 				|| !file.getContentType().equals("application/pdf"))
 			return ResponseEntity.badRequest().build();
 		
-		int studentNo = Integer.valueOf(cryptoComponent.decrypt(encryptedStudentNo));
-		int memberNo = Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo()));
+		int studentNo = cryptoComponent.decrypt(encStudentNo);
+		int memberNo = cryptoComponent.decrypt(userDetails.getEncMemberNo());
 
 		// MultipartFile을 FileDataVO로 변환
 		FileDataVO fileData = FileDataVO.builder()
@@ -152,20 +159,21 @@ public class StudentApiController {
 		
 		int groupNo = recordService.insertRecord(fileData, studentNo, memberNo);
 
-		return ResponseEntity.ok(cryptoComponent.encrypt(String.valueOf(groupNo)));
+		return ResponseEntity.ok(cryptoComponent.encrypt(groupNo));
 	}
 	
 	/**
 	 * 분석된 생기부 있나요
-	 * 관리자/컨설턴트/학생
+	 * 관리자, 컨설턴트, 학생
 	 * 
-	 * @param encryptedStudentNo
+	 * 1. GROUP_NO 복호화
+	 * 2. RECORD_ANALYSIS_GROUP 테이블의 STATUS조회
 	 */
-	@GetMapping("/record/status")
+	@GetMapping("record/status")
 	public ResponseEntity<Void> getRecordStatus(
-			@RequestParam String encryptedGroupNo) throws Exception{
+			@RequestParam String encGroupNo) throws Exception{
 		
-		int groupNo = Integer.valueOf(cryptoComponent.decrypt(encryptedGroupNo));
+		int groupNo = cryptoComponent.decrypt(encGroupNo);
 
 		RecordStatusEnum status = RecordStatusEnum.valueOf(recordService.getStatus(groupNo));
 		switch(status) {
@@ -183,11 +191,16 @@ public class StudentApiController {
 	
 	/**
 	 * 모의고사 성적표 업로드
-	 * 관리자/컨설턴트/학생
+	 * 관리자, 컨설턴트, 학생
+	 * 
+	 * 1. 파일 확장자, MIME가 pdf인지 확인
+	 * 2. 파일을 service전달용 객체에 역직렬화
+	 * 3. 서비스 메서드 작동
+	 * 4. MOCK_GROUP테이블의 GROUP_NO을 암호화해 반환
 	 */
-	@PostMapping("/{encryptedStudentNo}/mock/upload")
+	@PostMapping("{encStudentNo}/mock/upload")
 	public ResponseEntity<String> mockUpload(
-			@PathVariable String encryptedStudentNo,
+			@PathVariable String encStudentNo,
 			@RequestParam MultipartFile file,
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			Model model) throws Exception{
@@ -197,8 +210,8 @@ public class StudentApiController {
 				|| !file.getContentType().equals("application/pdf"))
 			return ResponseEntity.badRequest().build();
 		
-		int studentNo = Integer.valueOf(encryptedStudentNo);
-		int memberNo = Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo()));
+		int studentNo = Integer.valueOf(encStudentNo);
+		int memberNo = cryptoComponent.decrypt(userDetails.getEncMemberNo());
 
 		// MultipartFile을 FileDataVO로 변환
 		FileDataVO fileData = FileDataVO.builder()
@@ -210,20 +223,21 @@ public class StudentApiController {
 		// 모의고사 묶음 + 비동기 요청 작업 상태값 생성
 		int groupNo = mockService.insertMock(fileData, studentNo, memberNo);
 
-		return ResponseEntity.ok(cryptoComponent.encrypt(String.valueOf(groupNo)));
+		return ResponseEntity.ok(cryptoComponent.encrypt(groupNo));
 	}
 	
 	/**
 	 * 분석된 모의고사 성적표 있나요
-	 * 관리자/컨설턴트/학생
+	 * 관리자, 컨설턴트, 학생
 	 * 
-	 * @param encryptedStudentNo
+	 * 1. GROUP_NO 복호화
+	 * 2. MOCK_GROUP 테이블의 STATUS조회
 	 */
-	@GetMapping("/mock/status")
+	@GetMapping("mock/status")
 	public ResponseEntity<Void> getMockStatus(
-			@RequestParam String encryptedGroupNo) throws Exception{
+			@RequestParam String encGroupNo) throws Exception{
 		
-		int groupNo = Integer.valueOf(cryptoComponent.decrypt(encryptedGroupNo));
+		int groupNo = cryptoComponent.decrypt(encGroupNo);
 
 		MockStatusEnum status = MockStatusEnum.valueOf(mockService.getStatus(groupNo));
 		switch(status) {

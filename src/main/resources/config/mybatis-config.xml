@@ -35,9 +35,6 @@
         <typeAlias type="com.ax.student.record.RecordVO$Detail" alias="RecordDetail"/>
         <typeAlias type="com.ax.student.record.RecordVO$AnalysisPair" alias="RecordAnalysisPair"/>
         
-        <!-- ApiRecord -->
-        <typeAlias type="com.ax.student.record.ApiRecordVO$ApiRequest" alias="ApiRecordApiRequest"/>
-        
         <!-- Mock -->
         <typeAlias type="com.ax.student.mock.MockVO$Detail" alias="MockDetail"/>
         <typeAlias type="com.ax.student.mock.MockVO$SubjectScore" alias="MockSubjectScore"/>
@@ -61,8 +58,7 @@
         <typeAlias type="com.ax.global.file.FileInfoVO$Insert" alias="FileInfoInsert"/>
         <typeAlias type="com.ax.global.file.FileInfoVO$Detail" alias="FileInfoDetail"/>
         <typeAlias type="com.ax.global.file.FileInfoVO$InsertMapping" alias="FileInfoInsertMapping"/>
-        <typeAlias type="com.ax.global.file.FileInfoVO$GetFile" alias="FileInfoGetFile"/>
-        <typeAlias type="com.ax.global.file.FileInfoVO$FileResult" alias="FileInfoFileResult"/>
+        <typeAlias type="com.ax.global.file.FileInfoVO$Basic" alias="FileInfoBasic"/>
         <typeAlias type="com.ax.global.file.FileInfoVO$UpdateStatus" alias="FileInfoUpdateStatus"/>
         <typeAlias type="com.ax.global.file.FileInfoVO$InsertHistory" alias="FileInfoInsertHistory"/>
 

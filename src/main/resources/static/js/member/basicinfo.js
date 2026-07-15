@@ -168,7 +168,7 @@
     $.ajax({
       url: '/api/member/check-updatednickname',
       type: 'GET',
-      data: { nickname: input.value.trim(), encryptedMemberNo: ENCRYPTED_MEMBER_NO },
+      data: { nickname: input.value.trim(), encMemberNo: ENCRYPTED_MEMBER_NO },
       statusCode: {
         200: function () {
           nicknameChecked = true;
@@ -247,7 +247,7 @@
     if (!ok) return;
 
     const payload = {
-      encryptedMemberNo: ENCRYPTED_MEMBER_NO,
+      encMemberNo: ENCRYPTED_MEMBER_NO,
       name: document.getElementById('editName').value.trim(),
       nickname: document.getElementById('editNickname').value.trim(),
       phone: getPhoneValue()
@@ -258,7 +258,7 @@
       url: '/api/member/' + ENCRYPTED_MEMBER_NO + '/update',
       type: 'PUT',
       data: {
-        encryptedMemberNo: ENCRYPTED_MEMBER_NO,
+        encMemberNo: ENCRYPTED_MEMBER_NO,
         name: document.getElementById('editName').value.trim(),
         nickname: document.getElementById('editNickname').value.trim(),
         phone: getPhoneValue(),
@@ -306,7 +306,7 @@
         url: '/api/member/' + ENCRYPTED_MEMBER_NO + '/update/role',
         type: 'PUT',
         data: {
-          encryptedMemberNo: ENCRYPTED_MEMBER_NO,
+          encMemberNo: ENCRYPTED_MEMBER_NO,
           role: selected.value
         },
         statusCode: {
@@ -355,7 +355,7 @@
         url: '/api/member/' + ENCRYPTED_MEMBER_NO + '/update/status',
         type: 'PUT',
         data: {
-          encryptedMemberNo: ENCRYPTED_MEMBER_NO,
+          encMemberNo: ENCRYPTED_MEMBER_NO,
           status: selected.value
         },
         statusCode: {

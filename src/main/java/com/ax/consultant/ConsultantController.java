@@ -47,7 +47,7 @@ public class ConsultantController {
 		
 		// 암호화
 		for(ConsultantVO.Detail item : result.getList()) {
-			item.setEncryptedConsultantNo(cryptoComponent.encrypt(String.valueOf(item.getConsultantNo())));
+			item.setEncConsultantNo(cryptoComponent.encrypt(item.getConsultantNo()));
 			item.setConsultantNo(0);
 		}
 		
@@ -60,9 +60,9 @@ public class ConsultantController {
 	 * 관리자
 	 * 컨설턴트 : 같은 소속
 	 */
-	@GetMapping({"/{encryptedConsultantNo}", "/myinfo"})
+	@GetMapping({"/{encConsultantNo}", "/myinfo"})
 	public String goInfo(
-			@PathVariable(required = false) String encryptedConsultantNo,
+			@PathVariable(required = false) String encConsultantNo,
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			Model model) throws Exception {
 		
@@ -71,21 +71,21 @@ public class ConsultantController {
 		if(userDetails.getAuthorities().stream()
 		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.ADMIN.getPrefix()))) {
 			
-			// 관리자면 encryptedConsultantNo에서 컨설턴트 식별번호 추출
-			consultantNo = Integer.valueOf(cryptoComponent.decrypt(encryptedConsultantNo));
+			// 관리자면 encConsultantNo에서 컨설턴트 식별번호 추출
+			consultantNo = cryptoComponent.decrypt(encConsultantNo);
 			
 		}else if(userDetails.getAuthorities().stream()
 		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.CONSULTANT.getPrefix()))) {
 			
-			if(encryptedConsultantNo==null) {
+			if(encConsultantNo==null) {
 				// 컨설턴트가 본인 페이지로 온 경우
-				consultantNo = Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo())); 
+				consultantNo = cryptoComponent.decrypt(userDetails.getEncMemberNo()); 
 			}else {
 				// 컨설턴트가 같은 소속 다른 컨설턴트 페이지로 온 경우
-				consultantNo = Integer.valueOf(cryptoComponent.decrypt(encryptedConsultantNo));
+				consultantNo = cryptoComponent.decrypt(encConsultantNo);
 				
 				// 같은 소속인지 확인
-				int memberNo = Integer.valueOf(cryptoComponent.decrypt(userDetails.getEncryptedMemberNo()));
+				int memberNo = cryptoComponent.decrypt(userDetails.getEncMemberNo());
 				boolean isSameOrg = orgService.isSameOrg(consultantNo, memberNo);
 				if(!isSameOrg) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 			}
@@ -98,12 +98,12 @@ public class ConsultantController {
 		
 		// 컨설턴트 식별번호 정리
 		result.setConsultantNo(0);
-		result.setEncryptedConsultantNo(encryptedConsultantNo);
+		result.setEncConsultantNo(encConsultantNo);
 		
 		// 담당 학생 있으면 학생 식별번호 정리
 		if(result!=null && result.getCharged()!=null && !result.getCharged().isEmpty()) {
 			for(StudentVO.Detail item : result.getCharged()) {
-				item.setEncryptedStudentNo(cryptoComponent.encrypt(String.valueOf(item.getStudentNo())));
+				item.setEncStudentNo(cryptoComponent.encrypt(item.getStudentNo()));
 				item.setStudentNo(0);
 			}
 		}
@@ -133,7 +133,7 @@ public class ConsultantController {
 		
 		// 컨설턴트 세부사항에서 왔을 경우
 		if(encConNo!=null) {
-			model.addAttribute("encryptedConsultantNo", encConNo);
+			model.addAttribute("encConsultantNo", encConNo);
 			// 컨설턴트 조회 생략
 			
 		}else {
@@ -142,7 +142,7 @@ public class ConsultantController {
 			
 			// 암호화
 			for(ConsultantVO.Detail item : consultantResult.getList()) {
-				item.setEncryptedConsultantNo(cryptoComponent.encrypt(String.valueOf(item.getConsultantNo())));
+				item.setEncConsultantNo(cryptoComponent.encrypt(item.getConsultantNo()));
 				item.setConsultantNo(0);
 			}
 			
@@ -151,7 +151,7 @@ public class ConsultantController {
 		
 		// 학생 세부사항에서 왔을 경우
 		if(encStuNo!=null) {
-			model.addAttribute("encryptedStudentNo", encStuNo);
+			model.addAttribute("encStudentNo", encStuNo);
 			// 학생 조회 생략
 			
 		}else {
@@ -161,7 +161,7 @@ public class ConsultantController {
 			
 			// 암호화
 			for(StudentVO.Detail item : studentResult.getList()) {
-				item.setEncryptedStudentNo(cryptoComponent.encrypt(String.valueOf(item.getStudentNo())));
+				item.setEncStudentNo(cryptoComponent.encrypt(item.getStudentNo()));
 				item.setStudentNo(0);
 			}
 			

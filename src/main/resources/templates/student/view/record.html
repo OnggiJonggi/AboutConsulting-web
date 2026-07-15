@@ -13,7 +13,7 @@
           <i data-lucide="book-open" class="icon-sm"></i>
           <span>생기부 분석</span>
         </div>
-        <a th:href="@{/student/{no}/record/history(no=${encryptedStudentNo})}" class="btn-outline-sm"
+        <a th:href="@{/student/{no}/record/history(no=${encStudentNo})}" class="btn-outline-sm"
           id="record-btn-history">
           <i data-lucide="history" class="icon-sm"></i>
           분석 기록
@@ -48,7 +48,7 @@
 
         <!-- 업로드 버튼 (파일 선택 후 노출) -->
         <button class="record-btn-upload" id="record-btn-upload" style="display:none;"
-          th:data-no="${encryptedStudentNo}">
+          th:data-no="${encStudentNo}">
           <i data-lucide="upload-cloud" class="icon-sm"></i>
           업로드하기
         </button>
@@ -95,7 +95,7 @@
     </div><!-- /record-root -->
 
     <!-- 숨겨진 데이터 전달용 -->
-    <span id="record-encrypted-no" th:data-no="${encryptedStudentNo}"
+    <span id="record-enc-no" th:data-no="${encStudentNo}"
       th:data-status="${studentRecord != null ? studentRecord.status : 'EMPTY'}" style="display:none;"></span>
 
   </th:block>

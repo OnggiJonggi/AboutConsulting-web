@@ -22,10 +22,9 @@ public class SchoolApiController {
 
 	/**
 	 * 학교 데이터 db조회
-	 * 관리자/컨설턴트
+	 * 관리자, 컨설턴트
 	 * 
-	 * @param schoolName
-	 * @return List<schoolDetail>
+	 * DB에 학교 데이터가 있는지 검사
 	 */
 	@GetMapping("")
 	public ResponseEntity<List<SchoolVO.Detail>> getSchoolListFromDB(
@@ -34,10 +33,12 @@ public class SchoolApiController {
 	}
 
 	/**
-	 * 고등학교 데이터 공공데이터 조회
-	 * 관리자/컨설턴트
+	 * 나이스 학교 공공데이터 조회
+	 * 관리자, 컨설턴트
+	 *
+	 * 검색 결과를 세션에 저장해두고 검색 결과를 선택하면 세션에서 불러와 사용
 	 */
-	@GetMapping("/high")
+	@GetMapping("high")
 	public ResponseEntity<List<SchoolVO.Detail>> getHighSchoolList(
 			@RequestParam String schoolName,
 			HttpSession session) throws Exception {
@@ -54,24 +55,27 @@ public class SchoolApiController {
 	/**
 	 * (미사용)
 	 * 대학교 데이터 공공데이터 조회
-	 * 관리자/컨설턴트
+	 * 관리자, 컨설턴트
 	 */
-	@GetMapping("/univ")
-	public ResponseEntity<List<SchoolVO.UnivDetail>> getUnivList(
-			@RequestParam String univ,
-			@RequestParam String major,
-			HttpSession session) throws Exception {
-		
-		List<SchoolVO.UnivDetail> result = apiService.getUniv(univ, major);
-		
-		return ResponseEntity.ok(result);
-	}
+//	@GetMapping("univ")
+//	public ResponseEntity<List<SchoolVO.UnivDetail>> getUnivList(
+//			@RequestParam String univ,
+//			@RequestParam String major,
+//			HttpSession session) throws Exception {
+//		
+//		List<SchoolVO.UnivDetail> result = apiService.getUniv(univ, major);
+//		
+//		return ResponseEntity.ok(result);
+//	}
 
 	/**
 	 * 학교 등록
-	 * 관리자/컨설턴트
+	 * 관리자, 컨설턴트
+	 * 
+	 * 세션에 저장된 나이스 학교 공공데이터 조회 결과를 DB에 넣기
+	 * 동일한 학교가 이미 DB에 있으면 오류
 	 */
-	@PostMapping("/register")
+	@PostMapping("register")
 	public ResponseEntity<Void> registor(
 			@RequestParam String schoolCode,
 			HttpSession session) {
@@ -97,7 +101,7 @@ public class SchoolApiController {
 		try {
 			schoolService.insertOne(target);
 		} catch (DuplicateKeyException e) {
-			// 중복된 경우
+			// 이미 학교가 있을 경우
 			session.removeAttribute("schoolSearchResult");
 			return ResponseEntity.status(409).build();
 		}

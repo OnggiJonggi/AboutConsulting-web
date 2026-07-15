@@ -1,4 +1,4 @@
-package com.ax.global.security;
+package legacy;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -9,6 +9,14 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * (미사용)
+ * 본래 위치 : global.security
+ * HMAC 해싱
+ * 
+ * 유일하게 이 클래스를 사용하던 대학 및 학과 검색 로직이 폐기되면서 같이 폐기됨
+ * 활성화 하려면 pom.xml로 가라
+ */
 @Component
 public class HmacComponent {
 	private final SecretKeySpec keySpec;

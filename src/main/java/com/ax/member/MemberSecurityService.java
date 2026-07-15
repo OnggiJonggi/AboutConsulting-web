@@ -31,7 +31,7 @@ public class MemberSecurityService implements UserDetailsService{
 
         // memberNo암호화
         try {
-			memberDetail.setEncryptedMemberNo(cryptoComponent.encrypt(String.valueOf(memberDetail.getMemberNo())));
+			memberDetail.setEncMemberNo(cryptoComponent.encrypt(memberDetail.getMemberNo()));
 			memberDetail.setMemberNo(0);
 		} catch (Exception e) {
 			throw new UsernameNotFoundException(userId);

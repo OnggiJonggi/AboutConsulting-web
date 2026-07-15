@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>컨설턴트 목록</title>
-  <th:block th:replace="~{/common/fragment :: common}"></th:block>
+  <th:block th:replace="~{common/fragment :: common}"></th:block>
   <link rel="stylesheet" th:href="@{/css/consultant/list.css}">
 </head>
 
@@ -141,7 +141,7 @@
           <!-- 초기 서버 렌더링 (Thymeleaf) -->
           <th:block th:if="${consultantList != null and !consultantList.list.isEmpty()}">
             <div th:each="consultant : ${consultantList.list}" class="consultant-card"
-              th:attr="data-enc=${consultant.encryptedConsultantNo}">
+              th:attr="data-enc=${consultant.encConsultantNo}">
 
               <!-- 1행: 별명, 소속, 담당 학생 수 -->
               <div class="card-row card-row--primary">
