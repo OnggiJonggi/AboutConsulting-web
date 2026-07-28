@@ -69,6 +69,10 @@
 			<artifactId>spring-boot-starter-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-aspectj</artifactId>
+		</dependency>
 		
 		<!-- thymeleaf와 spring security 연동-->
 		<dependency>
@@ -122,18 +126,6 @@
 
 	<build>
 		<plugins>
-		
-			<!-- 소스 파일 컴파일 제외 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>legacy</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -149,6 +141,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<!-- 소스 파일 컴파일 제외 -->
+					<excludes>
+						<exclude>legacy</exclude>
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
 						<id>default-compile</id>

@@ -11,20 +11,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * AES-CBC 128
+ * AES-CBC 128 암호화 및 복호화
+ * 
+ * 클라이언트에 내부 DB식별번호를 노출해야 할 때 사용
  */
 @Component
 public class CryptoComponent {
 
-	// key.properties에서 뽑아오기
 	@Value("${crypto.key}")
 	private String keyStr;
 
 	/**
-	 * 암호문 생성 로직
-	 * @param plainNumber
-	 * @return base64safeurl
-	 * @throws Exception
+	 * 암호문 생성
 	 */
 	public String encrypt(int plainNumber) throws Exception {
 		
@@ -51,10 +49,7 @@ public class CryptoComponent {
 	}
 
 	/**
-	 * 암호문 복호 로직
-	 * @param encText
-	 * @return 평문
-	 * @throws Exception
+	 * 암호문 복호
 	 */
 	public int decrypt(String encText) throws Exception {
 		// base64safeurl 디코딩

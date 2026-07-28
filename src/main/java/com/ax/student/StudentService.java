@@ -6,10 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.ax.consultant.org.OrgRegexp;
 import com.ax.global.common.SanitizeComponent;
@@ -38,6 +36,10 @@ public class StudentService{
 	 * 대학 및 학과를 API로 검색한다면 검색어를 제대로 파라미터에 보냈는지
 	 * 검사하는 HMAC로직이 필요해요
 	 * 그런데 대학 및 학과 검색 로직이 폐기되면서 HMAC도 같이 폐기됨
+	 * 
+	 * 1. STUDENT 테이블 등록
+	 * 2. 목표 대학 / 학과 순위 중간이 비었으면 당겨주기
+	 * 3. TARGET_INFO 테이블 등록
 	 */
 	@Transactional
 	public int register(StudentVO.Insert Insert) throws Exception {
@@ -85,6 +87,10 @@ public class StudentService{
 
 	/**
 	 * 학생 목록 검색
+	 * 
+	 * 1. 검색어 소독
+	 * 2. 검색어 조회
+	 * 3. 검색 결과 수 조회
 	 */
 	public SearchResultVO<StudentVO.Detail> getList(StudentVO.Search search) throws Exception {
 		
@@ -120,12 +126,17 @@ public class StudentService{
 
 	/**
 	 * 학생 업데이트
+	 * 
+	 * 1. STUDENT 테이블 수정
+	 * 2. TARGET_INFO 테이블 삭제
+	 * 3. 목표 학교 / 학과 순위 중간이 비었으면 밀고 당기고
+	 * 4. TARGET_INFO 테이블 삽입
 	 */
 	public void updateStudent(StudentVO.Insert student) {
 		
 		// 기본정보 업데이트
 		int result1 = studentMapper.updateStudent(student);
-		if(result1==0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+		if(result1==0) throw new CustomException(ErrorCodeEnum.FAILED_UPDATE_STUDENT);
 		
 		// 지망 학교/학과 지우기
 		targetInfoMapper.delete(student.getStudentNo());
@@ -158,7 +169,7 @@ public class StudentService{
 	 */
 	public void updateStatus(int studentNo, StudentStatusEnum status) {
 		int result = studentMapper.updateStatus(studentNo, status);
-		if(result==0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+		if(result==0) throw new CustomException(ErrorCodeEnum.FAILED_UPDATE_STUDENT_STATUS);
 	}
 
 }

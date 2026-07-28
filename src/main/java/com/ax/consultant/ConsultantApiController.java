@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,10 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.ax.global.common.SearchResultVO;
 import com.ax.global.security.CryptoComponent;
+import com.ax.global.security.role.CanAccess;
+import com.ax.global.security.role.RoleEnum;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +32,10 @@ public class ConsultantApiController {
 
 	/**
 	 * 컨설턴트 목록 조회
+	 * 
 	 * 관리자
 	 */
+	@CanAccess(RoleEnum.ADMIN)
 	@GetMapping("")
 	public ResponseEntity<SearchResultVO<ConsultantVO.Detail>> getList(
 			@ModelAttribute ConsultantVO.Search consultantSearch) throws Exception{
@@ -42,7 +44,7 @@ public class ConsultantApiController {
 		
 		// 없으면 404
 		if(result==null || result.getList()==null || result.getList().isEmpty())
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+			return ResponseEntity.notFound().build();
 		
 		// 암호화
 		for(ConsultantVO.Detail item : result.getList()) {
@@ -56,11 +58,10 @@ public class ConsultantApiController {
 	
 	/**
 	 * 컨설턴트 - 학생 삭제
-	 * 관리자
 	 * 
-	 * @param encStudentNo
-	 * @param encConsultantNo
+	 * 관리자
 	 */
+	@CanAccess(RoleEnum.ADMIN)
 	@DeleteMapping("{encConsultantNo}/charged")
 	public ResponseEntity<Void> deleteCharged(
 			@RequestParam String encStudentNo,
@@ -78,11 +79,10 @@ public class ConsultantApiController {
 	
 	/**
 	 * 컨설턴트 - 학생 연결
-	 * 관리자
 	 * 
-	 * @param encStudentNo
-	 * @param encConsultantNo
+	 * 관리자
 	 */
+	@CanAccess(RoleEnum.ADMIN)
 	@PostMapping("charged")
 	public ResponseEntity<Void> insertCharged(
 			@RequestParam String encConsultantNo,
@@ -95,6 +95,13 @@ public class ConsultantApiController {
 		for(String item : encStudentNos) {
 			studentNos.add(cryptoComponent.decrypt(item));
 		}
+		
+		// 식별번호 없어요? 없는데 왜 왔어요?
+		if(consultantNo==0
+				|| studentNos==null
+				|| studentNos.isEmpty()
+				|| studentNos.contains(0))
+			return ResponseEntity.badRequest().build();
 		
 		consultantService.insertCharged(consultantNo, studentNos);
 		

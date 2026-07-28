@@ -2,13 +2,13 @@ package com.ax.student.mock;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.web.server.ResponseStatusException;
 
+import com.ax.global.exception.CustomException;
+import com.ax.global.exception.ErrorCodeEnum;
 import com.ax.global.file.FileDataVO;
 import com.ax.global.file.FileInfoVO;
 import com.ax.global.file.FileMapper;
@@ -27,17 +27,17 @@ public class MockService {
 
 	/**
 	 * 모의고사 목록 조회
-	 * @param studentNo
-	 * @return List<MockVO.Detail> 모의고사 리스트
 	 */
 	public List<MockVO.Detail> getMockScoreList(int studentNo) {
 		return mockMapper.selectMockScoreList(studentNo);
 	}
 
 	/**
-	 * 모의고사 묶음 생성
-	 * @param studentNo
-	 * @return 모의고사 묶음 번호
+	 * 모의고사 저장 및 분석
+	 * 
+	 * 1. MOCK_GROUP 생성 및 STATUS에 READY 집어넣기
+	 * 2. S3저장
+	 * 3. 커밋 후 모의고사 분석 요청
 	 */
 	@Transactional
 	public int insertMock(FileDataVO file, int studentNo, int memberNo) throws Exception {
@@ -48,10 +48,10 @@ public class MockService {
 				.status(MockStatusEnum.READY.name()).build();
 		
 		int result1 = mockMapper.insertMockGroup(groupStatus);
-		if(result1==0) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+		if(result1 == 0 || groupStatus.getGroupNo() == 0)
+			throw new CustomException(ErrorCodeEnum.FAILED_CREATE_MOCK_GROUP);
 		
 		int groupNo = groupStatus.getGroupNo();
-		if(groupNo==0) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
 		
 		// 저장
 		FileInfoVO.HandOver handOver = new FileInfoVO.HandOver(
@@ -81,8 +81,6 @@ public class MockService {
 
 	/**
 	 * 모의고사 묶음 상태값 조회
-	 * @param groupNo
-	 * @return 모의고사 묶음 상태값
 	 */
 	public String getStatus(int groupNo) {
 		return mockMapper.selectMockStatus(groupNo);

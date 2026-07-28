@@ -19,9 +19,13 @@ import org.springframework.web.server.ResponseStatusException;
 import com.ax.consultant.ConsultantService;
 import com.ax.consultant.ConsultantVO;
 import com.ax.global.common.SearchResultVO;
+import com.ax.global.exception.CustomException;
+import com.ax.global.exception.ErrorCodeEnum;
 import com.ax.global.security.CryptoComponent;
 import com.ax.global.security.CustomUserDetails;
-import com.ax.global.security.RoleEnum;
+import com.ax.global.security.role.CanAccess;
+import com.ax.global.security.role.HasRole;
+import com.ax.global.security.role.RoleEnum;
 import com.ax.member.MemberStatusEnum;
 
 import jakarta.validation.Valid;
@@ -40,12 +44,14 @@ public class OrgController {
 	
 	/**
 	 * 소속 목록 페이지로
+	 * 
 	 * 관리자
 	 */
+	@CanAccess(RoleEnum.ADMIN)
 	@GetMapping("")
 	public String goOrgList(Model model) throws Exception {
 		
-		// 조회용 객체 삽입
+		// thymeleaf에서 th:object로 받아갈 빈 객체
 		OrgVO.Search search = new OrgVO.Search();
 		model.addAttribute("orgSearch", search);
 		
@@ -70,22 +76,25 @@ public class OrgController {
 	
 	/**
 	 * 소속 상세 페이지로
-	 * 관리자, 컨설턴트 : 본인 소속
+	 * 
+	 * 관리자
+	 * 컨설턴트 : 본인 소속
 	 */
+	@CanAccess({RoleEnum.ADMIN, RoleEnum.CONSULTANT})
 	@GetMapping({"{encOrgNo}", "myinfo"})
 	public String goOrg(
 			@PathVariable(required=false) String encOrgNo,
 			@AuthenticationPrincipal CustomUserDetails userDetails,
+			@HasRole(RoleEnum.ADMIN) boolean isAdmin,
 			Model model)throws Exception {
 		
 		int orgNo = 0;
 		
-		if(encOrgNo!=null
-				&& userDetails.getAuthorities().stream()
-		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.ADMIN.getPrefix()))) {
-			// org/{encOrgNo} 로 접근 - 관리자만 가능
+		// org/{encOrgNo} 로 접근 - 관리자만 가능
+		if(isAdmin) {
 			orgNo = cryptoComponent.decrypt(encOrgNo);
 			model.addAttribute("encOrgNo", encOrgNo);
+			
 		}else {
 			// org/myinfo 로 접근
 			// 이 컨설턴트 소속 식별번호 추출
@@ -114,18 +123,19 @@ public class OrgController {
 	
 	/**
 	 * 소속 생성 페이지로
+	 * 
 	 * 관리자
 	 */
+	@CanAccess(RoleEnum.ADMIN)
 	@GetMapping("register")
 	public String goRegister(Model model) throws Exception {
 		
-		// 등록용 객체 삽입
+		// thymeleaf에서 th:object로 받아갈 빈 객체
 		model.addAttribute("OrgInsert", new OrgVO.Insert());
-		
-		// 검색용 객체 삽입
 		ConsultantVO.Search search = new ConsultantVO.Search();
 		model.addAttribute("ConsultantSearch", search);
 		
+		// 검색 기본값
 		search.setStatus(MemberStatusEnum.ACTIVE); // 활성화된 계정만
 		search.setHasOrg(false); // 소속이 없는 컨설턴트만
 		search.setInCharged(null); // 담당 학생은 미검색
@@ -141,17 +151,17 @@ public class OrgController {
 			}
 		}
 		
-		
 		model.addAttribute("SearchResult", result);
-		
 		
 		return "org/register";
 	}
 	
 	/**
 	 * 소속 생성
+	 * 
 	 * 관리자
 	 */
+	@CanAccess(RoleEnum.ADMIN)
 	@PostMapping("register")
 	public String register(
 			@ModelAttribute @Valid OrgVO.Insert insert,
@@ -184,7 +194,7 @@ public class OrgController {
 		}
 		
 		// 소속 컨설턴트 중 리더가 없거나 아무도 없어요
-		if(!hasLeaderNo) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+		if(!hasLeaderNo) throw new CustomException(ErrorCodeEnum.NO_ORG_LEADER_OR_CONSULTANT);
 		
 		insert.setConsultantNos(conNos);
 		insert.setEncConsultantNos(null);
@@ -197,8 +207,10 @@ public class OrgController {
 	
 	/**
 	 * 소속 - 컨설턴트 배정 페이지로
+	 * 
 	 * 관리자
 	 */
+	@CanAccess(RoleEnum.ADMIN)
 	@GetMapping("charged")
 	public String goCharged(
 			@RequestParam(required=false) String encOrgNo,
@@ -254,7 +266,7 @@ public class OrgController {
 			int orgNo = orgService.isBelong(conNo);
 			
 			// 배정 되어 있으면 가세요라
-			if(orgNo > 0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+			if(orgNo > 0) throw new CustomException(ErrorCodeEnum.ALREADY_CHARGED);
 			
 		} else {
 			// 쿼리스트링에 없으면 컨설턴트 검색

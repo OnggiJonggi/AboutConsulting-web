@@ -39,7 +39,7 @@ public class SchoolApiService {
 	 * 고등학교만 검색하고, 필요한 필드 제공하는 api가 없어요.
 	 * 고등학교만 추출하려면 이름에서 '~고'형식만 찾아내는 방식이 있는데,
 	 * 가끔 '고'로 끝나지 않는 고등학교가 있어요
-	 * 아니면 suffix가 '~초', '~중'인 학교만 필터링하던가
+	 * 아니면 suffix가 '~초', '~중'인 학교 때치때치해서 쓰던가
 	 * 근데 나중에 중학교도 서비스 추가한다니까 대충 쓰죠 걍
 	 */
 	public List<SchoolVO.Detail> getSchool(String schoolName) throws Exception {
@@ -85,8 +85,8 @@ public class SchoolApiService {
 	 * 대학교 + 그 대학교에 개설된 학과
 	 * 이 두 가지를 동시에 추출하는 api가 없어요
 	 * 이 api가 둘 다 조회는 되는데
-	 * 검색어가 정확히 동일해야 조회되요(api DB에서 like 안 쓰나봐요)
-	 * 그래서 폐기된 메서드에요
+	 * 검색어가 정확히 동일해야 조회되요(일부만 같아도 검색되는거 없음)
+	 * 그래서 내다버림 쓸모없는넘
 	 */
 //	public List<SchoolVO.UnivDetail> getUniv(String univ, String major) throws Exception {
 //

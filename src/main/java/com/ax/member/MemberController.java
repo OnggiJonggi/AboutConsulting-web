@@ -1,6 +1,7 @@
 package com.ax.member;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,7 +19,9 @@ import org.springframework.web.server.ResponseStatusException;
 import com.ax.global.common.SearchResultVO;
 import com.ax.global.security.CryptoComponent;
 import com.ax.global.security.CustomUserDetails;
-import com.ax.global.security.RoleEnum;
+import com.ax.global.security.role.CanAccess;
+import com.ax.global.security.role.HasRole;
+import com.ax.global.security.role.RoleEnum;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -49,8 +52,10 @@ public class MemberController {
 	 */
 	@GetMapping("/join")
 	public String goJoin(Model model) {
-		// thymeleaf에서 th:object로 받아갈 빈 객체 보내기
+		
+		// thymeleaf에서 th:object로 받아갈 빈 객체
 		model.addAttribute("memberJoin", new MemberVO.Insert());
+		
 		return "member/join";
 	}
 	
@@ -64,7 +69,7 @@ public class MemberController {
 			// BindingResult : @Valid 뒤에 붙여나와 오류 발생 시 결과 저장
 			Model model){
 		
-		// 유효성 검사 실패 시 작동
+		// 유효성 검사 실패
 		if(bindingResult.hasErrors()) {
 			model.addAttribute("memberJoin", new MemberVO.Insert());
 			return "member/join";
@@ -78,15 +83,17 @@ public class MemberController {
 	
 	/**
 	 * 회원 목록 페이지로
+	 * 
 	 * 관리자
 	 * 
 	 * 전형적인 검색 필터 - 검색 결과 - 페이징 바 레이아웃
 	 * 필터 - 아이디, 이름, 별명, 연락처, 권한, 상태
 	 */
+	@CanAccess(RoleEnum.ADMIN)
 	@GetMapping("")
 	public String getList(Model model) throws Exception {
 		
-		// thymleaf용 검색 틀
+		// thymeleaf에서 th:object로 받아갈 빈 객체
 		MemberVO.Search search = new MemberVO.Search();
 		model.addAttribute("memberSearch", search);
 		
@@ -100,6 +107,7 @@ public class MemberController {
 	
 	/**
 	 * 회원 상세 정보 보기
+	 * 
 	 * 모든 회원
 	 * 
 	 * 별명, 아이디, 이름, 별명, 전화번호, 권한 표시
@@ -109,6 +117,7 @@ public class MemberController {
 	 * 본인 계정은 이름, 별명, 전화번호, 비밀번호 수정 가능. 권한 및 수정 수정 불가능
 	 * 본인 계정은 회원 탈퇴 가능
 	 */
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping({"myinfo","{encMemberNo}"})
 	public String myInfo(
 			@PathVariable(required = false) String encMemberNo,
@@ -137,11 +146,14 @@ public class MemberController {
 	
 	/**
 	 * 계정 삭제
-	 * 관리자를 제외한 모든 권한
+	 * 
+	 * 관리자를 제외한 모든 회원
 	 */
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/delete")
 	public String deleteMember(
 			@AuthenticationPrincipal CustomUserDetails userDetails,
+			@HasRole(RoleEnum.ADMIN) boolean hasRole,
 			HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 
@@ -149,9 +161,7 @@ public class MemberController {
 		int memberNo = cryptoComponent.decrypt(userDetails.getEncMemberNo());
 		
 		// 관리자 계정은 탈퇴가 안 되셔요
-		if(userDetails.getAuthorities().stream()
-		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.ADMIN.getPrefix()))) {
-			
+		if(hasRole) {
 			log.warn("관리자가 자신의 계정을 탈퇴하려 합니다. memberNo : "+memberNo);
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 		}

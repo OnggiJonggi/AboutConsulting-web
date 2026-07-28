@@ -3,7 +3,7 @@ package com.ax.member;
 import java.util.List;
 
 import com.ax.global.common.SearchPageVO;
-import com.ax.global.security.RoleEnum;
+import com.ax.global.security.role.RoleEnum;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotBlank;

@@ -1,6 +1,5 @@
 package com.ax.student;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
@@ -13,14 +12,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.ax.consultant.ConsultantService;
 import com.ax.global.common.SearchResultVO;
+import com.ax.global.exception.CustomException;
+import com.ax.global.exception.ErrorCodeEnum;
 import com.ax.global.file.FileDataVO;
 import com.ax.global.security.CryptoComponent;
 import com.ax.global.security.CustomUserDetails;
-import com.ax.global.security.RoleEnum;
+import com.ax.global.security.role.CanAccess;
+import com.ax.global.security.role.HasRole;
+import com.ax.global.security.role.RoleEnum;
 import com.ax.student.mock.MockService;
 import com.ax.student.mock.MockStatusEnum;
 import com.ax.student.record.RecordService;
@@ -44,16 +46,14 @@ public class StudentApiController {
 	
 	/**
 	 * 학생 목록 검색
+	 * 
 	 * 관리자
 	 */
+	@CanAccess(RoleEnum.ADMIN)
 	@GetMapping("")
 	public ResponseEntity<SearchResultVO<StudentVO.Detail>> getList(
 			@ModelAttribute StudentVO.Search search,
 			Model model) throws Exception {
-		
-		StudentVO.Search studentSearch = new StudentVO.Search();
-		
-		model.addAttribute("studentSearch", studentSearch);
 		
 		// 검색해요
 		SearchResultVO<StudentVO.Detail> result = studentService.getList(search);
@@ -64,32 +64,31 @@ public class StudentApiController {
 			student.setStudentNo(0);
 		}
 		
-		model.addAttribute("studentList", result);
-		
 		return ResponseEntity.ok(result);
 	}
 	
 	/**
 	 * 학생 수정
-	 * 관리자, 컨설턴트 : 담당, 학생 : 본인
 	 * 
-	 * TODO: 학생 본인 확인
+	 * 관리자 : 모든 학생
+	 * 컨설턴트 : 담당 학생
 	 */
+	@CanAccess({RoleEnum.ADMIN, RoleEnum.CONSULTANT})
 	@PutMapping("{encStudentNo}")
 	public ResponseEntity<Void> updateStudent(
 			@ModelAttribute @Valid StudentVO.Insert student,
 			@PathVariable String encStudentNo,
-			@AuthenticationPrincipal CustomUserDetails userDetails) throws Exception{
+			@AuthenticationPrincipal CustomUserDetails userDetails,
+			@HasRole(RoleEnum.CONSULTANT) boolean hasRole
+			) throws Exception{
 		
 		int studentNo = cryptoComponent.decrypt(encStudentNo);
 		
 		// 컨설턴트라면 담당 학생인지 확인
-		if(userDetails.getAuthorities().stream()
-		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.CONSULTANT.getPrefix()))) {
+		if(hasRole) {
 			int consultantNo = cryptoComponent.decrypt(userDetails.getEncMemberNo());
-			
 			boolean inCharge = consultantService.isInCharge(consultantNo, studentNo);
-			if(inCharge) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+			if(!inCharge) throw new CustomException(ErrorCodeEnum.NOT_YOUR_STUDENT);
 		}
 		
 		
@@ -101,23 +100,24 @@ public class StudentApiController {
 	
 	/**
 	 * 학생 상태값 수정
-	 * 관리자, 컨설턴트 : 담당
+	 * 
+	 * 관리자
+	 * 컨설턴트 : 담당 학생
 	 */
 	@PutMapping("{encStudentNo}/status")
 	public ResponseEntity<Void> deleteStudent(
 			@PathVariable String encStudentNo,
 			@RequestParam StudentStatusEnum status,
-			@AuthenticationPrincipal CustomUserDetails userDetails) throws Exception{
+			@AuthenticationPrincipal CustomUserDetails userDetails,
+			@HasRole(RoleEnum.CONSULTANT) boolean hasRole) throws Exception{
 		
 		int studentNo = cryptoComponent.decrypt(encStudentNo);
 		
 		// 컨설턴트라면 담당 학생인지 확인
-		if(userDetails.getAuthorities().stream()
-		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.CONSULTANT.getPrefix()))) {
+		if(hasRole) {
 			int consultantNo = cryptoComponent.decrypt(userDetails.getEncMemberNo());
-			
 			boolean inCharge = consultantService.isInCharge(consultantNo, studentNo);
-			if(inCharge) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+			if(!inCharge) throw new CustomException(ErrorCodeEnum.NOT_YOUR_STUDENT);
 		}
 		
 		studentService.updateStatus(studentNo, status);
@@ -128,7 +128,9 @@ public class StudentApiController {
 
 	/**
 	 * 생기부 업로드
-	 * 관리자, 컨설턴트, 학생
+	 * 
+	 * 관리자
+	 * 컨설턴트 : 담당 학생
 	 * 
 	 * 1. 파일 확장자, MIME가 pdf인지 확인
 	 * 2. 파일을 service전달용 객체에 역직렬화
@@ -140,6 +142,7 @@ public class StudentApiController {
 			@PathVariable String encStudentNo,
 			@RequestParam MultipartFile file,
 			@AuthenticationPrincipal CustomUserDetails userDetails,
+			@HasRole(RoleEnum.CONSULTANT) boolean hasRole,
 			Model model) throws Exception{
 		
 		// 업로드한 파일이 pdf가 맞는지 확장자, MIME검사
@@ -150,6 +153,12 @@ public class StudentApiController {
 		int studentNo = cryptoComponent.decrypt(encStudentNo);
 		int memberNo = cryptoComponent.decrypt(userDetails.getEncMemberNo());
 
+		// 컨설턴트라면 담당 학생인지 확인
+		if(hasRole) {
+			boolean inCharge = consultantService.isInCharge(memberNo, studentNo);
+			if(!inCharge) throw new CustomException(ErrorCodeEnum.NOT_YOUR_STUDENT);
+		}
+		
 		// MultipartFile을 FileDataVO로 변환
 		FileDataVO fileData = FileDataVO.builder()
 				.originalName(file.getOriginalFilename())
@@ -164,7 +173,12 @@ public class StudentApiController {
 	
 	/**
 	 * 분석된 생기부 있나요
-	 * 관리자, 컨설턴트, 학생
+	 * 
+	 * 관리자
+	 * 컨설턴트
+	 * 
+	 * groupNo만을 사용해 상태값만을 가져오기에
+	 * 컨설턴트일 경우 담당 학생인지 확인할 수 없고 확인할 필요도 없음
 	 * 
 	 * 1. GROUP_NO 복호화
 	 * 2. RECORD_ANALYSIS_GROUP 테이블의 STATUS조회
@@ -191,7 +205,9 @@ public class StudentApiController {
 	
 	/**
 	 * 모의고사 성적표 업로드
-	 * 관리자, 컨설턴트, 학생
+	 * 
+	 * 관리자
+	 * 컨설턴트 : 담당 학생
 	 * 
 	 * 1. 파일 확장자, MIME가 pdf인지 확인
 	 * 2. 파일을 service전달용 객체에 역직렬화
@@ -203,6 +219,7 @@ public class StudentApiController {
 			@PathVariable String encStudentNo,
 			@RequestParam MultipartFile file,
 			@AuthenticationPrincipal CustomUserDetails userDetails,
+			@HasRole(RoleEnum.CONSULTANT) boolean hasRole,
 			Model model) throws Exception{
 		
 		// 업로드한 파일이 pdf가 맞는지 확장자, MIME검사
@@ -213,6 +230,13 @@ public class StudentApiController {
 		int studentNo = Integer.valueOf(encStudentNo);
 		int memberNo = cryptoComponent.decrypt(userDetails.getEncMemberNo());
 
+		// 컨설턴트라면 담당 학생인지 확인
+		if(hasRole) {
+			int consultantNo = cryptoComponent.decrypt(userDetails.getEncMemberNo());
+			boolean inCharge = consultantService.isInCharge(consultantNo, studentNo);
+			if(!inCharge) throw new CustomException(ErrorCodeEnum.NOT_YOUR_STUDENT);
+		}
+		
 		// MultipartFile을 FileDataVO로 변환
 		FileDataVO fileData = FileDataVO.builder()
 				.originalName(file.getOriginalFilename())
@@ -228,7 +252,12 @@ public class StudentApiController {
 	
 	/**
 	 * 분석된 모의고사 성적표 있나요
-	 * 관리자, 컨설턴트, 학생
+	 * 
+	 * 관리자
+	 * 컨설턴트
+	 * 
+	 * groupNo만을 사용해 상태값만을 가져오기에
+	 * 컨설턴트일 경우 담당 학생인지 확인할 수 없고 확인할 필요도 없음
 	 * 
 	 * 1. GROUP_NO 복호화
 	 * 2. MOCK_GROUP 테이블의 STATUS조회

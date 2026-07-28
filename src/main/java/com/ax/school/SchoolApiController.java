@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ax.global.security.role.CanAccess;
+import com.ax.global.security.role.RoleEnum;
+
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
@@ -22,10 +25,13 @@ public class SchoolApiController {
 
 	/**
 	 * 학교 데이터 db조회
-	 * 관리자, 컨설턴트
+	 * 
+	 * 관리자
+	 * 컨설턴트
 	 * 
 	 * DB에 학교 데이터가 있는지 검사
 	 */
+	@CanAccess({RoleEnum.ADMIN, RoleEnum.CONSULTANT})
 	@GetMapping("")
 	public ResponseEntity<List<SchoolVO.Detail>> getSchoolListFromDB(
 			@RequestParam String schoolName) {
@@ -34,10 +40,13 @@ public class SchoolApiController {
 
 	/**
 	 * 나이스 학교 공공데이터 조회
-	 * 관리자, 컨설턴트
+	 * 
+	 * 관리자
+	 * 컨설턴트
 	 *
 	 * 검색 결과를 세션에 저장해두고 검색 결과를 선택하면 세션에서 불러와 사용
 	 */
+	@CanAccess({RoleEnum.ADMIN, RoleEnum.CONSULTANT})
 	@GetMapping("high")
 	public ResponseEntity<List<SchoolVO.Detail>> getHighSchoolList(
 			@RequestParam String schoolName,
@@ -70,11 +79,14 @@ public class SchoolApiController {
 
 	/**
 	 * 학교 등록
-	 * 관리자, 컨설턴트
+	 * 
+	 * 관리자
+	 * 컨설턴트
 	 * 
 	 * 세션에 저장된 나이스 학교 공공데이터 조회 결과를 DB에 넣기
 	 * 동일한 학교가 이미 DB에 있으면 오류
 	 */
+	@CanAccess({RoleEnum.ADMIN, RoleEnum.CONSULTANT})
 	@PostMapping("register")
 	public ResponseEntity<Void> registor(
 			@RequestParam String schoolCode,

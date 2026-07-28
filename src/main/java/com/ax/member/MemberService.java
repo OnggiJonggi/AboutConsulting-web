@@ -2,18 +2,16 @@
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.ax.global.common.SanitizeComponent;
 import com.ax.global.common.SearchResultVO;
 import com.ax.global.exception.CustomException;
 import com.ax.global.exception.ErrorCodeEnum;
 import com.ax.global.security.CryptoComponent;
-import com.ax.global.security.RoleEnum;
+import com.ax.global.security.role.RoleEnum;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +44,7 @@ public class MemberService{
 		
 		int result = memberMapper.insertJoin(member);
 		if(result==0)
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new CustomException(ErrorCodeEnum.FAILED_CREATE_ACCOUNT);
 	}
 
 	/**
@@ -122,7 +120,7 @@ public class MemberService{
 			member.setUserPwd(passwordEncoder.encode(member.getUserPwd()));
 
 		int result = memberMapper.updateMember(member);
-		if(result==0) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+		if(result==0) throw new CustomException(ErrorCodeEnum.FAILED_UPDATE_MEMBER);
 	}
 
 	/**
@@ -133,19 +131,19 @@ public class MemberService{
 		
 		// 권한 지워버려
 		int deleteResult = memberMapper.deleteRole(memberNo);
-		if(deleteResult==0) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+		if(deleteResult==0) throw new CustomException(ErrorCodeEnum.FAILED_DELETE_ROLE);
 		
 		// 권한 생성하기
 		int result = memberMapper.insertRole(memberNo, role);
-		if(result==0) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+		if(result==0) throw new CustomException(ErrorCodeEnum.FAILED_GRANT_ROLE);
 	}
 
 	/**
 	 * 회원 상태 수정
 	 */
 	public void updateMemberStatus(int memberNo, MemberStatusEnum status) {
-		int result = memberMapper.updateStatus(memberNo,status);
-		if(result==0) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+		int result = memberMapper.updateStatus(memberNo, status);
+		if(result==0) throw new CustomException(ErrorCodeEnum.FAILED_UPDATE_MEMBER);
 	}
 
 	/**

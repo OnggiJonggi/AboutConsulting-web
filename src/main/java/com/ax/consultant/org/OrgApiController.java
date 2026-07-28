@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ax.consultant.ConsultantVO;
 import com.ax.global.common.SearchResultVO;
 import com.ax.global.security.CryptoComponent;
+import com.ax.global.security.role.CanAccess;
+import com.ax.global.security.role.RoleEnum;
 
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -34,11 +36,14 @@ public class OrgApiController {
 	
 	/**
 	 * 소속 검색
+	 * 
 	 * 관리자
 	 */
+	@CanAccess(RoleEnum.ADMIN)
 	@GetMapping("")
 	public ResponseEntity<SearchResultVO<OrgVO.Detail>> getList(
 			@ModelAttribute OrgVO.Search search) throws Exception{
+		
 		// 목록 조회
 		SearchResultVO<OrgVO.Detail> result = orgService.getList(search);
 		
@@ -56,8 +61,11 @@ public class OrgApiController {
 	
 	/**
 	 * 소속 이름 중복확인
-	 * 관리자, 대표 컨설턴트
+	 * 
+	 * 관리자
+	 * 대표 컨설턴트
 	 */
+	@CanAccess({RoleEnum.ADMIN, RoleEnum.CONSULTANT_LEADER})
 	@GetMapping("check-name")
 	public ResponseEntity<Void> checkName(
 			@RequestParam(required=false) String encOrgNo,
@@ -78,8 +86,11 @@ public class OrgApiController {
 	
 	/**
 	 * 이름 변경
-	 * 관리자, 대표 컨설턴트
+	 * 
+	 * 관리자
+	 * 대표 컨설턴트
 	 */
+	@CanAccess({RoleEnum.ADMIN, RoleEnum.CONSULTANT_LEADER})
 	@PutMapping("{encOrgNo}/name")
 	public ResponseEntity<Void> updateName(
 			@PathVariable String encOrgNo,
@@ -94,8 +105,10 @@ public class OrgApiController {
 	
 	/**
 	 * 소속 상태값 변경
+	 * 
 	 * 관리자
 	 */
+	@CanAccess(RoleEnum.ADMIN)
 	@PutMapping("{encOrgNo}/status")
 	public ResponseEntity<Void> updateStatus(
 			@PathVariable String encOrgNo,
@@ -109,8 +122,10 @@ public class OrgApiController {
 	
 	/**
 	 * 소속 기본정보 조회
+	 * 
 	 * 관리자
 	 */
+	@CanAccess(RoleEnum.ADMIN)
 	@GetMapping("{encOrgNo}")
 	public ResponseEntity<OrgVO.Detail> getOrgBasicInfo(
 			@PathVariable String encOrgNo) throws Exception{
@@ -134,8 +149,10 @@ public class OrgApiController {
 	
 	/**
 	 * 소속 - 컨설턴트 배정
+	 * 
 	 * 관리자
 	 */
+	@CanAccess(RoleEnum.ADMIN)
 	@PostMapping("charged")
 	public ResponseEntity<Void> insertCharged(
 			@RequestParam String encOrgNo,

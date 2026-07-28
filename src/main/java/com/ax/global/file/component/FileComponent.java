@@ -9,10 +9,10 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
+import com.ax.global.exception.CustomException;
+import com.ax.global.exception.ErrorCodeEnum;
 import com.ax.global.file.FileInfoVO;
 import com.ax.global.file.FileMapper;
 
@@ -57,7 +57,7 @@ public class FileComponent {
 	public String save(FileInfoVO.HandOver file, Consumer<Integer> callback) {
 		
 		// 파일 없으면 가세요
-		if (!file.isValid()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+		if (!file.isValid()) throw new CustomException(ErrorCodeEnum.REQUEST_FILE_NOT_FOUND);
 		
 		// 지금 몇 시에요?
 		LocalDateTime now = LocalDateTime.now();
@@ -96,7 +96,7 @@ public class FileComponent {
 		
 		// DB에 메타데이터 저장
 		int result1 = fileMapper.insertInfo(fileInfo);
-		if(result1 == 0) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+		if(result1 == 0) throw new CustomException(ErrorCodeEnum.FAILED_CREATE_FILE_INFO);
 		
 		// DB 맵핑 테이블에 저장
 		callback.accept(fileInfo.getFileNo()); // 콜백 함수
@@ -113,7 +113,7 @@ public class FileComponent {
 
 		// DB에 파일 로그 저장
 		int result2 = fileMapper.insertHistory(insertHistory);
-		if(result2 == 0) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+		if(result2 == 0) throw new CustomException(ErrorCodeEnum.FAILED_CREATE_FILE_HISTORY);
 		
 		return changeName;
 	}

@@ -54,10 +54,14 @@ public class CustomUserDetails implements UserDetails{
     	return member.getNickname();
     }
     
-    // 회원번호 꺼내기
+    // 암호화된 회원번호 꺼내기
     public String getEncMemberNo() {
     	return member.getEncMemberNo();
     }
+    
+    /*
+     * 이 아래부터는 미사용
+     */
     
     // 계정 만료 여부
     @Override

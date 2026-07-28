@@ -1,6 +1,5 @@
 package com.ax.consultant;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,13 +7,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.ax.consultant.org.OrgService;
 import com.ax.global.common.SearchResultVO;
+import com.ax.global.exception.CustomException;
+import com.ax.global.exception.ErrorCodeEnum;
 import com.ax.global.security.CryptoComponent;
 import com.ax.global.security.CustomUserDetails;
-import com.ax.global.security.RoleEnum;
+import com.ax.global.security.role.CanAccess;
+import com.ax.global.security.role.HasRole;
+import com.ax.global.security.role.RoleEnum;
 import com.ax.student.StudentService;
 import com.ax.student.StudentVO;
 
@@ -33,12 +35,14 @@ public class ConsultantController {
 
 	/**
 	 * 컨설턴트 목록 조회 화면으로
+	 * 
 	 * 관리자
 	 */
+	@CanAccess(RoleEnum.ADMIN)
 	@GetMapping("")
 	public String list(Model model) throws Exception {
 		
-		// thymeleaf용 빈 객체 보내기
+		// thymeleaf에서 th:object로 받아갈 빈 객체
 		ConsultantVO.Search consultantSearch = new ConsultantVO.Search();
 		model.addAttribute("consultantSearch", consultantSearch);
 		
@@ -57,41 +61,37 @@ public class ConsultantController {
 	
 	/**
 	 * 컨설턴트 세부사항으로
+	 * 
 	 * 관리자
 	 * 컨설턴트 : 같은 소속
 	 */
+	@CanAccess({RoleEnum.ADMIN, RoleEnum.CONSULTANT})
 	@GetMapping({"/{encConsultantNo}", "/myinfo"})
 	public String goInfo(
 			@PathVariable(required = false) String encConsultantNo,
 			@AuthenticationPrincipal CustomUserDetails userDetails,
+			@HasRole(RoleEnum.ADMIN) boolean isAdmin,
 			Model model) throws Exception {
 		
 		int consultantNo;
 		
-		if(userDetails.getAuthorities().stream()
-		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.ADMIN.getPrefix()))) {
-			
+		if(isAdmin) {
 			// 관리자면 encConsultantNo에서 컨설턴트 식별번호 추출
 			consultantNo = cryptoComponent.decrypt(encConsultantNo);
 			
-		}else if(userDetails.getAuthorities().stream()
-		        .anyMatch(a -> a.getAuthority().equals(RoleEnum.CONSULTANT.getPrefix()))) {
+		// 컨설턴트가 본인 페이지로 온 경우
+		}else if(encConsultantNo == null) {
+			consultantNo = cryptoComponent.decrypt(userDetails.getEncMemberNo()); 
 			
-			if(encConsultantNo==null) {
-				// 컨설턴트가 본인 페이지로 온 경우
-				consultantNo = cryptoComponent.decrypt(userDetails.getEncMemberNo()); 
-			}else {
-				// 컨설턴트가 같은 소속 다른 컨설턴트 페이지로 온 경우
-				consultantNo = cryptoComponent.decrypt(encConsultantNo);
-				
-				// 같은 소속인지 확인
-				int memberNo = cryptoComponent.decrypt(userDetails.getEncMemberNo());
-				boolean isSameOrg = orgService.isSameOrg(consultantNo, memberNo);
-				if(!isSameOrg) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-			}
+		// 컨설턴트가 같은 소속 다른 컨설턴트 페이지로 온 경우
+		}else {
+			consultantNo = cryptoComponent.decrypt(encConsultantNo);
 			
-			// 그도 아니면 어케들어왔노 끄져라
-		}else throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+			// 같은 소속인지 확인
+			int memberNo = cryptoComponent.decrypt(userDetails.getEncMemberNo());
+			boolean isSameOrg = orgService.isSameOrg(consultantNo, memberNo);
+			if(!isSameOrg) throw new CustomException(ErrorCodeEnum.NOT_SAME_ORG);
+		}
 		
 		// 조회
 		ConsultantVO.Detail result = consultantService.getDetail(consultantNo);
@@ -115,16 +115,17 @@ public class ConsultantController {
 	
 	/**
 	 * 컨설턴트 - 학생 연결 페이지로
+	 * 
 	 * 관리자
 	 */
+	@CanAccess(RoleEnum.ADMIN)
 	@GetMapping("charged")
 	public String goCharged(
 			@RequestParam(required=false) String encConNo,
 			@RequestParam(required=false) String encStuNo,
 			Model model) throws Exception{
 		
-		
-		// 검색용 객체 보내기
+		// thymeleaf에서 th:object로 받아갈 빈 객체
 		StudentVO.Search studentSearch = new StudentVO.Search();
 		model.addAttribute("studentSearch", studentSearch);
 		ConsultantVO.Search consultantSearch = new ConsultantVO.Search();
@@ -132,7 +133,7 @@ public class ConsultantController {
 		
 		
 		// 컨설턴트 세부사항에서 왔을 경우
-		if(encConNo!=null) {
+		if(encConNo != null) {
 			model.addAttribute("encConsultantNo", encConNo);
 			// 컨설턴트 조회 생략
 			

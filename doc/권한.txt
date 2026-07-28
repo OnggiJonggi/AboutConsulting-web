@@ -1,8 +1,0 @@
-SUPER_ADMIN은 ADMIN권한을 부여 가능하고, ADMIN은 ADMIN권한을 부여하지 못합니다.
-SUPER_ADMIN이 ADMIN과 다른 점은 이뿐입니다.
-이 이외에 SUPER_ADMIN권한은 아무런 용도가 없습니다.
-따라서 SUPER_ADMIN은 ADMIN권한도 갖습니다.
-
-SUPER_ADMIN권한은 기본 계정(id : asdf)뿐이며, 새로운 SUPER_ADMIN생성은 불가능합니다.
-
-CONSULTANT_LEADER 권한을 가지면 CONSULTANT권한 또한 소유합니다.

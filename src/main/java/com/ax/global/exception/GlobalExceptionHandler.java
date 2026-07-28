@@ -1,7 +1,8 @@
 package com.ax.global.exception;
 
+import java.io.IOException;
+
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,46 +15,22 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(CustomException.class)
-	protected String handleCustomException(CustomException e, Model model, HttpServletResponse response) {
-		
-		response.setStatus(e.getErrorCode().getHttpStatus().value());
-
-		model.addAttribute("message", e.getErrorCode().getMessage());
-		model.addAttribute("status", e.getErrorCode().getHttpStatus().value());
-
-		return "error/" + e.getErrorCode().getHttpStatus().value();
+	protected void handleCustomException(CustomException e, HttpServletResponse response) throws IOException {
+		int status = e.getErrorCode().getHttpStatus().value();
+		response.sendError(status, e.getErrorCode().getMessage());
 	}
 
-
-	// ResponseStatusException 전용 처리도구
 	@ExceptionHandler(ResponseStatusException.class)
-	protected String handleResponseStatusException(
-	        ResponseStatusException e, Model model, HttpServletResponse response) {
-
-	    int status = e.getStatusCode().value();
-	    response.setStatus(status);
-
-	    model.addAttribute("error", e.getReason());
-	    model.addAttribute("status", status);
-	    
-	    // 상태코드별 뷰 페이지 분기
-	    switch(status) {
-	    case 400:
-	    case 401:
-	    case 403:
-	    case 404:
-	    	return "error/"+status;
-	    default : return "error/500";
-	    }
+	protected void handleResponseStatusException(ResponseStatusException e, HttpServletResponse response)
+			throws IOException {
+		int status = e.getStatusCode().value();
+		String reason = e.getReason() != null ? e.getReason() : "요청을 처리할 수 없습니다";
+		response.sendError(status, reason);
 	}
-	
-	
 
-	// 일반 예외는 500
 	@ExceptionHandler(Exception.class)
-	protected String handleException(Exception e, Model model, HttpServletResponse response) {
-	    response.setStatus(500);
-	    model.addAttribute("error", e.getMessage());
-	    return "error/500";
+	protected void handleException(Exception e, HttpServletResponse response) throws IOException {
+		log.error("처리되지 않은 예외 발생", e);
+		response.sendError(500, e.getMessage());
 	}
 }

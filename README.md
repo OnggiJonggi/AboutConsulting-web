@@ -36,24 +36,29 @@ aws.credentials.secretKey=    # 시크릿 키
 aws.s3.region=ap-northeast-2  # 리전
 aws.s3.bucket=                # 버킷 이름
 
-# (미사용) HMAC 키
-# src/test/java/com/ax/tool/CreateHmacKey.java 실행 후 결과값 입력
-hmac.key=
-
 # 나이스 교육개방포털 API 키
 # https://open.neis.go.kr/portal/data/service/selectServicePage.do
 neis-data.key=
+
+# GEMINI
+# https://ai.google.dev/gemini-api/docs/get-started?hl=ko
+google-aistudio.key= # Google AI Studio API 키
+google-aistudio.aimodel=gemini-3.1-pro-preview
+
+# (미사용) HMAC 키
+# src/test/java/com/ax/tool/CreateHmacKey.java 실행 후 결과값 입력
+hmac.key=
 
 # (미사용) 공공데이터포털 API 키 (Encoding 인증키)
 # https://www.data.go.kr/data/15107737/standard.do
 public-data.key=
 
-# 네이버 클로바-OCR API
+# (미사용) 네이버 클로바-OCR API
 # https://guide.ncloud-docs.com/docs/clovaocr-overview
 ncloud-ocr.invoke-url=  # APIGW Invoke URL
 ncloud-ocr.key=         # Secret Key
 
-# OPEN AI
+# (미사용) OPEN AI
 # https://platform.openai.com/docs/api-reference
 openai.key=
 ```

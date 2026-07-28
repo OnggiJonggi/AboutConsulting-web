@@ -1,0 +1,4 @@
+@PreAuthorize("isAuthenticated()")가 선언된 컨트롤러
+(myinfo 등)에서 로그인 하지 않고 접근하면 401/403대신 500오류 발생
+
+로그인 실패 시 이동할 페이지(SecurityConfig)
