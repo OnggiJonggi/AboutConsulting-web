@@ -38,6 +38,7 @@ public enum ErrorCodeEnum {
 	CANNOT_CREATE_SUPER_ADMIN(HttpStatus.FORBIDDEN, "ROLE-101", "최고 관리자 생성 권한이 없습니다"),
 	CANNOT_CREATE_ADMIN(HttpStatus.FORBIDDEN, "ROLE-102", "관리자 생성 권한이 없습니다."),
 	CANNOT_CHANGE_MY_ROLE(HttpStatus.FORBIDDEN, "ROLE-103", "자신의 권한은 수정할 수 없습니다"),
+	CANNOT_DELETE_ADMIN_ACCOUNT(HttpStatus.FORBIDDEN, "ROLE-104", "관리자 계정은 삭제할 수 없습니다."),
 
 	
 	/**

@@ -1,6 +1,5 @@
 package com.ax.member;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,9 +13,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.ax.global.common.SearchResultVO;
+import com.ax.global.exception.CustomException;
+import com.ax.global.exception.ErrorCodeEnum;
 import com.ax.global.security.CryptoComponent;
 import com.ax.global.security.CustomUserDetails;
 import com.ax.global.security.role.CanAccess;
@@ -163,7 +163,7 @@ public class MemberController {
 		// 관리자 계정은 탈퇴가 안 되셔요
 		if(hasRole) {
 			log.warn("관리자가 자신의 계정을 탈퇴하려 합니다. memberNo : "+memberNo);
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+			throw new CustomException(ErrorCodeEnum.CANNOT_DELETE_ADMIN_ACCOUNT);
 		}
 		
 		// 가세요
