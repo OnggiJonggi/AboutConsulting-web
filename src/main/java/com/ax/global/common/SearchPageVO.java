@@ -14,12 +14,15 @@ public class SearchPageVO {
     
     
     public int getPage() {
-    	return page;
+		return page;
 	}
-    public void setPage(int page) {
-    	// 1페이지 미만이면 1페이지로 바꿔줌
-        this.page = (page < 1) ? 1 : page;
-    }
+	public void setPage(int page) {
+		// 1페이지 미만이면 1페이지로 바꿔줌
+	    this.page = (page < 1) ? 1 : page;
+	    
+	    // 1000페이지 초과하면 1000페이지로 바꿈
+	    this.page = (page > PagingConstant.MAX_PAGE_SIZE) ? PagingConstant.MAX_PAGE_SIZE : page;
+	}
 
     /**
      * startRow 검색 데이터 시작행
